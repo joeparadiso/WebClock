@@ -10,7 +10,7 @@ body{
 }
 
 .container{
-    height: 100vh;
+    height: 85vh;
     display: flex;
     align-items: center;
     justify-content: center;
