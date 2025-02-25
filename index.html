@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paradiso Tempo</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="text/javascript" src="app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baumans&family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="clock">
+        <div id="Date">DAY, MONTH 00, YEAR</div>
+        <ul>
+          <li id="hours">00</li>
+          <li id="point">:</li>
+          <li id="minutes">00</li>
+          <li id="point">:</li>
+          <li id="seconds">00</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Below is the HTML for the countdown timer -->
+    <div id="timer">
+      <table>
+        <thead>
+          <tr>
+            <th>Enter Date</th>
+            <th>Enter Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="date" id="date" /></td>
+            <td><input type="time" id="time" /></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="calculate">Start</button>
+      <button id="stop">Stop</button>
+      <button id="reset">Reset</button>
+
+      <div class="countdown">
+        <div>
+          <p class="heading">DAYS</p>
+          <div class="time" id="countdown-days">0</div>
+        </div>
+        <div>
+          <p class="heading">HOURS</p>
+          <div class="time" id="countdown-hours">0</div>
+        </div>
+        <div>
+          <p class="heading">MINUTES</p>
+          <div class="time" id="countdown-minutes">0</div>
+        </div>
+        <div>
+          <p class="heading">SECONDS</p>
+          <div class="time" id="countdown-seconds">0</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

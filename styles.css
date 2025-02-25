@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background: linear-gradient(45deg, #08001f, #30197d);
+}
+
+.container{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font:bold 12px Arial, Helvetica, sans-serif;
+    font-family: 'Poppins', sans-serif;
+    /* background: linear-gradient(45deg, #08001f, #30197d); */
+}
+
+/* This is the box containing the clock and date */
+.clock{
+    border: 1px solid #606060;
+    width: 800px;
+    color: rgb(114, 160, 225);
+    padding: 5em;
+    border-radius: 10px;
+    background-color: #22222288;
+    background: linear-gradient(-45deg, #08001f, #30197d);
+    box-shadow: 15px 15px 40px rgb(255, 4, 88);
+}
+
+/* This is the date DAY, MONTH XX, YEAR */
+#Date{
+    font-size: 25px;
+    text-align: center;
+    align-items: center;
+    justify-content: space-evenly;
+    font-family: "Baumans", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* This is the actual time display HH:MM:SS */
+.clock ul{
+    list-style: none;
+    display: flex;
+    font-size: 160px;
+    gap: 40px;
+    /* padding-left: 25px; */
+    /* font-family: "Baumans", serif; */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* BELOW IS THE TIMER STYLING */
+
+/* All of the timer is within this div with the id=timer */
+#timer{
+    text-align: center;
+}
+
+/* This centers the input boxes which are in a table */
+table {
+    margin: auto;
+}
+/* This is the wording that is above the input boxes (the table headers) */
+th {
+    color:rgb(114, 160, 225);
+}
+/* This is the formatting of the input boxes for date and time */
+input {
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgb(114, 160, 225);
+}
+/* button formatting when not hovered */
+button{
+    background: none;
+    color: rgb(114, 160, 225);
+    border: 2px solid rgb(255, 4, 88);
+    margin: 20px 10px;
+    padding: 1em 2em;
+    font-size: 1em;
+    transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+/* button formatting when hovered */
+button:hover{
+    border-color: rgb(255, 4, 88);
+    color: rgb(114, 160, 225);        
+    box-shadow: 0 0.5em 0.5em -0.4em rgb(255, 4, 88);
+    transform: translateY(-.2em);
+    cursor: pointer;
+}
+/* This is the layout of the boxes and labels that show the time countdown */
+.countdown {
+    display: flex;
+    justify-content: center;
+}
+/* This is the formatting for the .countdown headings */
+.heading {
+    color: rgb(114, 160, 225);
+    font-size: 18px;
+    text-transform: uppercase;
+}
+/* This is the formatting of the boxes that show the countdown */
+.time {
+    background: linear-gradient(-45deg, #08001f, #7a1cb8);
+    box-shadow: 15px 15px 40px rgb(255, 4, 88);
+    color: rgb(114, 160, 225);
+    font-size: 100px;
+    width: 150px;
+    margin: 0 10px 800px;
+}
