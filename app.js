@@ -44,7 +44,7 @@ function clock(){
     }
     
     // Load alarm sound
-    const alarmSound = new Audio('alarm.mp3');
+    const alarmSound = new Audio('sounds/alarm.mp3');
     alarmSound.loop = true; // Make the alarm loop
     
     let interval; // Store interval so we can clear it later
@@ -78,13 +78,19 @@ function clock(){
             hours.innerText = Math.floor((timeLeft / (60 * 60)) % 24);
             minutes.innerText = Math.floor((timeLeft / 60) % 60);
             seconds.innerText = Math.floor(timeLeft % 60);
+
+            // Append a zero to any number that is less than 10 to keep consistent formatting
+            days.innerText = days.innerText < 10 ? '0' + days.innerText : days.innerText;
+            hours.innerText = hours.innerText < 10 ? '0' + hours.innerText : hours.innerText;
+            minutes.innerText = minutes.innerText < 10 ? '0' + minutes.innerText : minutes.innerText;
+            seconds.innerText = seconds.innerText < 10 ? '0' + seconds.innerText : seconds.innerText;
     
             return true;
         } else {
-            days.innerText = 0;
-            hours.innerText = 0;
-            minutes.innerText = 0;
-            seconds.innerText = 0;
+            days.innerText = "00";
+            hours.innerText = "00";
+            minutes.innerText = "00";
+            seconds.innerText = "00";
     
             return false;
         }
@@ -97,10 +103,10 @@ function clock(){
     }
     
     function reset() {
-        document.querySelector('#countdown-days').innerText = 0;
-        document.querySelector('#countdown-hours').innerText = 0;
-        document.querySelector('#countdown-minutes').innerText = 0;
-        document.querySelector('#countdown-seconds').innerText = 0;
+        document.querySelector('#countdown-days').innerText = "--";
+        document.querySelector('#countdown-hours').innerText = "--";
+        document.querySelector('#countdown-minutes').innerText = "--";
+        document.querySelector('#countdown-seconds').innerText = "--";
     
         stopAlarm(); // Stop the alarm if reset is pressed
     }
