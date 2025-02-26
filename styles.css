@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baumans&display=swap');
 
 *{
     margin: 0;
@@ -14,9 +15,6 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    font:bold 12px Arial, Helvetica, sans-serif;
-    font-family: 'Poppins', sans-serif;
-    /* background: linear-gradient(45deg, #08001f, #30197d); */
 }
 
 /* This is the box containing the clock and date */
@@ -27,7 +25,6 @@ body{
     padding: 5em;
     border-radius: 10px;
     background-color: #22222288;
-    /* background: linear-gradient(-45deg, #08001f, #30197d); */
     background: linear-gradient(-75deg, #08001f, #1c52b8);
     box-shadow: 15px 15px 40px rgb(255 236 4);
 }
@@ -46,13 +43,12 @@ body{
 /* This is the actual time display HH:MM:SS */
 .clock ul{
     list-style: none;
-    justify-content: flex-start;
+    justify-content:center;
     display: flex;
     font-size: 130px;
-    gap: 25px;
-    padding-left: 80px;
-    /* font-family: "Baumans", serif; */
-    font-family: 'Poppins', sans-serif;
+    gap: 10px;
+    font-family: "Chivo Mono", serif;
+    font-optical-sizing:auto;
     font-weight: 400;
     font-style: normal;
 }
@@ -106,21 +102,22 @@ button:hover{
     display: flex;
     justify-content: center;
 }
-/* This is the formatting for the .countdown headings */
+/* This is the formatting for the .countdown numbers headings */
 .heading {
     color: rgb(114, 160, 225);
     font-size: 18px;
     text-transform: uppercase;
     font-family: "Baumans", serif;
+    margin-top: 40px;
 }
 /* This is the formatting of the boxes that show the countdown */
 .time {
     background: linear-gradient(-45deg, #08001f, #1c52b8);
     box-shadow: 2px 2px 12px rgb(255 224 4);
     color: rgb(114, 160, 225);
-    font-size: 100px;
+    font-size: 75px;
     width: 150px;
-    margin: 20px 10px 800px;
+    margin: 20px 15px 800px;
     border-radius: 30px;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Chivo Mono", serif;
 }
