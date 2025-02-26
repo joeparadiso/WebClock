@@ -10,7 +10,7 @@ body{
 }
 
 .container{
-    height: 85vh;
+    height: 50vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,13 +22,14 @@ body{
 /* This is the box containing the clock and date */
 .clock{
     border: 1px solid #606060;
-    width: 800px;
+    width: 700px;
     color: rgb(114, 160, 225);
     padding: 5em;
     border-radius: 10px;
     background-color: #22222288;
-    background: linear-gradient(-45deg, #08001f, #30197d);
-    box-shadow: 15px 15px 40px rgb(255, 4, 88);
+    /* background: linear-gradient(-45deg, #08001f, #30197d); */
+    background: linear-gradient(-75deg, #08001f, #1c52b8);
+    box-shadow: 15px 15px 40px rgb(255 236 4);
 }
 
 /* This is the date DAY, MONTH XX, YEAR */
@@ -45,10 +46,11 @@ body{
 /* This is the actual time display HH:MM:SS */
 .clock ul{
     list-style: none;
+    justify-content: flex-start;
     display: flex;
-    font-size: 160px;
-    gap: 40px;
-    /* padding-left: 25px; */
+    font-size: 130px;
+    gap: 25px;
+    padding-left: 80px;
     /* font-family: "Baumans", serif; */
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
@@ -69,6 +71,7 @@ table {
 /* This is the wording that is above the input boxes (the table headers) */
 th {
     color:rgb(114, 160, 225);
+    font-family: "Baumans", serif;
 }
 /* This is the formatting of the input boxes for date and time */
 input {
@@ -80,18 +83,21 @@ input {
 /* button formatting when not hovered */
 button{
     background: none;
+    background: linear-gradient(0.00turn, #08001f, #062963, #08001f);
     color: rgb(114, 160, 225);
-    border: 2px solid rgb(255, 4, 88);
+    border: 2px solid rgb(199 143 6);
     margin: 20px 10px;
     padding: 1em 2em;
     font-size: 1em;
     transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+    font-family: "Baumans", serif;
+    border-radius: 10px;
 }
 /* button formatting when hovered */
 button:hover{
-    border-color: rgb(255, 4, 88);
-    color: rgb(114, 160, 225);        
-    box-shadow: 0 0.5em 0.5em -0.4em rgb(255, 4, 88);
+    border-color: rgb(255 182 4);
+    color: rgb(114, 160, 225);
+    box-shadow: 0 0.5em 0.5em -0.4em rgb(255 182 4);
     transform: translateY(-.2em);
     cursor: pointer;
 }
@@ -105,13 +111,16 @@ button:hover{
     color: rgb(114, 160, 225);
     font-size: 18px;
     text-transform: uppercase;
+    font-family: "Baumans", serif;
 }
 /* This is the formatting of the boxes that show the countdown */
 .time {
-    background: linear-gradient(-45deg, #08001f, #7a1cb8);
-    box-shadow: 15px 15px 40px rgb(255, 4, 88);
+    background: linear-gradient(-45deg, #08001f, #1c52b8);
+    box-shadow: 2px 2px 12px rgb(255 224 4);
     color: rgb(114, 160, 225);
     font-size: 100px;
     width: 150px;
-    margin: 0 10px 800px;
+    margin: 20px 10px 800px;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
 }
