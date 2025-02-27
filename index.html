@@ -5,9 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chrono Paradiso</title>
     <link rel="stylesheet" href="styles.css" />
-    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="app.js" defer></script>
   </head>
   <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="menu-toggle" id="mobile-menu">☰</div>
+      <ul class="nav-links">
+        <li>
+          <label
+            >Box Shadow & Button Borders: <input type="color" id="shadowColor"
+          /></label>
+        </li>
+        <li>
+          <label
+            >Clock Background: <input type="color" id="clockBg1" /><input
+              type="color"
+              id="clockBg2"
+          /></label>
+        </li>
+        <li>
+          <label
+            >Timer Background: <input type="color" id="timerBg1" /><input
+              type="color"
+              id="timerBg2"
+          /></label>
+        </li>
+        <li>
+          <label
+            >Button Background: <input type="color" id="buttonBg1" /><input
+              type="color"
+              id="buttonBg2"
+          /></label>
+        </li>
+        <li>
+          <label
+            >Page Background: <input type="color" id="pageBg1" /><input
+              type="color"
+              id="pageBg2"
+          /></label>
+        </li>
+        <li>
+          <label
+            >Navbar Background: <input type="color" id="navbarColor"
+          /></label>
+        </li>
+        <li>
+          <label>Text Color: <input type="color" id="textColor" /></label>
+        </li>
+        <li>
+          <label
+            >Input Box Color: <input type="color" id="inputBoxColor"
+          /></label>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
     <div class="container">
       <div class="clock">
         <div id="Date">DAY, MONTH 00, YEAR</div>
@@ -20,7 +74,8 @@
         </ul>
       </div>
     </div>
-    <!-- Below is the HTML for the countdown timer -->
+
+    <!-- Timer Section -->
     <div id="timer">
       <table>
         <thead>
