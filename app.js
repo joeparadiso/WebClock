@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "Friday",
       "Saturday",
     ];
+
     var monthNames = [
       "January",
       "February",
