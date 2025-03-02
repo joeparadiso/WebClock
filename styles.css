@@ -81,9 +81,10 @@ body {
   padding: 5px 0;
 }
 
+/* Formatting of the menu options */
 .nav-links label {
   color: white;
-  font-family: "Baumans", serif;
+  font-family: "Courier New", Courier, monospace;
   font-size: 40px;
   font-weight: 900;
 }
