@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "Friday",
       "Saturday",
     ];
+
     var monthNames = [
       "January",
       "February",
@@ -188,3 +189,37 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCSSVariable("--navbar-bg", this.value);
   });
 });
+
+const apiKey = "c8308404d372dac83d64419d50deccee";
+const city = "Dedham";
+const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
+
+async function fetchWeather() {
+  try {
+    const response = await fetch(weatherApiUrl);
+    const data = await response.json();
+
+    document.getElementById(
+      "weather-icon"
+    ).src = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+    document.getElementById(
+      "current-temp"
+    ).innerText = `Temperature: ${Math.round(data.main.temp)}°F`;
+    document.getElementById("feels-like").innerText = `Feels like: ${Math.round(
+      data.main.feels_like
+    )}°F`;
+    document.getElementById("high-low-temp").innerText = `High: ${Math.round(
+      data.main.temp_max
+    )}°F / Low: ${Math.round(data.main.temp_min)}°F`;
+    document.getElementById(
+      "sky-condition"
+    ).innerText = `Conditions: ${data.weather[0].description}`;
+    document.getElementById("wind-speed").innerText = `Wind: ${Math.round(
+      data.wind.speed
+    )} mph`;
+  } catch (error) {
+    console.error("Error fetching weather data:", error);
+  }
+}
+
+fetchWeather();
