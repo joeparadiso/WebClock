@@ -206,7 +206,7 @@ async function fetchWeather() {
 
     document.getElementById(
       "current-temp"
-    ).innerText = `Temperature: ${Math.round(data.main.temp)}°F`;
+    ).innerText = `Temperature: ${Math.ceil(data.main.temp)}°F`;
 
     document.getElementById("feels-like").innerText = `Feels like: ${Math.round(
       data.main.feels_like
@@ -230,3 +230,4 @@ async function fetchWeather() {
 }
 
 fetchWeather();
+setInterval(fetchWeather, 60000);
