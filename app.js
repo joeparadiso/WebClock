@@ -130,6 +130,31 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("countdown-seconds").innerText = "--";
   }
 
+  // Theme Selection
+  const themes = {
+    default: { text: "#72a0e1", background: "#08001f", button: "#062963" },
+    dark: { text: "#ffffff", background: "#000000", button: "#333333" },
+    light: { text: "#000000", background: "#ffffff", button: "#cccccc" },
+    sunset: { text: "#ff4500", background: "#ffcc00", button: "#ff6600" },
+  };
+
+  document
+    .getElementById("themeSelector")
+    .addEventListener("change", function () {
+      let theme = themes[this.value];
+      if (theme) {
+        document.documentElement.style.setProperty("--text-color", theme.text);
+        document.documentElement.style.setProperty(
+          "--page-bg1",
+          theme.background
+        );
+        document.documentElement.style.setProperty(
+          "--button-bg1",
+          theme.button
+        );
+      }
+    });
+
   // COLOR CUSTOMIZATION FUNCTIONALITY
   function updateCSSVariable(variable, value) {
     document.documentElement.style.setProperty(variable, value);
