@@ -132,10 +132,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Theme Selection
   const themes = {
-    default: { text: "#72a0e1", background: "#08001f", button: "#062963" },
-    dark: { text: "#ffffff", background: "#000000", button: "#333333" },
-    light: { text: "#000000", background: "#ffffff", button: "#cccccc" },
-    sunset: { text: "#ff4500", background: "#ffcc00", button: "#ff6600" },
+    default: {
+      shadow: "#ffec04",
+      clockbg1: "#08001f",
+      clockbg2: "#1c52b8",
+      timerbg1: "#08001f",
+      timerbg2: "#1c52b8",
+      buttonbg1: "#08001f",
+      buttonbg2: "#062963",
+      pagebg1: "#08001f",
+      pagebg2: "#30197d",
+      navbar: "#000000e6",
+      text: "#72a0e1",
+      input: "#72a0e1",
+    },
+    dark: {
+      shadow: "#FFFFFF",
+      clockbg1: "#4F4F4F",
+      clockbg2: "#000000",
+      timerbg1: "#636363",
+      timerbg2: "#000000",
+      buttonbg1: "#5E5E5E",
+      buttonbg2: "#000000",
+      pagebg1: "#666666",
+      pagebg2: "#000000",
+      navbar: "#383838",
+      text: "#B8B8B8",
+      input: "#8F8F8F",
+    },
+    light: {
+      shadow: "#FFFFFF",
+      clockbg1: "#4F4F4F",
+      clockbg2: "#000000",
+      timerbg1: "#636363",
+      timerbg2: "#000000",
+      buttonbg1: "#5E5E5E",
+      buttonbg2: "#000000",
+      pagebg1: "#666666",
+      pagebg2: "#000000",
+      navbar: "#383838",
+      text: "#B8B8B8",
+      input: "#8F8F8F",
+    },
+    sunset: {
+      shadow: "#FFFFFF",
+      clockbg1: "#4F4F4F",
+      clockbg2: "#000000",
+      timerbg1: "#636363",
+      timerbg2: "#000000",
+      buttonbg1: "#5E5E5E",
+      buttonbg2: "#000000",
+      pagebg1: "#666666",
+      pagebg2: "#000000",
+      navbar: "#383838",
+      text: "#B8B8B8",
+      input: "#8F8F8F",
+    },
   };
 
   document
@@ -143,14 +195,41 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("change", function () {
       let theme = themes[this.value];
       if (theme) {
-        document.documentElement.style.setProperty("--text-color", theme.text);
         document.documentElement.style.setProperty(
-          "--page-bg1",
-          theme.background
+          "--box-shadow-color",
+          theme.shadow
+        );
+        document.documentElement.style.setProperty(
+          "--clock-bg1",
+          theme.clockbg1
+        );
+        document.documentElement.style.setProperty(
+          "--clock-bg2",
+          theme.clockbg2
+        );
+        document.documentElement.style.setProperty(
+          "--timer-bg1",
+          theme.timerbg1
+        );
+        document.documentElement.style.setProperty(
+          "--timer-bg2",
+          theme.timerbg1
         );
         document.documentElement.style.setProperty(
           "--button-bg1",
-          theme.button
+          theme.buttonbg1
+        );
+        document.documentElement.style.setProperty(
+          "--button-bg2",
+          theme.buttonbg2
+        );
+        document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
+        document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
+        document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
+        document.documentElement.style.setProperty("--text-color", theme.text);
+        document.documentElement.style.setProperty(
+          "--input-box-color",
+          theme.input
         );
       }
     });
