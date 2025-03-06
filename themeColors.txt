@@ -1,0 +1,36 @@
+DARK THEME
+----------
+Box shadow & button borders: #FFFFFF
+
+clock background: #4F4F4F  #000000
+
+timer backg: #636363  #000000
+
+button backg: #5E5E5E  #000000
+
+page backg: #666666  #000000
+
+navbar backg: #383838
+
+text color: #B8B8B8
+
+input box color: #8F8F8F
+
+==========================================
+SUNSET THEME
+------------
+Box shadow & button borders: #FB8728
+
+clock background: #590193  #F28226
+
+timer backg: #3400AD  #C885FF
+
+button backg: #0300CC  #A75858
+
+page backg: #593BA0  #673104
+
+navbar backg: #9A4F42
+
+text color: #FFFFFF
+
+input box color: #E9A5A5
