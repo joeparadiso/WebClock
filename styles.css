@@ -51,7 +51,7 @@ body {
 .menu-toggle {
   cursor: pointer;
   font-size: 2em;
-  color: white;
+  color: var(--text-color);
   padding: 5px;
 }
 
@@ -59,7 +59,7 @@ body {
 .nav-links {
   display: none;
   position: absolute;
-  top: 60px;
+  top: 50px;
   left: 0;
   width: 100%;
   background: rgba(0, 0, 0, 0.95);
@@ -84,7 +84,7 @@ body {
 .nav-links label {
   color: white;
   font-family: "Courier New", Courier, monospace;
-  font-size: 40px;
+  font-size: 30px;
   font-weight: 900;
 }
 
@@ -138,7 +138,7 @@ body {
 
 /* TIMER */
 #timer {
-  margin-top: 20px;
+  margin-top: 15px;
   text-align: center;
 }
 
@@ -155,7 +155,8 @@ th {
 input {
   font-size: 20px;
   padding: 5px;
-  border-radius: 5px;
+  margin: 10px 20px;
+  border-radius: 10px;
   background-color: var(--input-box-color);
   text-align: center;
 }
@@ -168,11 +169,11 @@ input {
 
 .time {
   background: linear-gradient(-45deg, var(--timer-bg1), var(--timer-bg2));
-  box-shadow: 2px 2px 12px var(--box-shadow-color);
+  box-shadow: 2px 8px 20px var(--box-shadow-color);
   color: var(--text-color);
   font-size: 75px;
-  width: 150px;
-  margin: 20px 15px;
+  width: 125px;
+  margin: 10px 15px;
   border-radius: 30px;
 }
 
@@ -181,6 +182,7 @@ button {
   background: linear-gradient(0turn, var(--button-bg1), var(--button-bg2));
   color: var(--text-color);
   border: 2px solid var(--box-shadow-color);
+  border-style: outset;
   margin: 20px 10px;
   padding: 1em 2em;
   border-radius: 10px;
@@ -188,8 +190,8 @@ button {
 }
 
 button:hover {
-  /* border-color: rgb(255, 182, 4);
-  box-shadow: 0 0.5em 0.5em -0.4em rgb(255, 182, 4); */
+  border-color: var(--box-shadow-color);
+  box-shadow: 0 1em 1em -0.4em var(--box-shadow-color);
   transform: translateY(-0.2em);
   cursor: pointer;
 }
@@ -200,7 +202,7 @@ button:hover {
   font-size: 18px;
   text-transform: uppercase;
   font-family: "Baumans", serif;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 /* Ensure all layout elements remain centered */
