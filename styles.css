@@ -8,8 +8,8 @@
 }
 
 :root {
-  --text-color: rgb(114, 160, 225);
-  --box-shadow-color: rgb(255, 236, 4);
+  --text-color: #72a0e1;
+  --box-shadow-color: #ffec04;
   --clock-bg1: #08001f;
   --clock-bg2: #1c52b8;
   --timer-bg1: #08001f;
@@ -18,8 +18,8 @@
   --button-bg2: #062963;
   --page-bg1: #08001f;
   --page-bg2: #30197d;
-  --input-box-color: rgb(114, 160, 225);
-  --navbar-bg: rgba(0, 0, 0, 0.9);
+  --input-box-color: #72a0e1;
+  --navbar-bg: #000000e6;
 }
 
 /* BODY STYLING */
