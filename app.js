@@ -133,9 +133,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Theme Selection
   const themes = {
     default: {
-      shadow: "#ffec04",
-      clockbg1: "#08001f",
-      clockbg2: "#1c52b8",
+      shadow: "#F8E3AF",
+      clockbg1: "#2D4067",
+      clockbg2: "#0D0B41",
       timerbg1: "#08001f",
       timerbg2: "#1c52b8",
       buttonbg1: "#08001f",
@@ -143,43 +143,57 @@ document.addEventListener("DOMContentLoaded", function () {
       pagebg1: "#08001f",
       pagebg2: "#30197d",
       navbar: "#000000e6",
-      text: "#72a0e1",
-      input: "#72a0e1",
+      text: "#DCC48F",
+      input: "#DCC48F",
+    },
+    lava: {
+      shadow: "#F99B4E",
+      clockbg1: "#223138",
+      clockbg2: "#586566",
+      timerbg1: "#4C595E",
+      timerbg2: "#1C221E",
+      buttonbg1: "#814108",
+      buttonbg2: "#071113",
+      pagebg1: "#08001f",
+      pagebg2: "#30197d",
+      navbar: "#000000e6",
+      text: "#e6740a",
+      input: "#F3B268",
     },
     dark: {
-      shadow: "#FFFFFF",
-      clockbg1: "#4F4F4F",
-      clockbg2: "#000000",
-      timerbg1: "#000000",
-      timerbg2: "#636363",
-      buttonbg1: "#5E5E5E",
-      buttonbg2: "#000000",
+      shadow: "#ADADAD",
+      clockbg1: "#192327",
+      clockbg2: "#535E66",
+      timerbg1: "#566f81",
+      timerbg2: "#3d474d",
+      buttonbg1: "#232d33",
+      buttonbg2: "#6a737c",
       pagebg1: "#303030",
       pagebg2: "#000000",
-      navbar: "#383838",
-      text: "#B8B8B8",
-      input: "#8F8F8F",
+      navbar: "#333537",
+      text: "#D1D1D1",
+      input: "#96a5b0",
     },
     light: {
       shadow: "#FFFFFF",
-      clockbg1: "#4F4F4F",
-      clockbg2: "#000000",
-      timerbg1: "#636363",
-      timerbg2: "#000000",
-      buttonbg1: "#5E5E5E",
-      buttonbg2: "#000000",
-      pagebg1: "#666666",
+      clockbg1: "#0049a3",
+      clockbg2: "#89a2c2",
+      timerbg1: "#0049a3",
+      timerbg2: "#668cbf",
+      buttonbg1: "#0254ac",
+      buttonbg2: "#b9c1cb",
+      pagebg1: "#000000",
       pagebg2: "#000000",
-      navbar: "#383838",
-      text: "#B8B8B8",
-      input: "#8F8F8F",
+      navbar: "#1f5ea2",
+      text: "#FFFFFF",
+      input: "#91b6d9",
     },
     sunset: {
       shadow: "#FB8728",
       clockbg1: "#590193",
       clockbg2: "#F28226",
-      timerbg1: "#3400AD",
-      timerbg2: "#C885FF",
+      timerbg1: "#ec572e",
+      timerbg2: "#5840d4",
       buttonbg1: "#0300CC",
       buttonbg2: "#A75858",
       pagebg1: "#593BA0",
@@ -213,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         document.documentElement.style.setProperty(
           "--timer-bg2",
-          theme.timerbg1
+          theme.timerbg2
         );
         document.documentElement.style.setProperty(
           "--button-bg1",
@@ -293,6 +307,76 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCSSVariable("--navbar-bg", this.value);
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const themes = {
+    default: {
+      backgroundImage:
+        "url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm00NzItMjBhLmpwZw.jpg')",
+    },
+    lava: {
+      backgroundImage:
+        "url('https://static.vecteezy.com/system/resources/thumbnails/045/698/869/small_2x/black-marble-texture-with-gold-veins-luxurious-surface-design-photo.jpg')",
+    },
+    dark: {
+      backgroundImage:
+        "url('https://media.istockphoto.com/id/106529026/photo/threatening-dark-clouds-covering-the-sky.jpg?s=612x612&w=0&k=20&c=XOSnMeZbKOW541FgTISJkDVvFK_bVHyTvusmAk9jjAs=')",
+    },
+    light: {
+      // backgroundImage: "url('https://www.freeimageslive.com/galleries/nature/weather/pics/sunny_clouds_8092612.jpg')",
+      backgroundImage:
+        "url('https://burst.shopifycdn.com/photos/bright-blue-sky-dotted-with-fluffy-white-clouds.jpg?exif=0&iptc=0')",
+    },
+    sunset: {
+      backgroundImage:
+        "url('https://t4.ftcdn.net/jpg/01/04/78/75/360_F_104787586_63vz1PkylLEfSfZ08dqTnqJqlqdq0eXx.jpg')",
+    },
+    ocean: {
+      backgroundImage: "url('https://example.com/ocean.jpg')",
+    },
+    forest: {
+      backgroundImage: "url('https://example.com/forest.jpg')",
+    },
+    pastel: {
+      backgroundImage: "url('https://example.com/pastel.jpg')",
+    },
+    neon: {
+      backgroundImage: "url('https://example.com/neon.jpg')",
+    },
+    cyberpunk: {
+      backgroundImage: "url('https://example.com/cyberpunk.jpg')",
+    },
+    autumn: {
+      backgroundImage: "url('https://example.com/autumn.jpg')",
+    },
+  };
+
+  document
+    .getElementById("themeSelector")
+    .addEventListener("change", function () {
+      let theme = themes[this.value];
+      if (theme) {
+        document.body.style.background = theme.backgroundImage;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+      }
+    });
+});
+
+//------------------------
+function updateCSSVariable(variable, value) {
+  document.documentElement.style.setProperty(variable, value);
+  document.body.style.background = `linear-gradient(45deg, var(--page-bg1), var(--page-bg2))`;
+}
+
+document.getElementById("pageBg1").addEventListener("input", function () {
+  updateCSSVariable("--page-bg1", this.value);
+});
+
+document.getElementById("pageBg2").addEventListener("input", function () {
+  updateCSSVariable("--page-bg2", this.value);
+});
+//----------------------
 
 const apiKey = "c8308404d372dac83d64419d50deccee";
 const city = "Dedham";
