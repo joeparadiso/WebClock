@@ -188,6 +188,20 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#FFFFFF",
       input: "#91b6d9",
     },
+    morning: {
+      shadow: "#FB8728",
+      clockbg1: "#342e94",
+      clockbg2: "#F28226",
+      timerbg1: "#cda89d",
+      timerbg2: "#814e38",
+      buttonbg1: "#6d8000",
+      buttonbg2: "#cba293",
+      pagebg1: "#593BA0",
+      pagebg2: "#673104",
+      navbar: "#464a6d",
+      text: "#ffdd00",
+      input: "#dc8f50",
+    },
     sunset: {
       shadow: "#FB8728",
       clockbg1: "#590193",
@@ -327,12 +341,17 @@ document.addEventListener("DOMContentLoaded", function () {
       backgroundImage:
         "url('https://burst.shopifycdn.com/photos/bright-blue-sky-dotted-with-fluffy-white-clouds.jpg?exif=0&iptc=0')",
     },
+    morning: {
+      backgroundImage:
+        "url('https://live.staticflickr.com/7915/32413680647_bfa12df896_b.jpg')",
+    },
     sunset: {
       backgroundImage:
         "url('https://t4.ftcdn.net/jpg/01/04/78/75/360_F_104787586_63vz1PkylLEfSfZ08dqTnqJqlqdq0eXx.jpg')",
     },
     ocean: {
-      backgroundImage: "url('https://example.com/ocean.jpg')",
+      backgroundImage:
+        "url('https://live.staticflickr.com/7915/32413680647_bfa12df896_b.jpg')",
     },
     forest: {
       backgroundImage: "url('https://example.com/forest.jpg')",
@@ -378,44 +397,44 @@ document.getElementById("pageBg2").addEventListener("input", function () {
 });
 //----------------------
 
-const apiKey = "c8308404d372dac83d64419d50deccee";
-const city = "Dedham";
-const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
+// const apiKey = "c8308404d372dac83d64419d50deccee";
+// const city = "Dedham";
+// const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
 
-async function fetchWeather() {
-  try {
-    const response = await fetch(weatherApiUrl);
-    const data = await response.json();
+// async function fetchWeather() {
+//   try {
+//     const response = await fetch(weatherApiUrl);
+//     const data = await response.json();
 
-    // Currently have the weather icon commented out because of work computer issues
-    // document.getElementById(
-    //   "weather-icon"
-    // ).src = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+//     // Currently have the weather icon commented out because of work computer issues
+//     // document.getElementById(
+//     //   "weather-icon"
+//     // ).src = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
 
-    document.getElementById(
-      "current-temp"
-    ).innerText = `Temperature: ${Math.ceil(data.main.temp)}°F`;
+//     document.getElementById(
+//       "current-temp"
+//     ).innerText = `Temperature: ${Math.ceil(data.main.temp)}°F`;
 
-    document.getElementById("feels-like").innerText = `Feels like: ${Math.round(
-      data.main.feels_like
-    )}°F`;
+//     document.getElementById("feels-like").innerText = `Feels like: ${Math.round(
+//       data.main.feels_like
+//     )}°F`;
 
-    document.getElementById("high-low-temp").innerText = `High: ${Math.round(
-      data.main.temp_max
-    )}°F / Low: ${Math.round(data.main.temp_min)}°F`;
+//     document.getElementById("high-low-temp").innerText = `High: ${Math.round(
+//       data.main.temp_max
+//     )}°F / Low: ${Math.round(data.main.temp_min)}°F`;
 
-    document.getElementById(
-      "sky-condition"
-    ).innerText = `Conditions: ${data.weather[0].description}`;
+//     document.getElementById(
+//       "sky-condition"
+//     ).innerText = `Conditions: ${data.weather[0].description}`;
 
-    // To approximately convert KMH to MPH, divide by 1.609
-    document.getElementById("wind-speed").innerText = `Wind: ${Math.ceil(
-      data.wind.speed / 1.609
-    )} mph`;
-  } catch (error) {
-    console.error("Error fetching weather data:", error);
-  }
-}
+//     // To approximately convert KMH to MPH, divide by 1.609
+//     document.getElementById("wind-speed").innerText = `Wind: ${Math.ceil(
+//       data.wind.speed / 1.609
+//     )} mph`;
+//   } catch (error) {
+//     console.error("Error fetching weather data:", error);
+//   }
+// }
 
-fetchWeather();
-setInterval(fetchWeather, 60000);
+// fetchWeather();
+// setInterval(fetchWeather, 60000);
