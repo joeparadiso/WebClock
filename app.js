@@ -190,8 +190,10 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     morning: {
       shadow: "#FB8728",
-      clockbg1: "#342e94",
-      clockbg2: "#F28226",
+      // clockbg1: "#342e94",
+      clockbg1: "rgba(52,46,148,.8)",
+      // clockbg2: "#F28226",
+      clockbg2: "rgba(242,130,38,.7)",
       timerbg1: "#cda89d",
       timerbg2: "#814e38",
       buttonbg1: "#6d8000",
@@ -199,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
       pagebg1: "#593BA0",
       pagebg2: "#673104",
       navbar: "#464a6d",
-      text: "#ffdd00",
+      text: "#fee981",
       input: "#dc8f50",
     },
     sunset: {
@@ -215,6 +217,22 @@ document.addEventListener("DOMContentLoaded", function () {
       navbar: "#9A4F42",
       text: "#FFFFFF",
       input: "#E9A5A5",
+    },
+    forest: {
+      shadow: "#d2d5a9",
+      // clockbg1: "#273313",
+      clockbg1: "rgba(39,51,19,.8)",
+      // clockbg2: "#62aa38",
+      clockbg2: "rgba(98,170,56,.8)",
+      timerbg1: "#56803a",
+      timerbg2: "#1b4e07",
+      buttonbg1: "#445343",
+      buttonbg2: "#536443",
+      pagebg1: "#593BA0",
+      pagebg2: "#673104",
+      navbar: "#000000",
+      text: "#c5dadb",
+      input: "#7ba84e",
     },
   };
 
@@ -351,10 +369,10 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     ocean: {
       backgroundImage:
-        "url('https://live.staticflickr.com/7915/32413680647_bfa12df896_b.jpg')",
+        "url('https://c1.wallpaperflare.com/preview/874/981/117/ocean-life-under-water-colorful-fish.jpg')",
     },
     forest: {
-      backgroundImage: "url('https://example.com/forest.jpg')",
+      backgroundImage: "url('https://images4.alphacoders.com/105/105806.jpg')",
     },
     pastel: {
       backgroundImage: "url('https://example.com/pastel.jpg')",
