@@ -234,6 +234,20 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#c5dadb",
       input: "#7ba84e",
     },
+    ocean: {
+      shadow: "#39a0b1",
+      clockbg1: "rgba(70,164,156,.8)",
+      clockbg2: "rgba(18,68,97,.8)",
+      timerbg1: "#0f384b",
+      timerbg2: "#46b188",
+      buttonbg1: "#359c7b",
+      buttonbg2: "#0a2d41",
+      pagebg1: "#593BA0",
+      pagebg2: "#673104",
+      navbar: "#296551",
+      text: "#ffc766",
+      input: "rgba(244,179,97,.8)",
+    },
   };
 
   document
