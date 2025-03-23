@@ -6,130 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
   menuToggle.addEventListener("click", function () {
     navLinks.classList.toggle("nav-active");
   });
-
-  // // CLOCK FUNCTION
-  // function clock() {
-  //   var today = new Date();
-  //   var dayNames = [
-  //     "Sunday",
-  //     "Monday",
-  //     "Tuesday",
-  //     "Wednesday",
-  //     "Thursday",
-  //     "Friday",
-  //     "Saturday",
-  //   ];
-
-  //   var monthNames = [
-  //     "January",
-  //     "February",
-  //     "March",
-  //     "April",
-  //     "May",
-  //     "June",
-  //     "July",
-  //     "August",
-  //     "September",
-  //     "October",
-  //     "November",
-  //     "December",
-  //   ];
-
-  //   document.getElementById("Date").innerHTML =
-  //     dayNames[today.getDay()] +
-  //     ", " +
-  //     monthNames[today.getMonth()] +
-  //     " " +
-  //     today.getDate() +
-  //     ", " +
-  //     today.getFullYear();
-
-  //   var h = today.getHours() % 12 || 12;
-  //   var m = today.getMinutes();
-  //   var s = today.getSeconds();
-
-  //   h = h < 10 ? "0" + h : h;
-  //   m = m < 10 ? "0" + m : m;
-  //   s = s < 10 ? "0" + s : s;
-
-  //   document.getElementById("hours").innerHTML = h;
-  //   document.getElementById("minutes").innerHTML = m;
-  //   document.getElementById("seconds").innerHTML = s;
-  // }
-
-  // setInterval(clock, 1000);
-
-  // // TIMER FUNCTIONALITY
-  // document.getElementById("calculate").addEventListener("click", calculate);
-  // document.getElementById("reset").addEventListener("click", reset);
-  // document.getElementById("stop").addEventListener("click", stopAlarm);
-
-  // const alarmSound = new Audio("alarm.mp3");
-  // alarmSound.loop = true;
-  // let interval;
-
-  // function calculate() {
-  //   const date = document.getElementById("date").value;
-  //   const time = document.getElementById("time").value;
-  //   const endTime = new Date(`${date}T${time}:00`);
-
-  //   if (!date || !time) {
-  //     alert("Please enter a valid date and time.");
-  //     return;
-  //   }
-
-  //   interval = setInterval(() => {
-  //     if (!calculateTime(endTime)) {
-  //       clearInterval(interval);
-  //       alarmSound.play();
-  //     }
-  //   }, 1000);
-  // }
-
-  // function calculateTime(endTime) {
-  //   const currentTime = new Date();
-  //   const days = document.getElementById("countdown-days");
-  //   const hours = document.getElementById("countdown-hours");
-  //   const minutes = document.getElementById("countdown-minutes");
-  //   const seconds = document.getElementById("countdown-seconds");
-
-  //   if (endTime > currentTime) {
-  //     const timeLeft = (endTime - currentTime) / 1000;
-
-  //     days.innerText = String(Math.floor(timeLeft / (24 * 60 * 60))).padStart(
-  //       2,
-  //       "0"
-  //     );
-  //     hours.innerText = String(
-  //       Math.floor((timeLeft / (60 * 60)) % 24)
-  //     ).padStart(2, "0");
-  //     minutes.innerText = String(Math.floor((timeLeft / 60) % 60)).padStart(
-  //       2,
-  //       "0"
-  //     );
-  //     seconds.innerText = String(Math.floor(timeLeft % 60)).padStart(2, "0");
-
-  //     return true;
-  //   } else {
-  //     stopAlarm();
-  //     return false;
-  //   }
-  // }
-
-  // function stopAlarm() {
-  //   alarmSound.pause();
-  //   alarmSound.currentTime = 0;
-  //   clearInterval(interval);
-  // }
-
-  // function reset() {
-  //   stopAlarm();
-  //   document.getElementById("countdown-days").innerText = "--";
-  //   document.getElementById("countdown-hours").innerText = "--";
-  //   document.getElementById("countdown-minutes").innerText = "--";
-  //   document.getElementById("countdown-seconds").innerText = "--";
-  // }
-
   // Theme Selection
   const themes = {
     default: {
@@ -188,22 +64,6 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#FFFFFF",
       input: "#91b6d9",
     },
-    // morning: {
-    //   shadow: "#FB8728",
-    //   // clockbg1: "#342e94",
-    //   clockbg1: "rgba(52,46,148,.8)",
-    //   // clockbg2: "#F28226",
-    //   clockbg2: "rgba(242,130,38,.7)",
-    //   timerbg1: "#cda89d",
-    //   timerbg2: "#814e38",
-    //   buttonbg1: "#6d8000",
-    //   buttonbg2: "#cba293",
-    //   pagebg1: "#593BA0",
-    //   pagebg2: "#673104",
-    //   navbar: "#464a6d",
-    //   text: "#fee981",
-    //   input: "#dc8f50",
-    // },
     morning: {
       shadow: "#c88437",
       clockbg1: "rgba(65,108,100,.8)",
@@ -234,9 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     forest: {
       shadow: "#d2d5a9",
-      // clockbg1: "#273313",
       clockbg1: "rgba(39,51,19,.8)",
-      // clockbg2: "#62aa38",
       clockbg2: "rgba(98,170,56,.8)",
       timerbg1: "#56803a",
       timerbg2: "#1b4e07",
@@ -261,6 +119,20 @@ document.addEventListener("DOMContentLoaded", function () {
       navbar: "#296551",
       text: "#ffc766",
       input: "rgba(244,179,97,.8)",
+    },
+    cityRain: {
+      shadow: "#ADADAD",
+      clockbg1: "rgba(38,30,20,.8)",
+      clockbg2: "rgba(124,111,106,.8)",
+      timerbg1: "rgba(129,119,111,.8)",
+      timerbg2: "rgba(97,93,95,.8)",
+      buttonbg1: "rgba(88,74,60,.8)",
+      buttonbg2: "rgba(197,177,164,.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(38,30,20,.8)",
+      text: "rgb(215, 211, 209)",
+      input: "rgba(171,161,155,.9)",
     },
   };
 
@@ -416,6 +288,10 @@ document.addEventListener("DOMContentLoaded", function () {
     autumn: {
       backgroundImage: "url('https://example.com/autumn.jpg')",
     },
+    cityRain: {
+      backgroundImage:
+        "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
+    },
   };
 
   document
@@ -430,7 +306,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//------------------------
 function updateCSSVariable(variable, value) {
   document.documentElement.style.setProperty(variable, value);
   document.body.style.background = `linear-gradient(45deg, var(--page-bg1), var(--page-bg2))`;
@@ -443,46 +318,3 @@ document.getElementById("pageBg1").addEventListener("input", function () {
 document.getElementById("pageBg2").addEventListener("input", function () {
   updateCSSVariable("--page-bg2", this.value);
 });
-//----------------------
-
-// const apiKey = "c8308404d372dac83d64419d50deccee";
-// const city = "Dedham";
-// const weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`;
-
-// async function fetchWeather() {
-//   try {
-//     const response = await fetch(weatherApiUrl);
-//     const data = await response.json();
-
-//     // Currently have the weather icon commented out because of work computer issues
-//     // document.getElementById(
-//     //   "weather-icon"
-//     // ).src = `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
-
-//     document.getElementById(
-//       "current-temp"
-//     ).innerText = `Temperature: ${Math.ceil(data.main.temp)}°F`;
-
-//     document.getElementById("feels-like").innerText = `Feels like: ${Math.round(
-//       data.main.feels_like
-//     )}°F`;
-
-//     document.getElementById("high-low-temp").innerText = `High: ${Math.round(
-//       data.main.temp_max
-//     )}°F / Low: ${Math.round(data.main.temp_min)}°F`;
-
-//     document.getElementById(
-//       "sky-condition"
-//     ).innerText = `Conditions: ${data.weather[0].description}`;
-
-//     // To approximately convert KMH to MPH, divide by 1.609
-//     document.getElementById("wind-speed").innerText = `Wind: ${Math.ceil(
-//       data.wind.speed / 1.609
-//     )} mph`;
-//   } catch (error) {
-//     console.error("Error fetching weather data:", error);
-//   }
-// }
-
-// fetchWeather();
-// setInterval(fetchWeather, 60000);
