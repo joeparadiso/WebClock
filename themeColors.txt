@@ -1,18 +1,18 @@
 DARK THEME
 ----------
-Box shadow & button borders: #FFFFFF
+Box shadow & button borders: #ADADAD
 
 clock background: #4F4F4F  #000000
 
-timer backg: #636363  #000000
+timer backg: #566f81  #3d474d
 
-button backg: #5E5E5E  #000000
+button backg: #232d33  #6a737c
 
 page backg: #666666  #000000
 
 navbar backg: #383838
 
-text color: #B8B8B8
+text color: #D1D1D1
 
 input box color: #8F8F8F
 
@@ -23,7 +23,7 @@ Box shadow & button borders: #FB8728
 
 clock background: #590193  #F28226
 
-timer backg: #3400AD  #C885FF
+timer backg: #ec572e  #5840d4
 
 button backg: #0300CC  #A75858
 
@@ -34,3 +34,167 @@ navbar backg: #9A4F42
 text color: #FFFFFF
 
 input box color: #E9A5A5
+
+==========================================
+SKY THEME
+------------
+Box shadow & button borders: #FFFFFF
+
+clock background: #0049a3  #89a2c2
+
+timer backg: #0049a3  #668cbf
+
+button backg: #0254ac  #b9c1cb
+
+page backg: #000000  #000000
+
+navbar backg: #1f5ea2
+
+text color: #FFFFFF
+
+input box color: #91b6d9
+
+==========================================
+DEFAULT THEME (RENAME THIS)
+------------
+Box shadow & button borders: #F8E3AF
+
+clock background: #2D4067  #0D0B41
+
+timer backg: #  #
+
+button backg: #  #
+
+page backg: #  #
+
+navbar backg: #
+
+text color: #DCC48F
+
+input box color: #DCC48F
+
+==========================================
+LAVA THEME
+------------
+Box shadow & button borders: #F99B4E
+
+clock background: #223138  #586566
+
+timer backg: #4C595E  #1C221E
+
+button backg: #814108  #071113
+
+page backg: #  #
+
+navbar backg: #
+
+text color: #F7A96E
+
+input box color: #F3B268
+
+=====================================
+MORNING THEME
+------------
+Box shadow & button borders: #FB8728
+
+clock background: #342e94  #F28226
+//(52,46,148) (242,130,38)
+
+timer backg: #cda89d  #814e38
+
+button backg: #6d8000  #cba293
+
+page backg: #  #
+
+navbar backg: #464a6d
+
+text color: #ffdd00
+
+input box color: #dc8f50
+
+====================================
+FOREST THEME
+------------
+Box shadow & button borders: #d2d5a9
+
+clock background: #273313  #62aa38
+
+//bg1(39 51 19) bg2(98 170 56)
+
+timer backg: #56803a  #1b4e07
+
+button backg: #445343  #536443
+
+page backg: #  #
+
+navbar backg: #000000
+
+text color: #c5dadb
+
+input box color: #7ba84e
+
+====================================
+OCEAN THEME
+------------
+Box shadow & button borders: #39a0b1
+
+clock background: #273313  #62aa38
+
+//bg1(70 164 156) bg2(18 68 97)
+
+timer backg: #0f384b  #46b188
+
+button backg: #359c7b  #0a2d41
+
+page backg: #  #
+
+navbar backg: #296551
+
+text color: #ffc766
+
+input box color: #f4b300
+//rgba(244 179 0)
+
+====================================
+MORNING THEME v2
+------------
+Box shadow & button borders: #c88437
+
+clock background: #342e94  #F28226
+//(65,108,100) (242,130,38)
+
+timer backg: 
+(201,135,44) (39,73,98)
+
+button backg: 
+(209,126,31) (21,121,120)
+
+page backg: #  #
+
+navbar backg: #464a6d
+
+text color: #ffdd00
+
+input box color: #dc8f50
+
+====================================
+City Rain THEME v2
+------------
+Box shadow & button borders: #
+
+clock background: 
+//(38,30,20) (124,111,106)
+
+timer backg: 
+(129,119,111) (97,93,95)
+
+button backg: 
+(88,74,60) (197,177,164)
+
+page backg: #  #
+
+navbar backg: #
+
+text color: #
+
+input box color: #
