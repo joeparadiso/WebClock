@@ -1,6 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Baumans&display=swap");
 
+/*============================================================================================= 
+*     This is the default color scheme and page setup
+===============================================================================================*/
 * {
   margin: 0;
   padding: 0;
@@ -22,7 +25,7 @@
   --navbar-bg: #000000e6;
 }
 
-/* BODY STYLING */
+/* Styling of the body (background of page) */
 body {
   background: linear-gradient(45deg, var(--page-bg1), var(--page-bg2));
   font-family: Arial, sans-serif;
@@ -32,7 +35,11 @@ body {
   height: 100vh;
 }
 
-/* NAVBAR */
+/*============================================================================================= 
+*     This is the styling for the navbar and its contents
+===============================================================================================*/
+
+/* Navbar setup/styling */
 .navbar {
   background: var(--navbar-bg);
   padding: 0 20px;
@@ -55,7 +62,7 @@ body {
   padding: 5px;
 }
 
-/* NAV MENU */
+/* This is the visible navbar at the top of the page */
 .nav-links {
   display: none;
   position: absolute;
@@ -73,7 +80,7 @@ body {
   display: block;
 }
 
-/* NAV LINKS STYLING */
+/* Styling of the list items in the navbar menu */
 .nav-links li {
   list-style: none;
   margin: 10px 0;
@@ -88,16 +95,18 @@ body {
   font-weight: 900;
 }
 
-/* Input styling for color pickers */
+/* Input styling for color pickers (the boxes for the colors) */
 .nav-links input {
-  width: 50px;
-  height: 30px;
-  border: none;
+  width: 100px;
+  height: 10px;
+  border: 3px solid whitesmoke;
   cursor: pointer;
   background: none;
 }
+/*============================================================================
+* MAIN CONTENT: This container contains all of the date, clock, and weather 
+=============================================================================*/
 
-/* MAIN CONTENT */
 .container {
   height: 50vh;
   display: flex;
@@ -106,7 +115,15 @@ body {
   margin-top: 80px;
 }
 
-/* CLOCK */
+/* DATE DISPLAY */
+#Date {
+  font-size: 40px;
+  text-align: center;
+  font-family: "Baumans", serif;
+  margin-bottom: auto;
+}
+
+/* This is the container for the Clock/Weather/Sun elements */
 .clock {
   border: 1px solid #606060;
   width: 850px;
@@ -117,15 +134,7 @@ body {
   color: var(--text-color);
 }
 
-/* DATE DISPLAY */
-#Date {
-  font-size: 40px;
-  text-align: center;
-  font-family: "Baumans", serif;
-  margin-bottom: 30px;
-}
-
-/* TIME DISPLAY */
+/* This is the actual clock (which is an UL) */
 .clock ul {
   list-style: none;
   display: flex;
@@ -135,6 +144,44 @@ body {
   font-family: "Chivo Mono", serif;
   margin-bottom: 30px;
 }
+
+#weather-widget {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.5em;
+  color: var(--text-color);
+}
+
+#weather-info {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+#clockSunContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+#sunriseContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+#sunsetContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+/*============================================================================================
+*     TIMER STYLING
+=============================================================================================*/
 
 /* TIMER */
 #timer {
@@ -209,26 +256,4 @@ button:hover {
 #timer {
   text-align: center;
   margin-top: 20px;
-}
-
-#weather-widget {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-evenly;
-  font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.5em;
-  color: var(--text-color);
-  margin-right: 20px;
-}
-
-#weather-icon {
-  width: 100px;
-  height: 100px;
-}
-
-#weather-info {
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
 }

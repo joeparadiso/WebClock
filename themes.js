@@ -1,12 +1,27 @@
+/********************************************************************************
+ * themes.js -- March 2025 -- Joe Paradiso
+ * DETAILS:
+ *  This script defines the details of the themes available in the navbar menu.
+ *  There are pre-determined themes that the user can choose from a dropdown menu
+ *  and there are options for changing nearly every visible element displayed in
+ *  the WebClock. This script is responsible for managing and updating the themes
+ *  and colors of this WebClock.
+ ********************************************************************************/
+
 document.addEventListener("DOMContentLoaded", function () {
   // Hamburger Menu Toggle
   const menuToggle = document.getElementById("mobile-menu");
   const navLinks = document.querySelector(".nav-links");
 
+  // Toggles the navbar menu between active/inactive when clicked
   menuToggle.addEventListener("click", function () {
     navLinks.classList.toggle("nav-active");
   });
-  // Theme Selection
+
+  /********************************************************************************
+   * The 'themes' define the colors for each visible element in the WebClock. They
+   * are chosen to match the backgound images of each theme.
+   ********************************************************************************/
   const themes = {
     default: {
       shadow: "#F8E3AF",
@@ -136,43 +151,64 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
+  /********************************************************************************
+   * This script updates the visible elements in the HTML document with the
+   * colors defined for each theme. Every time a new theme is chosen, the HTML
+   * elements are updated with the new colors of that theme.
+   ********************************************************************************/
   document
     .getElementById("themeSelector")
     .addEventListener("change", function () {
       let theme = themes[this.value];
       if (theme) {
+        // Update the color of the box shadow on the clock, buttons, and timer
         document.documentElement.style.setProperty(
           "--box-shadow-color",
           theme.shadow
         );
+        // Update the background color 1 of the clock
         document.documentElement.style.setProperty(
           "--clock-bg1",
           theme.clockbg1
         );
+        // Update the background color 2 of the clock
         document.documentElement.style.setProperty(
           "--clock-bg2",
           theme.clockbg2
         );
+        // Update the background color 1 of the timer
         document.documentElement.style.setProperty(
           "--timer-bg1",
           theme.timerbg1
         );
+        // Update the background color 2 of the timer
         document.documentElement.style.setProperty(
           "--timer-bg2",
           theme.timerbg2
         );
+        // Update the background color 1 of the start/stop/reset buttons
         document.documentElement.style.setProperty(
           "--button-bg1",
           theme.buttonbg1
         );
+        // Update the background color 2 of the start/stop/reset buttons
         document.documentElement.style.setProperty(
           "--button-bg2",
           theme.buttonbg2
         );
-        document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
-        document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
+        // Update the background color 1 of the whole page background
+        // NOTE: This is only visible when the user chooses a color different
+        // from the default theme background image. Remove this?
+        // document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
+        // Update the background color 2 of the whole page background
+        // NOTE: This is only visible when the user chooses a color different
+        // from the default theme background image. Remove this?
+        // document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
+        // Update the color of the navbar
         document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
+        // Update the color of all text displayed on the WebClock
         document.documentElement.style.setProperty("--text-color", theme.text);
+        // Update the background color of the date/time input boxes
         document.documentElement.style.setProperty(
           "--input-box-color",
           theme.input
@@ -180,7 +216,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-  // COLOR CUSTOMIZATION FUNCTIONALITY
+  /********************************************************************************
+   * This script updates the visible elements in the HTML document with the
+   * colors that are chosen by the user in the color picker options found in the
+   * navbar menu. See above for HTML element descriptions for updated elements.
+   ********************************************************************************/
   function updateCSSVariable(variable, value) {
     document.documentElement.style.setProperty(variable, value);
   }
@@ -240,6 +280,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+/********************************************************************************
+ * This script updates the background images for each theme. Currently, all theme
+ * images are just links to public images on the internet. If this becomes a real
+ * website, ensure all images are contained in the project and are free to use.
+ ********************************************************************************/
 document.addEventListener("DOMContentLoaded", function () {
   const themes = {
     default: {
@@ -306,6 +351,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+/********************************************************************************
+ * This script is the result of inexperienced JS coding. This script fixes the
+ * issue of not being able to update the background colors of a pre defined theme
+ * instead of using the default theme background image. Using the below script,
+ * backgound colors can be updated by the user instead of using default images.
+ ********************************************************************************/
 function updateCSSVariable(variable, value) {
   document.documentElement.style.setProperty(variable, value);
   document.body.style.background = `linear-gradient(45deg, var(--page-bg1), var(--page-bg2))`;

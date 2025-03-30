@@ -1,13 +1,23 @@
+<!--******************************************************************************
+ index.html -- March 2025 -- Joe Paradiso
+ DETAILS:
+  This file sets up the HTML skeleton for a clock that displays the current
+  date, time, weather details, and a countdown timer. There is a navbar with 
+  menu options for the user to select pre-defined themes or the user can 
+  change the color of each individual element in the display.
+******************************************************************************-->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chrono Paradiso</title>
+    <title>WebClock</title>
     <link rel="stylesheet" href="styles.css" />
     <script type="text/javascript" src="themes.js" defer></script>
     <script type="text/javascript" src="weather.js"></script>
     <script type="text/javascript" src="clock.js"></script>
+    <script type="text/javascript" src="sunTimes.js"></script>
+    <link rel="icon" href="favicon.ico" />
   </head>
   <body>
     <!-- Navbar -->
@@ -84,7 +94,20 @@
     <!-- Main Content -->
     <div class="container">
       <div class="clock">
-        <div id="Date">DAY, MONTH 00, YEAR</div>
+        <div id="clockSunContainer">
+          <!-- Block holding the sunrise details -->
+          <div id="sunriseContainer">
+            <!-- Sunrise title -->
+            <div id="sunBlock">Sunrise</div>
+            <!-- Sunrise time -->
+            <div id="sunrise">Sunrise</div>
+          </div>
+          <div id="Date">DAY, MONTH 00, YEAR</div>
+          <div id="sunsetContainer">
+            <div id="sunBlock">Sunset</div>
+            <div id="sunset">Sunset</div>
+          </div>
+        </div>
         <ul>
           <li id="hours">00</li>
           <li id="point">:</li>
@@ -94,8 +117,6 @@
         </ul>
         <!-- weather-widget.html -->
         <div id="weather-widget">
-          <!-- Currently turned off due to work computer issue -->
-          <!-- <img id="weather-icon" src="" alt="Weather Icon" /> -->
           <div id="weather-info">
             <div id="current-temp"></div>
             <div id="feels-like"></div>
