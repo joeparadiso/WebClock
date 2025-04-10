@@ -149,6 +149,20 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(215, 211, 209)",
       input: "rgba(171,161,155,.9)",
     },
+    morningField: {
+      shadow: "rgb(118,137,142)",
+      clockbg1: "rgba(228,194,136,0.9)",
+      clockbg2: "rgba(129,144,147,0.9)",
+      timerbg1: "rgba(236, 201, 3, 0.8)",
+      timerbg2: "rgba(177, 198, 40, 0.8)",
+      buttonbg1: "rgba(212,183,139,0.8)",
+      buttonbg2: "rgba(223,185,119,0.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(108,103,74)",
+      text: "rgb(98,23,04)",
+      input: "rgba(226,190,124,0.9)",
+    },
   };
 
   /********************************************************************************
@@ -324,8 +338,9 @@ document.addEventListener("DOMContentLoaded", function () {
     pastel: {
       backgroundImage: "url('https://example.com/pastel.jpg')",
     },
-    neon: {
-      backgroundImage: "url('https://example.com/neon.jpg')",
+    morningField: {
+      backgroundImage:
+        "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
     },
     cyberpunk: {
       backgroundImage: "url('https://example.com/cyberpunk.jpg')",

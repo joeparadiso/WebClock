@@ -198,3 +198,28 @@ navbar backg: #
 text color: #
 
 input box color: #
+====================================
+Morning Field
+------------
+Box shadow & button borders: 
+144,145,146
+
+clock background: 
+(105,107,0) (180,162,0)
+
+timer backg: 
+(153,130,0) (109,121,25)
+
+button backg: 
+(171,172,104) (76,77,10)
+
+page backg: #  #
+
+navbar backg: 
+80,80,47
+
+text color: 
+234,224,174
+
+input box color: 
+203,193,6
