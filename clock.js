@@ -14,6 +14,8 @@
  ********************************************************************************/
 
 document.addEventListener("DOMContentLoaded", function () {
+  let timerEndTime = null; // Store the end time globally
+
   /********************************************************************************
    * This method gets the current date details from the Date() and updates the
    * corresponding date and time HTML elements with the current values.
@@ -73,6 +75,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("hours").innerHTML = h;
     document.getElementById("minutes").innerHTML = m;
     document.getElementById("seconds").innerHTML = s;
+
+    // Update the timer countdown if running
+    if (timerEndTime) {
+      updateCountdown(timerEndTime, today);
+    }
   }
   // Call the 'clock' method every second to update the clock every second by
   setInterval(clock, 1000);
@@ -86,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // The alarm sound is from freesound.org
   const alarmSound = new Audio("alarm.mp3");
   alarmSound.loop = true;
-  let interval;
 
   /********************************************************************************
    * This method determines the endtime used to setup the countdown timer and
@@ -95,19 +101,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function calculate() {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
-    const endTime = new Date(`${date}T${time}:00`);
-
     if (!date || !time) {
       alert("Please enter a valid date and time.");
       return;
     }
-
-    interval = setInterval(() => {
-      if (!calculateTime(endTime)) {
-        clearInterval(interval);
-        alarmSound.play();
-      }
-    }, 1000);
+    timerEndTime = new Date(`${date}T${time}:00`);
+    clock(); // Immediately update display
   }
 
   /********************************************************************************
@@ -116,36 +115,27 @@ document.addEventListener("DOMContentLoaded", function () {
    * timer section of the WebClock and the time until the user's choice is
    * calculated using the below script.
    ********************************************************************************/
-  function calculateTime(endTime) {
-    const currentTime = new Date();
+  function updateCountdown(endTime, now) {
     const days = document.getElementById("countdown-days");
     const hours = document.getElementById("countdown-hours");
     const minutes = document.getElementById("countdown-minutes");
     const seconds = document.getElementById("countdown-seconds");
 
-    // If the user's time is in the future, calculate the time until then. Each
-    // part of the display is two digits by default. If the actual time/days is
-    // less than 10 in any element, it's padded with leading zeros.
-    if (endTime > currentTime) {
-      const timeLeft = (endTime - currentTime) / 1000;
-
-      days.innerText = String(Math.floor(timeLeft / (24 * 60 * 60))).padStart(
-        2,
-        "0"
-      );
-      hours.innerText = String(
-        Math.floor((timeLeft / (60 * 60)) % 24)
-      ).padStart(2, "0");
-      minutes.innerText = String(Math.floor((timeLeft / 60) % 60)).padStart(
-        2,
-        "0"
-      );
-      seconds.innerText = String(Math.floor(timeLeft % 60)).padStart(2, "0");
-
-      return true;
+    if (endTime > now) {
+      const timeLeft = Math.floor((endTime - now) / 1000);
+      days.innerText = String(Math.floor(timeLeft / (24 * 60 * 60))).padStart(2, "0");
+      hours.innerText = String(Math.floor((timeLeft / (60 * 60)) % 24)).padStart(2, "0");
+      minutes.innerText = String(Math.floor((timeLeft / 60) % 60)).padStart(2, "0");
+      seconds.innerText = String(timeLeft % 60).padStart(2, "0");
     } else {
-      stopAlarm();
-      return false;
+      // Play the alarm sound when timer reaches zero
+      alarmSound.play();
+      timerEndTime = null;
+      // Optionally, set the countdown display to zero
+      days.innerText = "00";
+      hours.innerText = "00";
+      minutes.innerText = "00";
+      seconds.innerText = "00";
     }
   }
 
@@ -155,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function stopAlarm() {
     alarmSound.pause();
     alarmSound.currentTime = 0;
-    clearInterval(interval);
+    timerEndTime = null;
   }
 
   /********************************************************************************
