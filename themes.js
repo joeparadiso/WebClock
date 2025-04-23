@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#e6740a",
       input: "#F3B268",
     },
-    dark: {
+    "Thunderstorm": {
       shadow: "#ADADAD",
       clockbg1: "rgba(25, 35, 39, .7)",
       clockbg2: "rgba(83, 94, 102, .7)",
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#D1D1D1",
       input: "#96a5b0",
     },
-    light: {
+    "Summer Afternoon": {
       shadow: "#FFFFFF",
       clockbg1: "#0049a3",
       clockbg2: "#89a2c2",
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#FFFFFF",
       input: "#91b6d9",
     },
-    morning: {
+    "Dusk Road": {
       shadow: "#c88437",
       clockbg1: "rgba(65,108,100,.8)",
       clockbg2: "rgba(242,130,38,.8)",
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#fee981",
       input: "rgba(220,143,80,.6)",
     },
-    sunset: {
+    "Brilliant Sunset": {
       shadow: "#FB8728",
       clockbg1: "rgba(89, 1, 147, .8)",
       clockbg2: "rgba(242, 130, 38, .8)",
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#FFFFFF",
       input: "#E9A5A5",
     },
-    forest: {
+    "Verdant Forest": {
       shadow: "#d2d5a9",
       clockbg1: "rgba(39,51,19,.8)",
       clockbg2: "rgba(98,170,56,.8)",
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#c5dadb",
       input: "rgba(123, 168, 78, .8)",
     },
-    ocean: {
+    "Under The Sea": {
       shadow: "#39a0b1",
       clockbg1: "rgba(70,164,156,.8)",
       clockbg2: "rgba(18,68,97,.8)",
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#ffc766",
       input: "rgba(244,179,97,.7)",
     },
-    cityRain: {
+    "City Rain": {
       shadow: "#ADADAD",
       clockbg1: "rgba(38,30,20,.8)",
       clockbg2: "rgba(124,111,106,.8)",
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(215, 211, 209)",
       input: "rgba(171,161,155,.9)",
     },
-    morningField: {
+    "Morning Field": {
       shadow: "rgb(118,137,142)",
       clockbg1: "rgba(228,194,136,0.9)",
       clockbg2: "rgba(129,144,147,0.9)",
@@ -320,36 +320,36 @@ document.addEventListener("DOMContentLoaded", function () {
       backgroundImage:
         "url('https://static.vecteezy.com/system/resources/thumbnails/045/698/869/small_2x/black-marble-texture-with-gold-veins-luxurious-surface-design-photo.jpg')",
     },
-    dark: {
+    "Thunderstorm": {
       backgroundImage:
         "url('https://media.istockphoto.com/id/106529026/photo/threatening-dark-clouds-covering-the-sky.jpg?s=612x612&w=0&k=20&c=XOSnMeZbKOW541FgTISJkDVvFK_bVHyTvusmAk9jjAs=')",
     },
-    light: {
+    "Summer Afternoon": {
       // backgroundImage: "url('https://www.freeimageslive.com/galleries/nature/weather/pics/sunny_clouds_8092612.jpg')",
       backgroundImage:
         "url('https://burst.shopifycdn.com/photos/bright-blue-sky-dotted-with-fluffy-white-clouds.jpg?exif=0&iptc=0')",
     },
-    morning: {
+    "Dusk Road": {
       // backgroundImage:
       //   "url('https://live.staticflickr.com/7915/32413680647_bfa12df896_b.jpg')",
       backgroundImage:
         "url('https://img.freepik.com/premium-photo/sunrise-road-summer-sunny-highway-journey-landscape-way-sunlight-horizon-copy-space_162695-14253.jpg')",
     },
-    sunset: {
+    "Brilliant Sunset": {
       backgroundImage:
         "url('https://t4.ftcdn.net/jpg/01/04/78/75/360_F_104787586_63vz1PkylLEfSfZ08dqTnqJqlqdq0eXx.jpg')",
     },
-    ocean: {
+    "Under The Sea": {
       backgroundImage:
         "url('https://c1.wallpaperflare.com/preview/874/981/117/ocean-life-under-water-colorful-fish.jpg')",
     },
-    forest: {
+    "Verdant Forest": {
       backgroundImage: "url('https://images4.alphacoders.com/105/105806.jpg')",
     },
     pastel: {
       backgroundImage: "url('https://example.com/pastel.jpg')",
     },
-    morningField: {
+    "Morning Field": {
       backgroundImage:
         "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
     },
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
     autumn: {
       backgroundImage: "url('https://example.com/autumn.jpg')",
     },
-    cityRain: {
+    "City Rain": {
       backgroundImage:
         "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
     },
