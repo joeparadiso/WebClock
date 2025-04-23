@@ -80,29 +80,72 @@ body {
   display: block;
 }
 
-/* Styling of the list items in the navbar menu */
+/* Navbar dropdown grid layout */
 .nav-links li {
-  list-style: none;
+  display: grid;
+  grid-template-columns: 200px 48px 48px;
+  align-items: center;
+  gap: 0 18px;
   margin: 10px 0;
-  padding: 5px 0;
+  padding: 8px 0;
 }
 
-/* Formatting of the menu options */
-.nav-links label {
+/* Label styling */
+.nav-links li > span {
   color: white;
   font-family: "Courier New", Courier, monospace;
-  font-size: 30px;
-  font-weight: 900;
+  font-size: 1.05em;
+  font-weight: 700;
+  grid-column: 1 / 2;
 }
 
-/* Input styling for color pickers (the boxes for the colors) */
-.nav-links input {
-  width: 100px;
-  height: 10px;
-  border: 3px solid whitesmoke;
-  cursor: pointer;
+/* All color pickers same size and shape */
+.nav-links input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
   background: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: border 0.2s;
+  justify-self: start;
+  grid-column: auto;
 }
+
+/* Single color picker: left color column */
+.nav-links li input[type="color"]:only-child {
+  grid-column: 2 / 3;
+}
+
+/* Two color pickers: columns 2 and 3 */
+.nav-links li input[type="color"]:nth-of-type(1) {
+  grid-column: 2 / 3;
+}
+.nav-links li input[type="color"]:nth-of-type(2) {
+  grid-column: 3 / 4;
+}
+
+.nav-links input[type="color"]:hover,
+.nav-links input[type="color"]:focus {
+  border: 2px solid var(--box-shadow-color);
+}
+
+/* Dropdown spans pickers columns */
+.nav-links select {
+  grid-column: 2 / 4;
+  font-size: 1em;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  background: #222;
+  color: white;
+  width: 300px;
+  margin-left: 0;
+}
+
 /*============================================================================
 * MAIN CONTENT: This container contains all of the date, clock, and weather 
 =============================================================================*/

@@ -165,6 +165,17 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
+  // Populate the themeSelector dropdown
+  const themeSelector = document.getElementById("themeSelector");
+  themeSelector.innerHTML = ""; // Clear any existing options
+  Object.keys(themes).forEach(key => {
+    const option = document.createElement("option");
+    option.value = key;
+    // Capitalize first letter for display
+    option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+    themeSelector.appendChild(option);
+  });
+
   /********************************************************************************
    * This script updates the visible elements in the HTML document with the
    * colors defined for each theme. Every time a new theme is chosen, the HTML
