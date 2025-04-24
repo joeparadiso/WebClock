@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
       pagebg2: "#000000",
       navbar: "rgba(58,69,57)",
       text: "rgb(255,221,189)",
-      input: "rgba(195,163,141,0.9)",
+      input: "rgba(195,163,141,0.6)",
     },
     "Golden Blue Morning": {
       shadow: "rgb(194,130,45)",
