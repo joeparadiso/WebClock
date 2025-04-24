@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
       input: "rgba(226,190,124,0.9)",
     },
     "Foggy Woods": {
-      shadow: "rgb(130,143,102)",
+      shadow: "rgb(121,62,24)",
       clockbg1: "rgba(138,149,153,0.85)",
       clockbg2: "rgba(55,78,55,0.85)",
       timerbg1: "rgba(167,174,175,0.8)",
@@ -204,6 +204,20 @@ document.addEventListener("DOMContentLoaded", function () {
       navbar: "rgb(5,36,21)",
       text: "rgb(182,242,235",
       input: "rgba(123, 168, 78, .8)",
+    },
+    "Natural Dystopia": {
+      shadow: "rgb(133,123,63)",
+      clockbg1: "rgba(196,162,115,.7)",
+      clockbg2: "rgba(68,48,19,.7)",
+      timerbg1: "rgba(18,31,14,.8)",
+      timerbg2: "rgba(99,83,54,.8)",
+      buttonbg1: "rgba(53,40,14,.8)",
+      buttonbg2: "rgba(166,158,63,.8)",
+      pagebg1: "#593BA0",
+      pagebg2: "#673104",
+      navbar: "rgba(118, 109, 11, 0.45)",
+      text: "rgb(244,242,203)",
+      input: "rgba(149,147,91,.6)",
     },
   };
 
@@ -396,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
     },
     cyberpunk: {
-      backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
+      backgroundImage: "url('https://wallpapers.com/images/hd/crysis-3-city-phm0tj539mwkq8i0.jpg')",
     },
     autumn: {
       backgroundImage: "url('https://example.com/autumn.jpg')",
@@ -411,6 +425,9 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     "Placid River": {
       backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
+    },
+    "Natural Dystopia": {
+      backgroundImage: "url('https://wallpapercave.com/wp/wp2015884.jpg')",
     },
   };
 
