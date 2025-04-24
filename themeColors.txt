@@ -223,3 +223,55 @@ text color:
 
 input box color: 
 203,193,6
+
+====================================
+Misty Forest
+------------
+Box shadow & button borders: 
+130,143,102
+
+clock background: 
+(138,149,153) (55,78,55)
+
+timer backg: 
+(167,174,175) (30,40,32)
+
+button backg: 
+(122,54,7) (176,185,186)
+
+page backg: #  #
+
+navbar backg: 
+58,69,57
+
+text color: 
+255,221,189
+
+input box color: 
+195,163,141
+
+====================================
+Golden Blue Morning
+------------
+Box shadow & button borders: 
+194,130,45
+
+clock background: 
+(35,74,97) (179,132,85)
+
+timer backg: 
+(178,141,94) (95,101,85)
+
+button backg: 
+(167,133,95) (105,104,83)
+
+page backg: #  #
+
+navbar backg: 
+98,72,45
+
+text color: 
+255,221,189
+
+input box color: 
+177,157,114

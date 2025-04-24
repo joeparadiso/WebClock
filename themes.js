@@ -163,6 +163,48 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(98,23,04)",
       input: "rgba(226,190,124,0.9)",
     },
+    "Foggy Woods": {
+      shadow: "rgb(130,143,102)",
+      clockbg1: "rgba(138,149,153,0.85)",
+      clockbg2: "rgba(55,78,55,0.85)",
+      timerbg1: "rgba(167,174,175,0.8)",
+      timerbg2: "rgba(30,40,32,0.8)",
+      buttonbg1: "rgba(122,54,7,0.8)",
+      buttonbg2: "rgba(176,185,186,0.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(58,69,57)",
+      text: "rgb(255,221,189)",
+      input: "rgba(195,163,141,0.9)",
+    },
+    "Golden Blue Morning": {
+      shadow: "rgb(194,130,45)",
+      clockbg1: "rgba(35,74,97,0.85)",
+      clockbg2: "rgba(179,132,85,0.85)",
+      timerbg1: "rgba(178,141,94,0.8)",
+      timerbg2: "rgba(95,101,85,0.8)",
+      buttonbg1: "rgba(167,133,95,0.8)",
+      buttonbg2: "rgba(105,104,83,0.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(98,72,45)",
+      text: "rgb(255,221,189)",
+      input: "rgba(177,157,114,0.9)",
+    },
+    "Placid River": {
+      shadow: "rgb(152,180,0)",
+      clockbg1: "rgba(39,51,19,.8)",
+      clockbg2: "rgba(98,170,56,.8)",
+      timerbg1: "rgba(86, 128, 58, .8)",
+      timerbg2: "rgba(27, 78, 7, .8)",
+      buttonbg1: "rgba(68, 83, 67, .8)",
+      buttonbg2: "rgba(83, 100, 67, .8)",
+      pagebg1: "#593BA0",
+      pagebg2: "#673104",
+      navbar: "rgb(5,36,21)",
+      text: "rgb(182,242,235",
+      input: "rgba(123, 168, 78, .8)",
+    },
   };
 
   // Populate the themeSelector dropdown
@@ -346,15 +388,15 @@ document.addEventListener("DOMContentLoaded", function () {
     "Verdant Forest": {
       backgroundImage: "url('https://images4.alphacoders.com/105/105806.jpg')",
     },
-    pastel: {
-      backgroundImage: "url('https://example.com/pastel.jpg')",
+    "Foggy Woods": {
+      backgroundImage: "url('https://wallpapersok.com/images/hd/foggy-road-in-the-redwood-forest-hekos5o4bl1makkv.jpg')",
     },
     "Morning Field": {
       backgroundImage:
         "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
     },
     cyberpunk: {
-      backgroundImage: "url('https://example.com/cyberpunk.jpg')",
+      backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
     },
     autumn: {
       backgroundImage: "url('https://example.com/autumn.jpg')",
@@ -362,6 +404,13 @@ document.addEventListener("DOMContentLoaded", function () {
     "City Rain": {
       backgroundImage:
         "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
+    },
+    "Golden Blue Morning": {
+      backgroundImage:
+        "url('https://c1.wallpaperflare.com/preview/288/835/770/sunset-sweden-sm%C3%A5land-blue.jpg')",
+    },
+    "Placid River": {
+      backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
     },
   };
 
