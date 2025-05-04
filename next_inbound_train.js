@@ -1,21 +1,34 @@
-// MBTA API key for authentication
+// ===============================
+// MBTA Next Inbound Train Display
+// ===============================
+// This script fetches and displays the next inbound train from Dedham Corporate Center to South Station using the MBTA API.
+// It updates the display every minute, showing departure time, arrival time, and train/route info.
+
+// -------------------------------
+// API and Stop Configuration
+// -------------------------------
+// MBTA API key for authentication (public demo key, replace with your own for production)
 const API_KEY = '72fa8ae012994df7b7f671c2c52c9ab2';
 // Base URL for MBTA API requests
 const BASE_URL = 'https://api-v3.mbta.com';
-// Stop ID for Dedham Corporate Center
+// Stop ID for Dedham Corporate Center (origin)
 const DEDHAM_STOP_ID = 'place-FB-0118';
-// Stop ID for South Station
+// Stop ID for South Station (destination)
 const SOUTH_STATION_STOP_ID = 'place-sstat';
 // MBTA uses 1 for inbound direction (toward Boston)
 const INBOUND_DIRECTION_ID = 1;
 
-// Helper function to pad single digit numbers with a leading zero
+// -------------------------------
+// Utility Functions
+// -------------------------------
+
+// Pads a single digit number with a leading zero (e.g., 7 -> '07')
 function pad(n) {
     // If n is less than 10, add a leading zero, otherwise return n as a string
     return n < 10 ? '0' + n : n;
 }
 
-// Format a JavaScript Date object as a 12-hour time string with am/pm
+// Formats a JavaScript Date object as a 12-hour time string with am/pm (e.g., 3:05 pm)
 function formatTime(dt) {
     // Get the hour (0-23)
     let hours = dt.getHours();
@@ -31,17 +44,16 @@ function formatTime(dt) {
     return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}`;
 }
 
-// Normalize ISO time strings to ensure they are compatible with JavaScript Date
+// Normalizes ISO time strings to ensure compatibility with JavaScript Date
+// Some ISO strings have timezone offsets like -0400 instead of -04:00
 function normalizeIsoTime(str) {
-    // Some ISO strings have timezone offsets like -0400 instead of -04:00
-    // This function inserts the colon if needed
     if (str && str.length > 5 && (str[str.length - 5] === '+' || str[str.length - 5] === '-') && str[str.length - 3] !== ':') {
         return str.slice(0, -2) + ':' + str.slice(-2);
     }
     return str;
 }
 
-// Extract a train number and route from a trainId and routeId string
+// Attempts to extract a train number and route from a trainId and routeId string
 function extractTrainNumberAndRoute(trainId, routeId) {
     // Try to match a 4-digit or any digit train number in the trainId string
     let match = trainId.match(/-(\d{4})-/);
@@ -52,19 +64,19 @@ function extractTrainNumberAndRoute(trainId, routeId) {
     return trainId;
 }
 
-// Fetch JSON data from a URL with query parameters
+// -------------------------------
+// API Fetch Functions
+// -------------------------------
+
+// Fetches JSON data from a URL with query parameters
 async function fetchJson(url, params) {
-    // Convert params object to a URL query string
-    const usp = new URLSearchParams(params);
-    // Fetch the data from the API
-    const resp = await fetch(url + '?' + usp.toString());
-    // If the response is not OK (status 200), throw an error
-    if (!resp.ok) throw new Error('API error: ' + resp.status);
-    // Parse and return the JSON data
-    return resp.json();
+    const usp = new URLSearchParams(params); // Convert params object to query string
+    const resp = await fetch(url + '?' + usp.toString()); // Fetch the data from the API
+    if (!resp.ok) throw new Error('API error: ' + resp.status); // Throw error if not OK
+    return resp.json(); // Parse and return JSON
 }
 
-// Get train predictions (real-time estimates) for a stop
+// Gets train predictions (real-time estimates) for a stop
 async function getPredictions(stopId) {
     // Call the MBTA predictions endpoint for the given stop
     return fetchJson(`${BASE_URL}/predictions`, {
@@ -74,7 +86,7 @@ async function getPredictions(stopId) {
     });
 }
 
-// Get scheduled train times for a stop (fallback if no predictions)
+// Gets scheduled train times for a stop (fallback if no predictions)
 async function getSchedules(stopId) {
     // Call the MBTA schedules endpoint for the given stop
     return fetchJson(`${BASE_URL}/schedules`, {
@@ -84,10 +96,13 @@ async function getSchedules(stopId) {
     });
 }
 
-// Filter a list of train data to only future inbound trains
+// -------------------------------
+// Data Processing Functions
+// -------------------------------
+
+// Filters a list of train data to only future inbound trains
 function filterFutureTrains(data, directionId) {
-    // Get the current time
-    const now = new Date();
+    const now = new Date(); // Current time
     let future = [];
     // Loop through each train prediction or schedule
     for (const item of (data.data || [])) {
@@ -105,14 +120,12 @@ function filterFutureTrains(data, directionId) {
     return future;
 }
 
-// Get the arrival time at a specific stop for a given trip
+// Gets the arrival time at a specific stop for a given trip
 // Tries predictions first, then falls back to scheduled times
 async function getArrivalTimeAtStation(tripId, stopId, preferPred = true) {
     let data;
-    // Try to get predictions (real-time) if preferPred is true
-    if (preferPred) data = await getPredictions(stopId);
-    else data = await getSchedules(stopId);
-    // Loop through each prediction or schedule
+    if (preferPred) data = await getPredictions(stopId); // Try to get predictions (real-time)
+    else data = await getSchedules(stopId); // Fallback to schedules
     for (const item of (data.data || [])) {
         let itemTripId = null;
         // Get the trip ID from the relationships or attributes
@@ -125,8 +138,7 @@ async function getArrivalTimeAtStation(tripId, stopId, preferPred = true) {
             let arr = item.attributes.arrival_time;
             if (arr) {
                 try {
-                    // Return as a Date object
-                    return new Date(normalizeIsoTime(arr));
+                    return new Date(normalizeIsoTime(arr)); // Return as a Date object
                 } catch { }
             }
         }
@@ -137,20 +149,30 @@ async function getArrivalTimeAtStation(tripId, stopId, preferPred = true) {
     return null;
 }
 
+// -------------------------------
+// Main Display Logic
+// -------------------------------
+
+// Tracks if this is the first time loading the data
+let firstLoad = true;
+
 // Main function to display the next inbound train info on the page
 async function showNextInboundTrain() {
-    // Get the HTML elements where info will be displayed
+    // Get references to the HTML elements where info will be displayed
     const departureElem = document.getElementById('departure-time');
     const arrivalElem = document.getElementById('arrival-time');
     const routeElem = document.getElementById('train-route');
     const info = document.getElementById('train-info');
-    // Show loading message while fetching data
-    if (departureElem && arrivalElem && routeElem) {
-        departureElem.textContent = 'Loading...';
-        arrivalElem.textContent = 'Loading...';
-        routeElem.textContent = 'Loading...';
-    } else if (info) {
-        info.textContent = 'Loading...';
+
+    // Only show 'Loading...' on first load
+    if (firstLoad) {
+        if (departureElem && arrivalElem && routeElem) {
+            departureElem.textContent = 'Loading...';
+            arrivalElem.textContent = 'Loading...';
+            routeElem.textContent = 'Loading...';
+        } else if (info) {
+            info.textContent = 'Loading...';
+        }
     }
     try {
         // Try to get real-time predictions for Dedham
@@ -165,12 +187,13 @@ async function showNextInboundTrain() {
         // If still no trains, show a message
         if (!future.length) {
             if (departureElem && arrivalElem && routeElem) {
-                departureElem.textContent = '-';
-                arrivalElem.innerHTML = '<span class="error">No inbound trains found.</span>';
-                routeElem.textContent = '-';
+                if (firstLoad || departureElem.textContent !== '-') departureElem.textContent = '-';
+                if (firstLoad || arrivalElem.innerHTML !== '<span class="error">No inbound trains found.</span>') arrivalElem.innerHTML = '<span class="error">No inbound trains found.</span>';
+                if (firstLoad || routeElem.textContent !== '-') routeElem.textContent = '-';
             } else if (info) {
-                info.innerHTML = '<span class="error">No inbound trains found.</span>';
+                if (firstLoad || info.innerHTML !== '<span class="error">No inbound trains found.</span>') info.innerHTML = '<span class="error">No inbound trains found.</span>';
             }
+            firstLoad = false;
             return;
         }
         // Get the soonest train
@@ -194,30 +217,40 @@ async function showNextInboundTrain() {
         // Try to get the arrival time at South Station for this trip
         let arrTime = null;
         if (tripId) arrTime = await getArrivalTimeAtStation(tripId, SOUTH_STATION_STOP_ID);
-        // Update the HTML elements with the info
-        if (departureElem && arrivalElem && routeElem) {
-            departureElem.textContent = formatTime(depTime);
+        // Always update on first load, otherwise only if changed
+        const depStr = formatTime(depTime);
+        const arrStr = arrTime ? formatTime(arrTime) : '<span class="error">Not available</span>';
+        if (departureElem && (firstLoad || departureElem.textContent !== depStr)) departureElem.textContent = depStr;
+        if (arrivalElem) {
             if (arrTime) {
-                arrivalElem.textContent = formatTime(arrTime);
-                arrivalElem.classList.remove('error');
+                if (firstLoad || arrivalElem.textContent !== formatTime(arrTime)) {
+                    arrivalElem.textContent = formatTime(arrTime);
+                    arrivalElem.classList.remove('error');
+                }
             } else {
-                arrivalElem.innerHTML = '<span class="error">Not available</span>';
+                if (firstLoad || arrivalElem.innerHTML !== arrStr) arrivalElem.innerHTML = arrStr;
             }
-            routeElem.textContent = trainNumber;
-        } else if (info) {
-            info.innerHTML = `<span class="error">Display error: Info elements not found.</span>`;
         }
+        if (routeElem && (firstLoad || routeElem.textContent !== trainNumber)) routeElem.textContent = trainNumber;
+        firstLoad = false;
     } catch (e) {
         // If there was an error (e.g., network), show an error message
         if (departureElem && arrivalElem && routeElem) {
-            departureElem.textContent = '-';
-            arrivalElem.innerHTML = `<span class="error">Error: ${e.message}</span>`;
-            routeElem.textContent = '-';
+            if (firstLoad || departureElem.textContent !== '-') departureElem.textContent = '-';
+            const errStr = `<span class=\"error\">Error: ${e.message}</span>`;
+            if (firstLoad || arrivalElem.innerHTML !== errStr) arrivalElem.innerHTML = errStr;
+            if (firstLoad || routeElem.textContent !== '-') routeElem.textContent = '-';
         } else if (info) {
-            info.innerHTML = `<span class="error">Error: ${e.message}</span>`;
+            const errStr = `<span class=\"error\">Error: ${e.message}</span>`;
+            if (firstLoad || info.innerHTML !== errStr) info.innerHTML = errStr;
         }
+        firstLoad = false;
     }
 }
+
+// -------------------------------
+// Initialization
+// -------------------------------
 
 // Call the main function once when the page loads
 showNextInboundTrain();
