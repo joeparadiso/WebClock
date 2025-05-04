@@ -275,3 +275,53 @@ text color:
 
 input box color: 
 177,157,114
+====================================
+Mid Day Field
+------------
+Box shadow & button borders: 
+140,153,000
+
+clock background: 
+(255,255,255) (98,140,172)
+
+timer backg: 
+(217,217,205) (171,178,000)
+
+button backg: 
+(156,176,120) (249,255,209)
+
+page backg: #  #
+
+navbar backg: 
+23,38,09
+
+text color: 
+002,076,136
+
+input box color: 
+172,179,180
+====================================
+Rainy Field
+------------
+Box shadow & button borders: 
+116,132,125
+
+clock background: 
+(095,110,106) (136,150,145)
+
+timer backg: 
+(71,88,39) (97,113,86)
+
+button backg: 
+(140,154,150) (106,120,108)
+
+page backg: #  #
+
+navbar backg: 
+(60,68,64)
+
+text color: 
+215,211,209
+
+input box color: 
+161,161,161
