@@ -28,7 +28,7 @@ function pad(n) {
     return n < 10 ? '0' + n : n;
 }
 
-// Formats a JavaScript Date object as a 12-hour time string with am/pm (e.g., 3:05 pm)
+// Formats a JavaScript Date object as a 12-hour time string with am/pm (e.g., 09:05 am)
 function formatTime(dt) {
     // Get the hour (0-23)
     let hours = dt.getHours();
@@ -40,8 +40,8 @@ function formatTime(dt) {
     hours = hours % 12;
     // 0 should be shown as 12
     if (hours === 0) hours = 12;
-    // Return formatted string, e.g., 3:05 pm
-    return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}`;
+    // Pad hours and minutes with leading zero if less than 10
+    return `${pad(hours)}:${pad(minutes)} ${ampm}`;
 }
 
 // Normalizes ISO time strings to ensure compatibility with JavaScript Date
