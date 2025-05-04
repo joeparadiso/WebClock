@@ -185,7 +185,7 @@ body {
   font-size: 130px;
   gap: 10px;
   font-family: "Chivo Mono", serif;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
 }
 
 #weather-widget {
@@ -217,6 +217,31 @@ body {
 }
 
 #sunsetContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+#trainContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-bottom: 25px;
+}
+
+#departureContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+#trainInfoContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+#arrivalContainer {
   font-family: "Baumans", serif;
   font-weight: 100;
   font-size: 1.2em;

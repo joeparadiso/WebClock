@@ -17,6 +17,7 @@
     <script type="text/javascript" src="weather.js"></script>
     <script type="text/javascript" src="clock.js"></script>
     <script type="text/javascript" src="sunTimes.js"></script>
+    <script type="text/javascript" src="next_inbound_train.js"></script>
     <link rel="icon" href="favicon.ico" />
   </head>
   <body>
@@ -72,12 +73,10 @@
     <!-- Main Content -->
     <div class="container">
       <div class="clock">
+        <!-- Sunrise time, Date, Sunset time -->
         <div id="clockSunContainer">
-          <!-- Block holding the sunrise details -->
           <div id="sunriseContainer">
-            <!-- Sunrise title -->
             <div id="sunBlock">Sunrise</div>
-            <!-- Sunrise time -->
             <div id="sunrise">Sunrise</div>
           </div>
           <div id="Date">DAY, MONTH 00, YEAR</div>
@@ -93,6 +92,20 @@
           <li id="point">:</li>
           <li id="seconds">00</li>
         </ul>
+        <div id="trainContainer">
+          <div id="departureContainer">
+            <div id="departureTimeTxt">Departure at Dedham</div>
+            <div id="departure-time">Loading...</div>
+          </div>
+          <div id="trainInfoContainer">
+            <div id="trainRoute">Train/Route</div>
+            <div id="train-route">Loading...</div>
+          </div>
+          <div id="arrivalContainer">
+            <div id="arrivalTimeTxt">Arrival at South Station</div>
+            <div id="arrival-time">Loading...</div>
+          </div>
+        </div>
         <!-- weather-widget.html -->
         <div id="weather-widget">
           <div id="weather-info">
