@@ -70,93 +70,98 @@
       </ul>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container">
-      <div class="clock">
-        <!-- Sunrise time, Date, Sunset time -->
-        <div id="clockSunContainer">
-          <div id="sunriseContainer">
-            <div id="sunBlock">Sunrise</div>
-            <div id="sunrise">Sunrise</div>
+    <div class="main-content">
+      <!-- Main Content -->
+      <div class="container">
+        <div class="clock">
+          <!-- Sunrise time, Date, Sunset time -->
+          <div id="clockSunContainer">
+            <div id="sunriseContainer">
+              <div id="sunBlock">Sunrise</div>
+              <div id="sunrise">Sunrise</div>
+            </div>
+            <div id="Date">DAY, MONTH 00, YEAR</div>
+            <div id="sunsetContainer">
+              <div id="sunBlock">Sunset</div>
+              <div id="sunset">Sunset</div>
+            </div>
           </div>
-          <div id="Date">DAY, MONTH 00, YEAR</div>
-          <div id="sunsetContainer">
-            <div id="sunBlock">Sunset</div>
-            <div id="sunset">Sunset</div>
+          <ul>
+            <li id="hours">00</li>
+            <li id="point">:</li>
+            <li id="minutes">00</li>
+            <li id="point">:</li>
+            <li id="seconds">00</li>
+          </ul>
+          <div id="trainContainer">
+            <div id="departureContainer">
+              <div id="departureTimeTxt">Departure at Dedham</div>
+              <div id="departure-time">Loading...</div>
+            </div>
+            <div id="trainInfoContainer">
+              <div id="trainRoute">Train/Route</div>
+              <div id="train-route">Loading...</div>
+            </div>
+            <div id="arrivalContainer">
+              <div id="arrivalTimeTxt">Arrival at South Station</div>
+              <div id="arrival-time">Loading...</div>
+            </div>
+          </div>
+          <!-- weather-widget.html -->
+          <div id="weather-widget">
+            <div id="weather-info">
+              <div id="current-temp"></div>
+              <div id="feels-like"></div>
+              <div id="high-low-temp"></div>
+              <div id="sky-condition"></div>
+              <div id="wind-speed"></div>
+            </div>
           </div>
         </div>
-        <ul>
-          <li id="hours">00</li>
-          <li id="point">:</li>
-          <li id="minutes">00</li>
-          <li id="point">:</li>
-          <li id="seconds">00</li>
-        </ul>
-        <div id="trainContainer">
-          <div id="departureContainer">
-            <div id="departureTimeTxt">Departure at Dedham</div>
-            <div id="departure-time">Loading...</div>
+      </div>
+
+      <!-- Timer Section -->
+      <div id="timer">
+        <table>
+          <thead>
+            <tr>
+              <th>Enter Date</th>
+              <th>Enter Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="date" id="date" /></td>
+              <td><input type="time" id="time" /></td>
+            </tr>
+          </tbody>
+        </table>
+        <button id="calculate">Start</button>
+        <button id="stop">Stop</button>
+        <button id="reset">Reset</button>
+
+        <div class="countdown">
+          <div>
+            <p class="heading">DAYS</p>
+            <div class="time" id="countdown-days">--</div>
           </div>
-          <div id="trainInfoContainer">
-            <div id="trainRoute">Train/Route</div>
-            <div id="train-route">Loading...</div>
+          <div>
+            <p class="heading">HOURS</p>
+            <div class="time" id="countdown-hours">--</div>
           </div>
-          <div id="arrivalContainer">
-            <div id="arrivalTimeTxt">Arrival at South Station</div>
-            <div id="arrival-time">Loading...</div>
+          <div>
+            <p class="heading">MINUTES</p>
+            <div class="time" id="countdown-minutes">--</div>
           </div>
-        </div>
-        <!-- weather-widget.html -->
-        <div id="weather-widget">
-          <div id="weather-info">
-            <div id="current-temp"></div>
-            <div id="feels-like"></div>
-            <div id="high-low-temp"></div>
-            <div id="sky-condition"></div>
-            <div id="wind-speed"></div>
+          <div>
+            <p class="heading">SECONDS</p>
+            <div class="time" id="countdown-seconds">--</div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Timer Section -->
-    <div id="timer">
-      <table>
-        <thead>
-          <tr>
-            <th>Enter Date</th>
-            <th>Enter Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="date" id="date" /></td>
-            <td><input type="time" id="time" /></td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="calculate">Start</button>
-      <button id="stop">Stop</button>
-      <button id="reset">Reset</button>
-
-      <div class="countdown">
-        <div>
-          <p class="heading">DAYS</p>
-          <div class="time" id="countdown-days">--</div>
-        </div>
-        <div>
-          <p class="heading">HOURS</p>
-          <div class="time" id="countdown-hours">--</div>
-        </div>
-        <div>
-          <p class="heading">MINUTES</p>
-          <div class="time" id="countdown-minutes">--</div>
-        </div>
-        <div>
-          <p class="heading">SECONDS</p>
-          <div class="time" id="countdown-seconds">--</div>
-        </div>
-      </div>
+    <div class="footer">
+      <p id="copyright">© 2025 Joe Paradiso</p>
     </div>
   </body>
 </html>
