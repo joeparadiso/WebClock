@@ -32,7 +32,16 @@ body {
   color: var(--text-color);
   text-align: center;
   padding: 0;
-  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styling for the main content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /*============================================================================================= 
@@ -324,4 +333,19 @@ button:hover {
 #timer {
   text-align: center;
   margin-top: 20px;
+}
+
+/*============================================================================================
+*     FOOTER STYLING
+=============================================================================================*/
+.footer {
+  width: 100%;
+  background-color: var(--navbar-bg);
+  color: var(--text-color);
+  text-align: center;
+  padding: 10px;
+  font-family: "Baumans", serif;
+  margin-top: 20vh;
+  margin-bottom: 0px;
+  opacity: 70%;
 }
