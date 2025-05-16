@@ -205,6 +205,48 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(215,211,209)",
       input: "rgba(161,161,161,.9)",
     },
+    "Cloudy Field": {
+      shadow: "rgb(19,29,08)",
+      clockbg1: "rgba(44,63,63,.9)",
+      clockbg2: "rgba(102,124,127,.9)",
+      timerbg1: "rgba(40,63,0,.8)",
+      timerbg2: "rgba(97,113,86,.8)",
+      buttonbg1: "rgba(80,99,57,.8)",
+      buttonbg2: "rgba(115,131,123,.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(60,68,64,.8)",
+      text: "rgb(215,211,209)",
+      input: "rgba(161,161,161,.9)",
+    },
+    "Overcast Field": {
+      shadow: "rgb(46,41,24)",
+      clockbg1: "rgba(99,110,99,.9)",
+      clockbg2: "rgba(61,70,76,.9)",
+      timerbg1: "rgba(39,45,06,.8)",
+      timerbg2: "rgba(95,106,38,.8)",
+      buttonbg1: "rgba(61,70,32,.8)",
+      buttonbg2: "rgba(115,131,123,.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(60,68,64,.8)",
+      text: "rgb(215,211,209)",
+      input: "rgba(161,161,161,.9)",
+    },
+    "Stormy Field": {
+      shadow: "rgb(121,89,42)",
+      clockbg1: "rgba(47,39,31,.8)",
+      clockbg2: "rgba(11,15,18,.8)",
+      timerbg1: "rgba(11,15,2,.8)",
+      timerbg2: "rgba(71,53,2,.8)",
+      buttonbg1: "rgba(96,80,52,.7)",
+      buttonbg2: "rgba(11,16,17,.7)",
+      pagebg1: "#000000",
+      pagebg2: "#000000",
+      navbar: "rgba(24,21,17,.8)",
+      text: "rgb(165,117,49)",
+      input: "rgba(99,70,39,.9)",
+    },
     "Foggy Woods": {
       shadow: "rgb(121,62,24)",
       clockbg1: "rgba(138,149,153,0.85)",
@@ -462,6 +504,18 @@ document.addEventListener("DOMContentLoaded", function () {
     "Rainy Field": {
       backgroundImage:
         "url('images/rainyField.png')",
+    },
+    "Cloudy Field": {
+      backgroundImage:
+        "url('images/cloudyField.png')",
+    },
+    "Overcast Field": {
+      backgroundImage:
+        "url('images/cloudyAfternoonField.png')",
+    },
+    "Stormy Field": {
+      backgroundImage:
+        "url('images/darkStormyField.png')",
     },
     autumn: {
       backgroundImage: "url('https://example.com/autumn.jpg')",
