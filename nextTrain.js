@@ -7,7 +7,7 @@
 // -------------------------------
 // API and Stop Configuration
 // -------------------------------
-// MBTA API key for authentication (public demo key, replace with your own for production)
+// MBTA API key for authentication
 const API_KEY = '72fa8ae012994df7b7f671c2c52c9ab2';
 // Base URL for MBTA API requests
 const BASE_URL = 'https://api-v3.mbta.com';
