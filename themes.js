@@ -1,12 +1,49 @@
-/********************************************************************************
+/* *********************************************************************************
  * themes.js -- March 2025 -- Joe Paradiso
- * DETAILS:
- *  This script defines the details of the themes available in the navbar menu.
- *  There are pre-determined themes that the user can choose from a dropdown menu
- *  and there are options for changing nearly every visible element displayed in
- *  the WebClock. This script is responsible for managing and updating the themes
- *  and colors of this WebClock.
- ********************************************************************************/
+ *
+ * PURPOSE:
+ *  - Centralizes theme definitions (colors + background images) in one master
+ *    object so theme data is easy to maintain.
+ *  - Populates two independent dropdowns in the navbar: `themeSelector` and
+ *    `themeSelector2`. Each dropdown may contain a different subset of themes
+ *    (initially defined by `manualGroupB`). Selecting an option applies the
+ *    associated theme (CSS variables and background image) immediately.
+ *  - Provides color picker handlers that allow the user to override CSS
+ *    variables at runtime.
+ *
+ * HOW TO ADD NEW THEMES / CONTROL WHICH DROPDOWN THEY APPEAR IN
+ *  1) Add the theme's color properties into the `colorThemes` object below.
+ *     Use the same property keys other themes use (shadow, clockbg1, clockbg2,
+ *     timerbg1, timerbg2, buttonbg1, buttonbg2, pagebg1, pagebg2, navbar, text,
+ *     input). You can omit properties that aren't relevant for a theme.
+ *
+ *  2) Add the theme's background image entry into `bgThemes` below. The key
+ *     must match the key you used in `colorThemes`.
+ *
+ *  3) Control which dropdown contains the theme:
+ *     - To place a theme in the SECOND dropdown (`themeSelector2`) initially,
+ *       add its exact key (string) to the `manualGroupB` array (near the
+ *       grouping logic). The order in `manualGroupB` dictates the order the
+ *       theme appears inside `themeSelector2`.
+ *     - Themes not listed in `manualGroupB` will appear in the FIRST dropdown
+ *       (`themeSelector`) in the same order they are defined in `colorThemes`
+ *       / `masterThemes`.
+ *
+ *  NOTES:
+ *  - This is just the initial placement. If you later want to reassign a
+ *    theme, edit `manualGroupB` and reload the page.
+ *  - Theme keys are treated as exact strings. Be consistent with capitalization.
+ *  - For maintainability, keep colorThemes and bgThemes near each other so
+ *    adding a theme is a small, local change.
+ *
+ * INTERNALS / IMPLEMENTATION SUMMARY:
+ *  - `colorThemes` contains the color-related properties for each theme.
+ *  - `bgThemes` contains backgroundImage entries.
+ *  - `masterThemes` merges the two so a single lookup contains both colors and
+ *    background image for a theme.
+ *  - Dropdowns are populated from `masterThemes` using either manual lists or
+ *    ordering preserved from `masterThemes`.
+ *********************************************************************************/
 
 document.addEventListener("DOMContentLoaded", function () {
   // Hamburger Menu Toggle
@@ -19,10 +56,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /********************************************************************************
-   * The 'themes' define the colors for each visible element in the WebClock. They
-   * are chosen to match the backgound images of each theme.
+   * Master theme store: colors + background images in one place. We'll split the
+   * available keys into two groups and populate `themeSelector` and
+   * `themeSelector2` from those groups.
    ********************************************************************************/
-  const themes = {
+  const colorThemes = {
     default: {
       shadow: "#F8E3AF",
       clockbg1: "#2D4067",
@@ -303,83 +341,259 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(244,242,203)",
       input: "rgba(149,147,91,.6)",
     },
+    "Autumnal Field": {
+      shadow: "rgb(189,128,62)",
+      clockbg1: "rgba(223,154,114,.7)",
+      clockbg2: "rgba(128,52,15,.7)",
+      timerbg1: "rgba(243,186,88,.8)",
+      timerbg2: "rgba(152,97,46,.8)",
+      buttonbg1: "rgba(160,69,24,.8)",
+      buttonbg2: "rgba(246,212,157,.8)",
+      navbar: "rgba(161,100,38, 0.45)",
+      text: "rgb(244,242,203)",
+      input: "rgba(211,196,173,.6)",
+    },
+    "Afternoon Pumpkin Field": {
+      shadow: "rgb(145,122,85)",
+      clockbg1: "rgba(193,190,179,.7)",
+      clockbg2: "rgba(153,173,178,.7)",
+      timerbg1: "rgba(238,153,33,.8)",
+      timerbg2: "rgba(177,103,11,.8)",
+      buttonbg1: "rgba(62,49,4,.8)",
+      buttonbg2: "rgba(246,212,157,.8)",
+      navbar: "rgba(161,100,38, 0.45)",
+      text: "rgb(66,43,6)",
+      input: "rgba(211,196,173,.6)",
+    },
+    "Misty Autumnal Field": {
+      shadow: "rgb(77,48,10)",
+      clockbg1: "rgba(162,153,134,.8)",
+      clockbg2: "rgba(129,130,124,.8)",
+      timerbg1: "rgba(185,146,95,.8)",
+      timerbg2: "rgba(90,69,38,.8)",
+      buttonbg1: "rgba(102,77,47,.8)",
+      buttonbg2: "rgba(169,140,102,.8)",
+      navbar: "rgba(60,68,64,.8)",
+      text: "rgb(215,211,209)",
+      input: "rgba(175,167,150,.9)",
+    },
+    "Scattered Clouds Fall Field": {
+      shadow: "rgb(77,48,10)",
+      clockbg1: "rgba(198,168,120,.8)",
+      clockbg2: "rgba(56,56,52,.8)",
+      timerbg1: "rgba(185,146,95,.8)",
+      timerbg2: "rgba(90,69,38,.8)",
+      buttonbg1: "rgba(102,77,47,.8)",
+      buttonbg2: "rgba(169,140,102,.8)",
+      navbar: "rgba(60,68,64,.8)",
+      text: "rgb(215,211,209)",
+      input: "rgba(175,167,150,.9)",
+    },
+    "Sunny Autumnal Field": {
+      shadow: "rgb(189,128,62)",
+      clockbg1: "rgba(223,154,114,.7)",
+      clockbg2: "rgba(128,52,15,.7)",
+      timerbg1: "rgba(243,186,88,.8)",
+      timerbg2: "rgba(152,97,46,.8)",
+      buttonbg1: "rgba(160,69,24,.8)",
+      buttonbg2: "rgba(246,212,157,.8)",
+      navbar: "rgba(161,100,38, 0.45)",
+      text: "rgb(244,242,203)",
+      input: "rgba(211,196,173,.6)",
+    },
   };
 
-  // Populate the themeSelector dropdown
-  const themeSelector = document.getElementById("themeSelector");
-  themeSelector.innerHTML = ""; // Clear any existing options
-  Object.keys(themes).forEach(key => {
-    const option = document.createElement("option");
-    option.value = key;
-    // Capitalize first letter for display
-    option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-    themeSelector.appendChild(option);
+  const bgThemes = {
+    default: {
+      backgroundImage:
+        "url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm00NzItMjBhLmpwZw.jpg')",
+    },
+    lava: {
+      backgroundImage:
+        "url('https://static.vecteezy.com/system/resources/thumbnails/045/698/869/small_2x/black-marble-texture-with-gold-veins-luxurious-surface-design-photo.jpg')",
+    },
+    "Thunderstorm": {
+      backgroundImage:
+        "url('https://media.istockphoto.com/id/106529026/photo/threatening-dark-clouds-covering-the-sky.jpg?s=612x612&w=0&k=20&c=XOSnMeZbKOW541FgTISJkDVvFK_bVHyTvusmAk9jjAs=')",
+    },
+    "Summer Afternoon": {
+      backgroundImage:
+        "url('https://burst.shopifycdn.com/photos/bright-blue-sky-dotted-with-fluffy-white-clouds.jpg?exif=0&iptc=0')",
+    },
+    "Dusk Road": {
+      backgroundImage:
+        "url('https://img.freepik.com/premium-photo/sunrise-road-summer-sunny-highway-journey-landscape-way-sunlight-horizon-copy-space_162695-14253.jpg')",
+    },
+    "Brilliant Sunset": {
+      backgroundImage:
+        "url('https://t4.ftcdn.net/jpg/01/04/78/75/360_F_104787586_63vz1PkylLEfSfZ08dqTnqJqlqdq0eXx.jpg')",
+    },
+    "Under The Sea": {
+      backgroundImage:
+        "url('https://c1.wallpaperflare.com/preview/874/981/117/ocean-life-under-water-colorful-fish.jpg')",
+    },
+    "Verdant Forest": {
+      backgroundImage: "url('https://images4.alphacoders.com/105/105806.jpg')",
+    },
+    "Foggy Woods": {
+      backgroundImage: "url('https://wallpapersok.com/images/hd/foggy-road-in-the-redwood-forest-hekos5o4bl1makkv.jpg')",
+    },
+    "Morning Field": {
+      backgroundImage:
+        "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+    },
+    "Mid Morning Field": {
+      backgroundImage:
+        "url('images/midMorningField.png')",
+    },
+    "Mid Day Field": {
+      backgroundImage:
+        "url('images/middayField.png')",
+    },
+    "Rainy Field": {
+      backgroundImage:
+        "url('images/rainyField.png')",
+    },
+    "Cloudy Field": {
+      backgroundImage:
+        "url('images/cloudyField.png')",
+    },
+    "Overcast Field": {
+      backgroundImage:
+        "url('images/cloudyAfternoonField.png')",
+    },
+    "Stormy Field": {
+      backgroundImage:
+        "url('images/darkStormyField.png')",
+    },
+    "City Rain": {
+      backgroundImage:
+        "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
+    },
+    "Golden Blue Morning": {
+      backgroundImage:
+        "url('https://c1.wallpaperflare.com/preview/288/835/770/sunset-sweden-sm%C3%A5land-blue.jpg')",
+    },
+    "Placid River": {
+      backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
+    },
+    "Natural Dystopia": {
+      backgroundImage: "url('https://wallpapercave.com/wp/wp2015884.jpg')",
+    },
+    "Autumnal Field": {
+      backgroundImage: "url('images/autumnal_field.png')",
+    },
+    "Afternoon Pumpkin Field": {
+      backgroundImage: "url('images/afternoonPumpkinPatchField.png')",
+    },
+    "Misty Autumnal Field": {
+      backgroundImage: "url('images/autumnal_misty_field.png')",
+    },
+    "Scattered Clouds Fall Field": {
+      backgroundImage: "url('images/cloudyFallField.png')",
+    },
+    "Sunny Autumnal Field": {
+      backgroundImage: "url('images/sunnyAutumnalField.png')",
+    },
+  };
+
+  // Build a single master themes object by merging colorThemes and bgThemes
+  const masterThemes = {};
+  Object.keys(colorThemes).forEach(key => {
+    masterThemes[key] = Object.assign({}, colorThemes[key]);
+    if (bgThemes[key]) masterThemes[key].backgroundImage = bgThemes[key].backgroundImage;
+  });
+  // Include any bg-only keys
+  Object.keys(bgThemes).forEach(key => {
+    if (!masterThemes[key]) masterThemes[key] = { backgroundImage: bgThemes[key].backgroundImage };
   });
 
-  /********************************************************************************
-   * This script updates the visible elements in the HTML document with the
-   * colors defined for each theme. Every time a new theme is chosen, the HTML
-   * elements are updated with the new colors of that theme.
-   ********************************************************************************/
-  document
-    .getElementById("themeSelector")
-    .addEventListener("change", function () {
-      let theme = themes[this.value];
-      if (theme) {
-        // Update the color of the box shadow on the clock, buttons, and timer
-        document.documentElement.style.setProperty(
-          "--box-shadow-color",
-          theme.shadow
-        );
-        // Update the background color 1 of the clock
-        document.documentElement.style.setProperty(
-          "--clock-bg1",
-          theme.clockbg1
-        );
-        // Update the background color 2 of the clock
-        document.documentElement.style.setProperty(
-          "--clock-bg2",
-          theme.clockbg2
-        );
-        // Update the background color 1 of the timer
-        document.documentElement.style.setProperty(
-          "--timer-bg1",
-          theme.timerbg1
-        );
-        // Update the background color 2 of the timer
-        document.documentElement.style.setProperty(
-          "--timer-bg2",
-          theme.timerbg2
-        );
-        // Update the background color 1 of the start/stop/reset buttons
-        document.documentElement.style.setProperty(
-          "--button-bg1",
-          theme.buttonbg1
-        );
-        // Update the background color 2 of the start/stop/reset buttons
-        document.documentElement.style.setProperty(
-          "--button-bg2",
-          theme.buttonbg2
-        );
-        // Update the background color 1 of the whole page background
-        // NOTE: This is only visible when the user chooses a color different
-        // from the default theme background image. Remove this?
-        // document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
-        // Update the background color 2 of the whole page background
-        // NOTE: This is only visible when the user chooses a color different
-        // from the default theme background image. Remove this?
-        // document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
-        // Update the color of the navbar
-        document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
-        // Update the color of all text displayed on the WebClock
-        document.documentElement.style.setProperty("--text-color", theme.text);
-        // Update the background color of the date/time input boxes
-        document.documentElement.style.setProperty(
-          "--input-box-color",
-          theme.input
-        );
-      }
+  // Split keys into two groups using a manual list for groupB so you can control
+  // initial assignment and order. The remaining keys (groupA) will preserve the
+  // order they appear in the code (masterThemes insertion order).
+  const allKeys = Object.keys(masterThemes);
+  // MANUAL: list themes that should initially appear in the second selector
+  // (themeSelector2). Change this array to control which themes belong to
+  // selector2 and the order they appear. This is a one-time initial mapping;
+  // you can add/remove names here as you add new themes later.
+  const manualGroupB = [
+    "Autumnal Field",
+    "Sunny Autumnal Field",
+    "Misty Autumnal Field",
+    "Scattered Clouds Fall Field",
+    "Afternoon Pumpkin Field",
+    "Morning Field",
+    "Mid Morning Field",
+    "Mid Day Field",
+    "Rainy Field",
+    "Cloudy Field",
+    "Overcast Field",
+    "Stormy Field",
+  ];
+  // groupA keeps the master order but excludes the manual groupB entries
+  const groupA = allKeys.filter(k => !manualGroupB.includes(k));
+  // groupB follows the manual list but only includes keys that exist
+  const groupB = manualGroupB.filter(k => Object.prototype.hasOwnProperty.call(masterThemes, k));
+
+  // Populate the dropdowns
+  const themeSelector = document.getElementById("themeSelector");
+  const themeSelector2 = document.getElementById("themeSelector2");
+  if (themeSelector) {
+    themeSelector.innerHTML = "";
+    groupA.forEach(key => {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+      themeSelector.appendChild(option);
     });
+  }
+  if (themeSelector2) {
+    themeSelector2.innerHTML = "";
+    groupB.forEach(key => {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+      themeSelector2.appendChild(option);
+    });
+  }
+
+  // Helper to apply a theme object to CSS variables and background
+  function applyThemeByKey(key) {
+    const theme = masterThemes[key];
+    if (!theme) return;
+    // Apply CSS variables if present
+    if (theme.shadow) document.documentElement.style.setProperty("--box-shadow-color", theme.shadow);
+    if (theme.clockbg1) document.documentElement.style.setProperty("--clock-bg1", theme.clockbg1);
+    if (theme.clockbg2) document.documentElement.style.setProperty("--clock-bg2", theme.clockbg2);
+    if (theme.timerbg1) document.documentElement.style.setProperty("--timer-bg1", theme.timerbg1);
+    if (theme.timerbg2) document.documentElement.style.setProperty("--timer-bg2", theme.timerbg2);
+    if (theme.buttonbg1) document.documentElement.style.setProperty("--button-bg1", theme.buttonbg1);
+    if (theme.buttonbg2) document.documentElement.style.setProperty("--button-bg2", theme.buttonbg2);
+    if (theme.navbar) document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
+    if (theme.text) document.documentElement.style.setProperty("--text-color", theme.text);
+    if (theme.input) document.documentElement.style.setProperty("--input-box-color", theme.input);
+    // Apply background image if available, otherwise preserve gradient
+    if (theme.backgroundImage) {
+      document.body.style.background = theme.backgroundImage;
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+    }
+  }
+
+  // Wire change handlers
+  if (themeSelector) {
+    themeSelector.addEventListener("change", function () {
+      applyThemeByKey(this.value);
+    });
+    // apply initial selection
+    if (themeSelector.options.length) applyThemeByKey(themeSelector.options[0].value);
+  }
+  if (themeSelector2) {
+    themeSelector2.addEventListener("change", function () {
+      applyThemeByKey(this.value);
+    });
+    if (themeSelector2.options.length) applyThemeByKey(themeSelector2.options[0].value);
+  }
 
   /********************************************************************************
    * This script updates the visible elements in the HTML document with the
@@ -445,108 +659,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-/********************************************************************************
- * This script updates the background images for each theme. Currently, all theme
- * images are just links to public images on the internet. If this becomes a real
- * website, ensure all images are contained in the project and are free to use.
- ********************************************************************************/
-document.addEventListener("DOMContentLoaded", function () {
-  const themes = {
-    default: {
-      backgroundImage:
-        "url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm00NzItMjBhLmpwZw.jpg')",
-    },
-    lava: {
-      backgroundImage:
-        "url('https://static.vecteezy.com/system/resources/thumbnails/045/698/869/small_2x/black-marble-texture-with-gold-veins-luxurious-surface-design-photo.jpg')",
-    },
-    "Thunderstorm": {
-      backgroundImage:
-        "url('https://media.istockphoto.com/id/106529026/photo/threatening-dark-clouds-covering-the-sky.jpg?s=612x612&w=0&k=20&c=XOSnMeZbKOW541FgTISJkDVvFK_bVHyTvusmAk9jjAs=')",
-    },
-    "Summer Afternoon": {
-      // backgroundImage: "url('https://www.freeimageslive.com/galleries/nature/weather/pics/sunny_clouds_8092612.jpg')",
-      backgroundImage:
-        "url('https://burst.shopifycdn.com/photos/bright-blue-sky-dotted-with-fluffy-white-clouds.jpg?exif=0&iptc=0')",
-    },
-    "Dusk Road": {
-      // backgroundImage:
-      //   "url('https://live.staticflickr.com/7915/32413680647_bfa12df896_b.jpg')",
-      backgroundImage:
-        "url('https://img.freepik.com/premium-photo/sunrise-road-summer-sunny-highway-journey-landscape-way-sunlight-horizon-copy-space_162695-14253.jpg')",
-    },
-    "Brilliant Sunset": {
-      backgroundImage:
-        "url('https://t4.ftcdn.net/jpg/01/04/78/75/360_F_104787586_63vz1PkylLEfSfZ08dqTnqJqlqdq0eXx.jpg')",
-    },
-    "Under The Sea": {
-      backgroundImage:
-        "url('https://c1.wallpaperflare.com/preview/874/981/117/ocean-life-under-water-colorful-fish.jpg')",
-    },
-    "Verdant Forest": {
-      backgroundImage: "url('https://images4.alphacoders.com/105/105806.jpg')",
-    },
-    "Foggy Woods": {
-      backgroundImage: "url('https://wallpapersok.com/images/hd/foggy-road-in-the-redwood-forest-hekos5o4bl1makkv.jpg')",
-    },
-    "Morning Field": {
-      backgroundImage:
-        "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-    },
-    "Mid Morning Field": {
-      backgroundImage:
-        "url('images/midMorningField.png')",
-    },
-    "Mid Day Field": {
-      backgroundImage:
-        "url('images/middayField.png')",
-    },
-    "Rainy Field": {
-      backgroundImage:
-        "url('images/rainyField.png')",
-    },
-    "Cloudy Field": {
-      backgroundImage:
-        "url('images/cloudyField.png')",
-    },
-    "Overcast Field": {
-      backgroundImage:
-        "url('images/cloudyAfternoonField.png')",
-    },
-    "Stormy Field": {
-      backgroundImage:
-        "url('images/darkStormyField.png')",
-    },
-    autumn: {
-      backgroundImage: "url('https://example.com/autumn.jpg')",
-    },
-    "City Rain": {
-      backgroundImage:
-        "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
-    },
-    "Golden Blue Morning": {
-      backgroundImage:
-        "url('https://c1.wallpaperflare.com/preview/288/835/770/sunset-sweden-sm%C3%A5land-blue.jpg')",
-    },
-    "Placid River": {
-      backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
-    },
-    "Natural Dystopia": {
-      backgroundImage: "url('https://wallpapercave.com/wp/wp2015884.jpg')",
-    },
-  };
 
-  document
-    .getElementById("themeSelector")
-    .addEventListener("change", function () {
-      let theme = themes[this.value];
-      if (theme) {
-        document.body.style.background = theme.backgroundImage;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-      }
-    });
-});
 
 /********************************************************************************
  * This script is the result of inexperienced JS coding. This script fixes the

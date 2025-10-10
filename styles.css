@@ -338,7 +338,7 @@ button:hover {
 /*============================================================================================
 *     FOOTER STYLING
 =============================================================================================*/
-.footer {
+/* .footer {
   width: 100%;
   background-color: var(--navbar-bg);
   color: var(--text-color);
@@ -348,4 +348,4 @@ button:hover {
   margin-top: 20vh;
   margin-bottom: 0px;
   opacity: 70%;
-}
+} */
