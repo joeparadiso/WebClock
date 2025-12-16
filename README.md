@@ -8,12 +8,12 @@ It features a robust theming engine allowing for preset visual styles or granula
 
 ### Main Dashboard
 
-![Main Dashboard View](images/screenshot_main.png)
+![Main Dashboard View](images/webClockImg_1.png)
 _The main view showing the clock, weather, sun times, and train schedule._
 
 ### Theme Customization
 
-![Theme Menu](images/screenshot_themes.png)
+![Theme Menu](images/webClockImg_2.png)
 _The customization menu allowing for theme selection and manual color adjustments._
 
 ---
