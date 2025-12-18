@@ -401,6 +401,66 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(244,242,203)",
       input: "rgba(211,196,173,.6)",
     },
+    "Mid Morning Frosty Field": {
+      shadow: "rgb(242,212,173)",
+      clockbg1: "rgba(251,230,195,.7)",
+      clockbg2: "rgba(147,150,161,.7)",
+      timerbg1: "rgba(177,154,140,.8)",
+      timerbg2: "rgba(236,194,147,.8)",
+      buttonbg1: "rgba(170,151,136,.8)",
+      buttonbg2: "rgba(238,198,160,.8)",
+      navbar: "rgba(161,100,38, 0.45)",
+      text: "rgb(104,80,39)",
+      input: "rgba(211,196,173,.6)",
+    },
+    "Morning Frosty Field": {
+      shadow: "rgb(119,134,154)",
+      clockbg1: "rgba(251,230,195,.7)",
+      clockbg2: "rgba(147,150,161,.7)",
+      timerbg1: "rgba(171,171,171,.8)",
+      timerbg2: "rgba(248,235,210,.8)",
+      buttonbg1: "rgba(170,176,183,.8)",
+      buttonbg2: "rgba(240,225,201,.8)",
+      navbar: "rgba(95,95,100, 0.45)",
+      text: "rgb(90,72,43)",
+      input: "rgba(211,215,222,.6)",
+    },
+    "Partly Sunny Frosty Field": {
+      shadow: "rgb(119,134,154)",
+      clockbg1: "rgba(242,247,253,.7)",
+      clockbg2: "rgba(159,166,186,.7)",
+      timerbg1: "rgba(144,147,167,.8)",
+      timerbg2: "rgba(247,247,247,.8)",
+      buttonbg1: "rgba(236,239,244,.8)",
+      buttonbg2: "rgba(185,190,208,.8)",
+      navbar: "rgba(95,95,100, 0.45)",
+      text: "rgb(90,72,43)",
+      input: "rgba(211,215,222,.6)",
+    },
+    "Winter Evening Field": {
+      shadow: "rgb(188,146,91)",
+      clockbg1: "rgba(206,147,80,.5)",
+      clockbg2: "rgba(59,69,109,.5)",
+      timerbg1: "rgba(197,162,124,.8)",
+      timerbg2: "rgba(55,56,72,.8)",
+      buttonbg1: "rgba(192,158,125,.8)",
+      buttonbg2: "rgba(85,78,106,.8)",
+      navbar: "rgba(95,95,100, 0.45)",
+      text: "rgb(197,205,211)",
+      input: "rgba(192,159,128,.6)",
+    },
+    "Winter Night Field": {
+      shadow: "rgb(209,212,228)",
+      clockbg1: "rgba(242,247,253,.5)",
+      clockbg2: "rgba(159,166,186,.8)",
+      timerbg1: "rgba(144,147,167,.6)",
+      timerbg2: "rgba(247,247,247,.6)",
+      buttonbg1: "rgba(236,239,244,.6)",
+      buttonbg2: "rgba(185,190,208,.6)",
+      navbar: "rgba(95,95,100, 0.45)",
+      text: "rgb(90,72,43)",
+      input: "rgba(211,215,222,.6)",
+    },
   };
 
   const bgThemes = {
@@ -495,6 +555,21 @@ document.addEventListener("DOMContentLoaded", function () {
     "Sunny Autumnal Field": {
       backgroundImage: "url('images/sunnyAutumnalField.png')",
     },
+    "Mid Morning Frosty Field": {
+      backgroundImage: "url('images/midMorningFrostyField.png')",
+    },
+    "Morning Frosty Field": {
+      backgroundImage: "url('images/morningFrostyField.png')",
+    },
+    "Partly Sunny Frosty Field": {
+      backgroundImage: "url('images/partlySunnyFrostyField.png')",
+    },
+    "Winter Evening Field": {
+      backgroundImage: "url('images/eveningWinterField.png')",
+    },
+    "Winter Night Field": {
+      backgroundImage: "url('images/winterNightField.png')",
+    },
   };
 
   // Build a single master themes object by merging colorThemes and bgThemes
@@ -517,6 +592,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // selector2 and the order they appear. This is a one-time initial mapping;
   // you can add/remove names here as you add new themes later.
   const manualGroupB = [
+    "Morning Frosty Field",
+    "Mid Morning Frosty Field",
+    "Partly Sunny Frosty Field",
+    "Winter Evening Field",
+    "Winter Night Field",
     "Autumnal Field",
     "Sunny Autumnal Field",
     "Misty Autumnal Field",
