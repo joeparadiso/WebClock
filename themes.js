@@ -313,19 +313,17 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(255,221,189)",
       input: "rgba(177,157,114,0.9)",
     },
-    "Placid River": {
-      shadow: "rgb(152,180,0)",
-      clockbg1: "rgba(39,51,19,.8)",
-      clockbg2: "rgba(98,170,56,.8)",
-      timerbg1: "rgba(86, 128, 58, .8)",
-      timerbg2: "rgba(27, 78, 7, .8)",
-      buttonbg1: "rgba(68, 83, 67, .8)",
-      buttonbg2: "rgba(83, 100, 67, .8)",
-      pagebg1: "#593BA0",
-      pagebg2: "#673104",
-      navbar: "rgb(5,36,21)",
-      text: "rgb(182,242,235",
-      input: "rgba(123, 168, 78, .8)",
+    "Space Clouds": {
+      shadow: "rgb(152,159,160)",
+      clockbg1: "rgba(177,170,160,.7)",
+      clockbg2: "rgba(14,19,40,.8)",
+      timerbg1: "rgba(117,117,119, .7)",
+      timerbg2: "rgba(210,187,150, .8)",
+      buttonbg1: "rgba(112,121,122, .8)",
+      buttonbg2: "rgba(223,205,168, .8)",
+      navbar: "rgba(51,54,56, 0.45)",
+      text: "rgb(243,228,201",
+      input: "rgba(185,176,149, .6)",
     },
     "Natural Dystopia": {
       shadow: "rgb(133,123,63)",
@@ -494,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     "Dusk Road": {
       backgroundImage:
-        "url('https://img.freepik.com/premium-photo/sunrise-road-summer-sunny-highway-journey-landscape-way-sunlight-horizon-copy-space_162695-14253.jpg')",
+        "url('images/duskRoad.png')",
     },
     "Brilliant Sunset": {
       backgroundImage:
@@ -546,8 +544,8 @@ document.addEventListener("DOMContentLoaded", function () {
       backgroundImage:
         "url('https://c1.wallpaperflare.com/preview/288/835/770/sunset-sweden-sm%C3%A5land-blue.jpg')",
     },
-    "Placid River": {
-      backgroundImage: "url('https://live.staticflickr.com/4232/35623383532_31c9ccf0f4_h.jpg')",
+    "Space Clouds": {
+      backgroundImage: "url('images/spaceClouds.png')",
     },
     "Natural Dystopia": {
       backgroundImage: "url('https://wallpapercave.com/wp/wp2015884.jpg')",
