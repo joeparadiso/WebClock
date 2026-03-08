@@ -299,19 +299,19 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(255,221,189)",
       input: "rgba(195,163,141,0.6)",
     },
-    "Golden Blue Morning": {
+    "Whispering Cottage": {
       shadow: "rgb(194,130,45)",
-      clockbg1: "rgba(35,74,97,0.85)",
-      clockbg2: "rgba(179,132,85,0.85)",
-      timerbg1: "rgba(178,141,94,0.8)",
-      timerbg2: "rgba(95,101,85,0.8)",
-      buttonbg1: "rgba(167,133,95,0.8)",
-      buttonbg2: "rgba(105,104,83,0.8)",
+      clockbg1: "rgba(35,74,97,0.6)",
+      clockbg2: "rgba(179,132,85,0.6)",
+      timerbg1: "rgba(178,141,94,0.5)",
+      timerbg2: "rgba(95,101,85,0.5)",
+      buttonbg1: "rgba(167,133,95,0.6)",
+      buttonbg2: "rgba(105,104,83,0.6)",
       pagebg1: "#303030",
       pagebg2: "#000000",
-      navbar: "rgba(98,72,45)",
+      navbar: "rgba(98,72,45,.4)",
       text: "rgb(255,221,189)",
-      input: "rgba(177,157,114,0.9)",
+      input: "rgba(177,157,114,0.6)",
     },
     "Space Clouds": {
       shadow: "rgb(152,159,160)",
@@ -540,9 +540,9 @@ document.addEventListener("DOMContentLoaded", function () {
       backgroundImage:
         "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
     },
-    "Golden Blue Morning": {
+    "Whispering Cottage": {
       backgroundImage:
-        "url('https://c1.wallpaperflare.com/preview/288/835/770/sunset-sweden-sm%C3%A5land-blue.jpg')",
+        "url('images/whisperingCottage.png')",
     },
     "Space Clouds": {
       backgroundImage: "url('images/spaceClouds.png')",
