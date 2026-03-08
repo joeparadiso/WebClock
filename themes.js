@@ -461,6 +461,18 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "rgb(90,72,43)",
       input: "rgba(211,215,222,.6)",
     },
+    "Iridescent Clouds": {
+      shadow: "rgb(192,136,114)",
+      clockbg1: "rgba(247,215,183,.5)",
+      clockbg2: "rgba(154,100,88,.8)",
+      timerbg1: "rgba(255,151,122,.6)",
+      timerbg2: "rgba(180,128,112,.6)",
+      buttonbg1: "rgba(219,175,164,.6)",
+      buttonbg2: "rgba(224,153,127,.6)",
+      navbar: "rgba(128,108,120, 0.45)",
+      text: "rgb(70,52,61)",
+      input: "rgba(197,135,114,.6)",
+    },
   };
 
   const bgThemes = {
@@ -570,6 +582,9 @@ document.addEventListener("DOMContentLoaded", function () {
     "Winter Night Field": {
       backgroundImage: "url('images/winterNightField.png')",
     },
+    "Iridescent Clouds": {
+      backgroundImage: "url('images/iridescentClouds.png')",
+    },
   };
 
   // Build a single master themes object by merging colorThemes and bgThemes
@@ -592,8 +607,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // selector2 and the order they appear. This is a one-time initial mapping;
   // you can add/remove names here as you add new themes later.
   const manualGroupB = [
-    "Morning Frosty Field",
     "Mid Morning Frosty Field",
+    "Morning Frosty Field",
     "Partly Sunny Frosty Field",
     "Winter Evening Field",
     "Winter Night Field",
