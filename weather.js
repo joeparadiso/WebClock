@@ -73,10 +73,10 @@ async function fetchWeather() {
     // Set the current temp in the weather widget
     document.getElementById(
       "current-temp"
-    ).innerText = `Temperature: ${Math.ceil(data.main.temp)}°F`;
+    ).innerHTML = `Temperature:<br>${Math.ceil(data.main.temp)}°F`;
 
     // Set what the current temp 'feels like' in the weather widget
-    document.getElementById("feels-like").innerText = `Feels Like: ${Math.round(
+    document.getElementById("feels-like").innerHTML = `Feels Like:<br>${Math.round(
       data.main.feels_like
     )}°F`;
 
@@ -92,11 +92,11 @@ async function fetchWeather() {
     // Set the current visible sky conditions in the weather widget
     document.getElementById(
       "sky-condition"
-    ).innerText = `Conditions: ${data.weather[0].description}`;
+    ).innerHTML = `Conditions:<br>${data.weather[0].description}`;
 
     // Set the current wind speed in the weather widget
     // (To approximately convert KMH to MPH, divide by 1.609)
-    document.getElementById("wind-speed").innerHTML = `Wind:\n${Math.ceil(
+    document.getElementById("wind-speed").innerHTML = `Wind:<br>${Math.ceil(
       data.wind.speed / 1.609
     )}&nbsp;mph`;
     // catch any errors and display them in the console
