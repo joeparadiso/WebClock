@@ -186,11 +186,11 @@ document.addEventListener("DOMContentLoaded", function () {
       input: "rgba(171,161,155,.9)",
     },
     "Morning Field": {
-      shadow: "rgb(118,137,142)",
-      clockbg1: "rgba(228,194,136,0.9)",
-      clockbg2: "rgba(129,144,147,0.9)",
-      timerbg1: "rgba(236, 201, 3, 0.8)",
-      timerbg2: "rgba(177, 198, 40, 0.8)",
+      shadow: "rgb(37,47,57)",
+      clockbg1: "rgba(129,144,147,0.8)",
+      clockbg2: "rgba(228,194,136,0.8)",
+      timerbg1: "rgba(96,95,32, 0.8)",
+      timerbg2: "rgba(148,122,0, 0.8)",
       buttonbg1: "rgba(212,183,139,0.8)",
       buttonbg2: "rgba(223,185,119,0.8)",
       pagebg1: "#303030",
@@ -217,8 +217,8 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(181,192,196)",
       clockbg1: "rgba(255,255,255,0.85)",
       clockbg2: "rgba(98,140,172,0.85)",
-      timerbg1: "rgba(198,198,036, 0.85)",
-      timerbg2: "rgba(106,115,043, 0.85)",
+      timerbg1: "rgba(114,145,3, 0.85)",
+      timerbg2: "rgba(134,138,117, 0.85)",
       buttonbg1: "rgba(156,176,120,0.8)",
       buttonbg2: "rgba(249,255,209,0.8)",
       pagebg1: "#303030",
@@ -508,7 +508,8 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     "Morning Field": {
       backgroundImage:
-        "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+        // "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+        "url('images/morningField_26.png')",
     },
     "Mid Morning Field": {
       backgroundImage:
@@ -516,7 +517,7 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     "Mid Day Field": {
       backgroundImage:
-        "url('images/middayField.png')",
+        "url('images/middayField_26.png')",
     },
     "Rainy Field": {
       backgroundImage:
