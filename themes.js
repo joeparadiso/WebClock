@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
       clockbg1: "rgba(129,144,147,0.8)",
       clockbg2: "rgba(228,194,136,0.8)",
       timerbg1: "rgba(96,95,32, 0.8)",
-      timerbg2: "rgba(148,122,0, 0.8)",
+      timerbg2: "rgba(204,156,0, 0.8)",
       buttonbg1: "rgba(212,183,139,0.8)",
       buttonbg2: "rgba(223,185,119,0.8)",
       pagebg1: "#303030",
@@ -604,6 +604,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // selector2 and the order they appear. This is a one-time initial mapping;
   // you can add/remove names here as you add new themes later.
   const manualGroupB = [
+    "Morning Field",
+    "Mid Morning Field",
+    "Mid Day Field",
     "Mid Morning Frosty Field",
     "Morning Frosty Field",
     "Partly Sunny Frosty Field",
@@ -614,9 +617,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "Misty Autumnal Field",
     "Scattered Clouds Fall Field",
     "Afternoon Pumpkin Field",
-    "Morning Field",
-    "Mid Morning Field",
-    "Mid Day Field",
     "Rainy Field",
     "Cloudy Field",
     "Overcast Field",
