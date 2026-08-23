@@ -138,12 +138,28 @@ document.addEventListener("DOMContentLoaded", function () {
     if (countdownSeconds) countdownSeconds.textContent = "--";
   }
 
+  /********************************************************************************
+   * Sets today's date (YYYY-MM-DD) as the default value in the Date input
+   ********************************************************************************/
+  function setDefaultDate() {
+    if (inputDate) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      inputDate.value = `${year}-${month}-${day}`;
+    }
+  }
+
   // Attach button event listeners
   const startBtn = document.getElementById("calculate");
   const resetBtn = document.getElementById("reset");
 
   if (startBtn) startBtn.addEventListener("click", startTimer);
   if (resetBtn) resetBtn.addEventListener("click", resetTimer);
+
+  // Set today's date as default in the timer input
+  setDefaultDate();
 
   // Initialize clock immediately on page load, then update every second
   updateClock();

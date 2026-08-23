@@ -103,10 +103,9 @@ body {
 }
 
 .nav-links li {
-  display: grid;
-  grid-template-columns: minmax(180px, 240px) 48px 48px;
+  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   margin: 8px 0;
   padding: 6px 0;
 }
@@ -116,6 +115,8 @@ body {
   font-family: "Courier New", Courier, monospace;
   font-size: 1rem;
   font-weight: 700;
+  width: 270px;
+  flex-shrink: 0;
 }
 
 /* Color pickers */
@@ -128,6 +129,7 @@ body {
   padding: 0;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.2s;
+  flex-shrink: 0;
 }
 
 .nav-links input[type="color"]:hover,
@@ -138,14 +140,15 @@ body {
 
 /* Dropdowns */
 .nav-links select {
-  font-size: 0.95rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #555;
+  font-size: 1rem;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid #666;
   background: #222;
   color: white;
-  max-width: 280px;
-  width: 100%;
+  width: 380px;
+  max-width: 100%;
+  cursor: pointer;
 }
 
 /*============================================================================
@@ -355,18 +358,21 @@ button#reset:hover {
 
 @media (max-width: 600px) {
   .nav-links {
-    padding: 15px;
+    padding: 15px 20px;
   }
 
   .nav-links li {
-    grid-template-columns: 1fr 42px 42px;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
   }
 
+  .nav-links li label {
+    width: 100%;
+  }
+
   .nav-links select {
-    grid-column: 1 / 4;
-    max-width: 100%;
-    margin-top: 4px;
+    width: 100%;
   }
 
   #clockSunContainer {
