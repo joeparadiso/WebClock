@@ -27,6 +27,7 @@
     <!-- Navbar -->
     <nav class="navbar" aria-label="Main Navigation">
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
+      <button class="create-timer-nav-btn" id="open-timer-modal" type="button">＋ Create Timer</button>
       <ul class="nav-links">
         <li>
           <label for="themeSelector">General Themes:</label>
@@ -129,44 +130,47 @@
         </main>
       </div>
 
-      <!-- Timer Section -->
-      <section id="timer" aria-label="Countdown Timer">
-        <table>
-          <thead>
-            <tr>
-              <th><label for="date">Enter Date</label></th>
-              <th><label for="time">Enter Time</label></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><input type="date" id="date" /></td>
-              <td><input type="time" id="time" /></td>
-            </tr>
-          </tbody>
-        </table>
-        <button id="calculate" type="button">Start</button>
-        <button id="reset" type="button">Reset</button>
-
-        <div class="countdown" aria-live="polite">
-          <div>
-            <p class="heading">DAYS</p>
-            <div class="time" id="countdown-days">--</div>
-          </div>
-          <div>
-            <p class="heading">HOURS</p>
-            <div class="time" id="countdown-hours">--</div>
-          </div>
-          <div>
-            <p class="heading">MINUTES</p>
-            <div class="time" id="countdown-minutes">--</div>
-          </div>
-          <div>
-            <p class="heading">SECONDS</p>
-            <div class="time" id="countdown-seconds">--</div>
-          </div>
-        </div>
+      <!-- Dynamic Multi-Timer Shelf -->
+      <section id="timers-shelf" aria-label="Active Countdown Timers">
+        <div id="timers-grid"></div>
       </section>
+    </div>
+
+    <!-- Create Timer Modal Overlay -->
+    <div id="timer-modal-overlay" class="modal-overlay" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+          <h2 id="modal-title">Create Countdown Timer</h2>
+          <button type="button" class="modal-close-btn" id="close-timer-modal" aria-label="Close modal">✕</button>
+        </div>
+        <form id="create-timer-form">
+          <div class="form-group">
+            <label for="timer-label">Timer Label / Meeting Name</label>
+            <input type="text" id="timer-label" placeholder="e.g., Sprint Planning, Client Sync, Lunch" maxlength="40" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="timer-date">Date</label>
+              <input type="date" id="timer-date" required />
+            </div>
+            <div class="form-group">
+              <label for="timer-time">Time</label>
+              <input type="time" id="timer-time" required />
+            </div>
+          </div>
+          <div class="quick-presets">
+            <span class="preset-label">Quick Add:</span>
+            <button type="button" class="preset-btn" data-minutes="15">+15m</button>
+            <button type="button" class="preset-btn" data-minutes="30">+30m</button>
+            <button type="button" class="preset-btn" data-minutes="45">+45m</button>
+            <button type="button" class="preset-btn" data-minutes="60">+1h</button>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" id="cancel-timer-btn">Cancel</button>
+            <button type="submit" class="btn-submit" id="submit-timer-btn">Start Timer</button>
+          </div>
+        </form>
+      </div>
     </div>
   </body>
 </html>

@@ -43,11 +43,12 @@ _The customization menu allowing for theme selection and manual color adjustment
 - **Bi-directional Color Sync:** Selecting any preset theme automatically syncs the color pickers to the theme's palette.
 - **Persistence:** Selected themes and settings automatically persist across page reloads via `localStorage`.
 
-### ⏳ Countdown Timer
-- Target specific dates and times with instant real-time countdown.
-- Displays remaining Days, Hours, Minutes, and Seconds.
-- Audio alarm (`alarm.mp3`) triggers upon completion.
-- Streamlined **Start** and **Reset** controls.
+### ⏳ Dynamic Multi-Timer System
+- **Simultaneous Countdowns:** Run multiple independent meeting or event timers at the same time.
+- **Option 3 Modern Hybrid Design:** Compact cards featuring an SVG circular progress ring indicating elapsed percentage alongside large countdown digits and target timestamps.
+- **Overdue Count-Up & Alarm:** When a countdown reaches `00:00:00`, audio alarm (`alarm.mp3`) triggers, card turns into a pulsing warning state, and digits switch to counting **UP** (e.g. `+02:15 past due`) until dismissed.
+- **Popup Creation Modal:** Clean "＋ Create Timer" button in the top navbar opens a modal with custom label, date, time picker, and quick `+15m / +30m / +45m / +1h` presets.
+- **Dynamic Shelf & Persistence:** Automatic reflowing shelf; timers persist in `localStorage` across page reloads.
 
 ---
 
@@ -69,14 +70,14 @@ Because this is a static web project, no server installation or build step is re
    - **Field Themes:** Nature and seasonal themes (e.g., _Morning Field, Rainy Field, Autumnal Field_).
 3. **Manual Customization:** Use the color pickers to customize specific elements. Picking a custom Page Background automatically transitions from image mode to a sleek custom gradient.
 
-### 3. Using the Timer
+### 3. Using the Multi-Timer System
 
-Located at the bottom of the dashboard:
-
-1. **Enter Date:** Select the target date.
-2. **Enter Time:** Select the target time.
-3. Click **Start**. The countdown will validate the time and begin immediately.
-4. Click **Reset** at any time to cancel the countdown, silence the alarm, and clear the display.
+1. Click the **"＋ Create Timer"** button in the top navbar.
+2. Enter a **Timer Label / Meeting Name** (e.g. *"Team Standup"*, *"Sprint Demo"*).
+3. Select the target Date (defaults to today) and Time, or use the **Quick Add** buttons (*+15m, +30m, +45m, +1h*).
+4. Click **Start Timer**. A new modern card will appear on the dashboard shelf.
+5. When the timer finishes, it alerts you with audio and switches to count-up mode showing how long overdue the meeting is. Click **✕ Dismiss** to silence and remove it.
+6. Delete any active timer at any time by clicking **✕** on the card header.
 
 ---
 
