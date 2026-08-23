@@ -12,66 +12,69 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebClock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baumans&family=Chivo+Mono:wght@100..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script type="text/javascript" src="themes.js" defer></script>
-    <script type="text/javascript" src="weather.js"></script>
-    <script type="text/javascript" src="clock.js"></script>
-    <script type="text/javascript" src="sunTimes.js"></script>
-    <script type="text/javascript" src="nextTrain.js"></script>
+    <script type="text/javascript" src="weather.js" defer></script>
+    <script type="text/javascript" src="clock.js" defer></script>
+    <script type="text/javascript" src="sunTimes.js" defer></script>
+    <script type="text/javascript" src="nextTrain.js" defer></script>
     <link rel="icon" href="favicon.ico" />
   </head>
   <body>
     <!-- Navbar -->
-    <nav class="navbar">
-      <div class="menu-toggle" id="mobile-menu">☰</div>
+    <nav class="navbar" aria-label="Main Navigation">
+      <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
       <ul class="nav-links">
         <li>
-          <span>General Themes:</span>
+          <label for="themeSelector">General Themes:</label>
           <select id="themeSelector" style="grid-column: 2 / 4">
-            <!-- options -->
+            <!-- options populated via JS -->
           </select>
         </li>
         <li>
-          <span>Field Themes:</span>
+          <label for="themeSelector2">Field Themes:</label>
           <select id="themeSelector2" style="grid-column: 2 / 4">
-            <!-- options for independent selector -->
+            <!-- options populated via JS -->
           </select>
         </li>
         <li>
-          <span>Box Shadow & Button Borders:</span>
-          <input type="color" id="shadowColor" />
+          <label for="shadowColor">Box Shadow & Button Borders:</label>
+          <input type="color" id="shadowColor" aria-label="Box Shadow & Button Borders" />
         </li>
         <li>
-          <span>Clock Background:</span>
-          <input type="color" id="clockBg1" />
-          <input type="color" id="clockBg2" />
+          <label for="clockBg1">Clock Background:</label>
+          <input type="color" id="clockBg1" aria-label="Clock Background Color 1" />
+          <input type="color" id="clockBg2" aria-label="Clock Background Color 2" />
         </li>
         <li>
-          <span>Timer Background:</span>
-          <input type="color" id="timerBg1" />
-          <input type="color" id="timerBg2" />
+          <label for="timerBg1">Timer Background:</label>
+          <input type="color" id="timerBg1" aria-label="Timer Background Color 1" />
+          <input type="color" id="timerBg2" aria-label="Timer Background Color 2" />
         </li>
         <li>
-          <span>Button Background:</span>
-          <input type="color" id="buttonBg1" />
-          <input type="color" id="buttonBg2" />
+          <label for="buttonBg1">Button Background:</label>
+          <input type="color" id="buttonBg1" aria-label="Button Background Color 1" />
+          <input type="color" id="buttonBg2" aria-label="Button Background Color 2" />
         </li>
         <li>
-          <span>Page Background:</span>
-          <input type="color" id="pageBg1" />
-          <input type="color" id="pageBg2" />
+          <label for="pageBg1">Page Background:</label>
+          <input type="color" id="pageBg1" aria-label="Page Background Color 1" />
+          <input type="color" id="pageBg2" aria-label="Page Background Color 2" />
         </li>
         <li>
-          <span>Navbar Background:</span>
-          <input type="color" id="navbarColor" />
+          <label for="navbarColor">Navbar Background:</label>
+          <input type="color" id="navbarColor" aria-label="Navbar Background Color" />
         </li>
         <li>
-          <span>Text Color:</span>
-          <input type="color" id="textColor" />
+          <label for="textColor">Text Color:</label>
+          <input type="color" id="textColor" aria-label="Text Color" />
         </li>
         <li>
-          <span>Input Box Color:</span>
-          <input type="color" id="inputBoxColor" />
+          <label for="inputBoxColor">Input Box Color:</label>
+          <input type="color" id="inputBoxColor" aria-label="Input Box Color" />
         </li>
       </ul>
     </nav>
@@ -79,24 +82,24 @@
     <div class="main-content">
       <!-- Main Content -->
       <div class="container">
-        <div class="clock">
+        <main class="clock" aria-label="Digital Clock and Information Hub">
           <!-- Sunrise time, Date, Sunset time -->
           <div id="clockSunContainer">
             <div id="sunriseContainer">
-              <div id="sunBlock">Sunrise</div>
-              <div id="sunrise">Sunrise</div>
+              <div class="sun-block-label">Sunrise</div>
+              <div id="sunrise">--:--</div>
             </div>
-            <div id="Date">DAY, MONTH 00, YEAR</div>
+            <div id="Date">Loading Date...</div>
             <div id="sunsetContainer">
-              <div id="sunBlock">Sunset</div>
-              <div id="sunset">Sunset</div>
+              <div class="sun-block-label">Sunset</div>
+              <div id="sunset">--:--</div>
             </div>
           </div>
-          <ul>
+          <ul class="clock-display" aria-live="off">
             <li id="hours">00</li>
-            <li id="point">:</li>
+            <li class="point">:</li>
             <li id="minutes">00</li>
-            <li id="point">:</li>
+            <li class="point">:</li>
             <li id="seconds">00</li>
           </ul>
           <div id="trainContainer">
@@ -113,26 +116,26 @@
               <div id="arrival-time">Loading...</div>
             </div>
           </div>
-          <!-- weather-widget.html -->
+          <!-- Weather Widget -->
           <div id="weather-widget">
             <div id="weather-info">
-              <div id="current-temp"></div>
+              <div id="current-temp">Loading weather...</div>
               <div id="feels-like"></div>
               <div id="high-low-temp"></div>
               <div id="sky-condition"></div>
               <div id="wind-speed"></div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
 
       <!-- Timer Section -->
-      <div id="timer">
+      <section id="timer" aria-label="Countdown Timer">
         <table>
           <thead>
             <tr>
-              <th>Enter Date</th>
-              <th>Enter Time</th>
+              <th><label for="date">Enter Date</label></th>
+              <th><label for="time">Enter Time</label></th>
             </tr>
           </thead>
           <tbody>
@@ -142,11 +145,10 @@
             </tr>
           </tbody>
         </table>
-        <button id="calculate">Start</button>
-        <button id="stop">Stop</button>
-        <button id="reset">Reset</button>
+        <button id="calculate" type="button">Start</button>
+        <button id="reset" type="button">Reset</button>
 
-        <div class="countdown">
+        <div class="countdown" aria-live="polite">
           <div>
             <p class="heading">DAYS</p>
             <div class="time" id="countdown-days">--</div>
@@ -164,10 +166,7 @@
             <div class="time" id="countdown-seconds">--</div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
-    <!-- <div class="footer">
-      <p id="copyright">© 2025 Joe Paradiso</p>
-    </div> -->
   </body>
 </html>

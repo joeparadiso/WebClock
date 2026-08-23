@@ -1,8 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@100..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Baumans&display=swap");
-
 /*============================================================================================= 
-*     This is the default color scheme and page setup
+*     Default Color Scheme and Global Settings
 ===============================================================================================*/
 * {
   margin: 0;
@@ -25,146 +22,153 @@
   --navbar-bg: #000000e6;
 }
 
-/* Styling of the body (background of page) */
+/* Page background */
 body {
   background: linear-gradient(45deg, var(--page-bg1), var(--page-bg2));
   font-family: Arial, sans-serif;
   color: var(--text-color);
   text-align: center;
-  padding: 0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  transition: color 0.3s ease;
 }
 
-/* Styling for the main content */
+/* Main content wrapper */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 15px 40px;
+  width: 100%;
 }
 
 /*============================================================================================= 
-*     This is the styling for the navbar and its contents
+*     Navbar & Customization Menu
 ===============================================================================================*/
 
-/* Navbar setup/styling */
 .navbar {
   background: var(--navbar-bg);
-  padding: 0 20px;
+  padding: 8px 20px;
   position: fixed;
   width: 100%;
   top: 0;
   left: 0;
   z-index: 1000;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   opacity: 70%;
 }
 
-/* Hamburger Icon */
+/* Hamburger button */
 .menu-toggle {
+  background: none;
+  border: none;
   cursor: pointer;
-  font-size: 2em;
+  font-size: 1.8rem;
   color: var(--text-color);
-  padding: 5px;
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 6px;
+  transition: transform 0.2s, color 0.2s;
 }
 
-/* This is the visible navbar at the top of the page */
+.menu-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Expandable settings drawer */
 .nav-links {
   display: none;
   position: absolute;
-  top: 50px;
+  top: 100%;
   left: 0;
   width: 100%;
   background: rgba(0, 0, 0, 0.95);
   text-align: left;
-  padding: 10px 100px;
+  padding: 15px 30px;
+  list-style: none;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease-in-out;
 }
 
-/* Show menu when active */
 .nav-active {
   display: block;
 }
 
-/* Navbar dropdown grid layout */
 .nav-links li {
   display: grid;
-  grid-template-columns: 200px 48px 48px;
+  grid-template-columns: minmax(180px, 240px) 48px 48px;
   align-items: center;
-  gap: 0 18px;
-  margin: 10px 0;
-  padding: 8px 0;
+  gap: 12px;
+  margin: 8px 0;
+  padding: 6px 0;
 }
 
-/* Label styling */
-.nav-links li > span {
-  color: white;
+.nav-links li label {
+  color: #fff;
   font-family: "Courier New", Courier, monospace;
-  font-size: 1.05em;
+  font-size: 1rem;
   font-weight: 700;
-  grid-column: 1 / 2;
 }
 
-/* All color pickers same size and shape */
+/* Color pickers */
 .nav-links input[type="color"] {
-  width: 40px;
-  height: 40px;
-  border: 2px solid #ccc;
+  width: 38px;
+  height: 38px;
+  border: 2px solid #555;
   border-radius: 8px;
   background: none;
-  margin: 0;
   padding: 0;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   cursor: pointer;
-  transition: border 0.2s;
-  justify-self: start;
-  grid-column: auto;
-}
-
-/* Single color picker: left color column */
-.nav-links li input[type="color"]:only-child {
-  grid-column: 2 / 3;
-}
-
-/* Two color pickers: columns 2 and 3 */
-.nav-links li input[type="color"]:nth-of-type(1) {
-  grid-column: 2 / 3;
-}
-.nav-links li input[type="color"]:nth-of-type(2) {
-  grid-column: 3 / 4;
+  transition: border-color 0.2s, transform 0.2s;
 }
 
 .nav-links input[type="color"]:hover,
 .nav-links input[type="color"]:focus {
-  border: 2px solid var(--box-shadow-color);
+  border-color: var(--box-shadow-color);
+  transform: scale(1.08);
 }
 
-/* Dropdown spans pickers columns */
+/* Dropdowns */
 .nav-links select {
-  grid-column: 2 / 4;
-  font-size: 1em;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid #aaa;
+  font-size: 0.95rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #555;
   background: #222;
   color: white;
-  width: 300px;
-  margin-left: 0;
+  max-width: 280px;
+  width: 100%;
 }
 
 /*============================================================================
-* MAIN CONTENT: This container contains all of the date, clock, and weather 
+*     MAIN CONTENT: Clock, Sun, Weather, & Train Dashboard
 =============================================================================*/
 
 .container {
-  height: 50vh;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 80px;
+}
+
+/* This is the container for the Clock/Weather/Sun elements */
+.clock {
+  border: 1px solid #606060;
+  width: 850px;
+  max-width: 95vw;
+  padding: 2em;
+  border-radius: 10px;
+  background: linear-gradient(-75deg, var(--clock-bg1), var(--clock-bg2));
+  box-shadow: 15px 15px 40px var(--box-shadow-color);
+  color: var(--text-color);
 }
 
 /* DATE DISPLAY */
@@ -175,28 +179,60 @@ body {
   margin-bottom: auto;
 }
 
-/* This is the container for the Clock/Weather/Sun elements */
-.clock {
-  border: 1px solid #606060;
-  width: 850px;
-  padding: 2em;
-  border-radius: 10px;
-  background: linear-gradient(-75deg, var(--clock-bg1), var(--clock-bg2));
-  box-shadow: 15px 15px 40px var(--box-shadow-color);
-  color: var(--text-color);
+#clockSunContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+#sunriseContainer,
+#sunsetContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+.sun-block-label {
+  font-weight: bold;
 }
 
 /* This is the actual clock (which is an UL) */
-.clock ul {
+.clock-display {
   list-style: none;
   display: flex;
   justify-content: center;
   font-size: 130px;
   gap: 10px;
   font-family: "Chivo Mono", serif;
-  /* margin-bottom: 30px; */
+  line-height: 1;
 }
 
+.clock-display li {
+  display: inline-block;
+}
+
+#trainContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-bottom: 25px;
+}
+
+#departureContainer,
+#trainInfoContainer,
+#arrivalContainer {
+  font-family: "Baumans", serif;
+  font-weight: 100;
+  font-size: 1.2em;
+}
+
+#departureTimeTxt,
+#trainRoute,
+#arrivalTimeTxt {
+  opacity: 0.85;
+}
+
+/* Weather Widget */
 #weather-widget {
   display: flex;
   flex-direction: row;
@@ -211,49 +247,6 @@ body {
   display: flex;
   flex-direction: row;
   gap: 15px;
-}
-
-#clockSunContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-}
-
-#sunriseContainer {
-  font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.2em;
-}
-
-#sunsetContainer {
-  font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.2em;
-}
-
-#trainContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  margin-bottom: 25px;
-}
-
-#departureContainer {
-  font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.2em;
-}
-
-#trainInfoContainer {
-  font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.2em;
-}
-
-#arrivalContainer {
-  font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.2em;
 }
 
 /*============================================================================================
@@ -271,7 +264,7 @@ table {
   margin: auto;
 }
 
-th {
+th label {
   color: var(--text-color);
   font-family: "Baumans", serif;
 }
@@ -283,6 +276,7 @@ input {
   border-radius: 10px;
   background-color: var(--input-box-color);
   text-align: center;
+  font-family: inherit;
 }
 
 /* COUNTDOWN */
@@ -299,25 +293,29 @@ input {
   width: 125px;
   margin: 10px 15px;
   border-radius: 30px;
+  font-family: "Chivo Mono", monospace;
 }
 
 /* BUTTONS */
-button {
+button#calculate,
+button#reset {
   background: linear-gradient(0turn, var(--button-bg1), var(--button-bg2));
   color: var(--text-color);
   border: 2px solid var(--box-shadow-color);
-  border-style: outset;
   margin: 20px 10px;
   padding: 1em 2em;
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
+  font-family: "Baumans", serif;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-button:hover {
+button#calculate:hover,
+button#reset:hover {
   border-color: var(--box-shadow-color);
   box-shadow: 0 1em 1em -0.4em var(--box-shadow-color);
   transform: translateY(-0.2em);
-  cursor: pointer;
 }
 
 /* Make sure clock, timer, and alarm text stays large */
@@ -329,23 +327,61 @@ button:hover {
   margin-top: 20px;
 }
 
-/* Ensure all layout elements remain centered */
-#timer {
-  text-align: center;
-  margin-top: 20px;
+/* Error Text styling */
+.error {
+  color: #ff6b6b;
+  font-size: 0.9em;
 }
 
 /*============================================================================================
-*     FOOTER STYLING
+*     Mobile Responsiveness Fallbacks (Only triggered on narrow screens)
 =============================================================================================*/
-/* .footer {
-  width: 100%;
-  background-color: var(--navbar-bg);
-  color: var(--text-color);
-  text-align: center;
-  padding: 10px;
-  font-family: "Baumans", serif;
-  margin-top: 20vh;
-  margin-bottom: 0px;
-  opacity: 70%;
-} */
+
+@media (max-width: 860px) {
+  .clock-display {
+    font-size: clamp(2.8rem, 13vw, 130px);
+  }
+
+  #Date {
+    font-size: clamp(1.4rem, 4.5vw, 40px);
+  }
+
+  .time {
+    font-size: clamp(2rem, 8vw, 75px);
+    width: clamp(70px, 18vw, 125px);
+    margin: 6px 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-links {
+    padding: 15px;
+  }
+
+  .nav-links li {
+    grid-template-columns: 1fr 42px 42px;
+    gap: 8px;
+  }
+
+  .nav-links select {
+    grid-column: 1 / 4;
+    max-width: 100%;
+    margin-top: 4px;
+  }
+
+  #clockSunContainer {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  #trainContainer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #weather-info {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+

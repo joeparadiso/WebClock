@@ -1,161 +1,152 @@
 /********************************************************************************
- * clock.js -- March 2025 -- Joe Paradiso
+ * clock.js -- March 2025 -- Joe Paradiso (Refactored & Optimized)
  * DETAILS:
- *  This script provides the functionality to the clock skeleton in the HTML file.
- *  The details needed for the time and date are retrieved from the Date object.
- *  Next, the script formats (to my spec) and updates the HTML elements to display
- *  the current date and time.
- * NOTE:
- *  There's a flaw with this code that needs to be updated. The user can change
- *  the time/date for the countdown timer while it's still running and it causes
- *  the countdown timer to malfunction/not function as expected. Currently, I am
- *  pressing the reset button before choosing a new time/date for the countdown.
- *  However, this should be addressed if this ever becomes a real website.
+ *  Retrieves system time, formats date and 12-hour clock (with leading zeros),
+ *  and manages the countdown timer with audio alarm functionality.
  ********************************************************************************/
 
 document.addEventListener("DOMContentLoaded", function () {
-  let timerEndTime = null; // Store the end time globally
+  let timerEndTime = null;
 
-  /********************************************************************************
-   * This method gets the current date details from the Date() and updates the
-   * corresponding date and time HTML elements with the current values.
-   ********************************************************************************/
-  function clock() {
-    // Get the current date details from the system clock
-    var today = new Date();
+  // Cached DOM elements
+  const dateEl = document.getElementById("Date");
+  const hoursEl = document.getElementById("hours");
+  const minutesEl = document.getElementById("minutes");
+  const secondsEl = document.getElementById("seconds");
+  const countdownDays = document.getElementById("countdown-days");
+  const countdownHours = document.getElementById("countdown-hours");
+  const countdownMinutes = document.getElementById("countdown-minutes");
+  const countdownSeconds = document.getElementById("countdown-seconds");
+  const inputDate = document.getElementById("date");
+  const inputTime = document.getElementById("time");
 
-    // array of day names to correspond to Date() index
-    var dayNames = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
+  // Constant lookup arrays (defined once, not reallocated every second)
+  const DAY_NAMES = [
+    "Sunday", "Monday", "Tuesday", "Wednesday",
+    "Thursday", "Friday", "Saturday"
+  ];
+  const MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
-    // array of month names to correspond to Date() index
-    var monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    // Update the elements in the HTML with the date values
-    document.getElementById("Date").innerHTML =
-      dayNames[today.getDay()] +
-      ", " +
-      monthNames[today.getMonth()] +
-      " " +
-      today.getDate() +
-      ", " +
-      today.getFullYear();
-
-    // Get the current hour of the day. Format to 12hr time.
-    var h = today.getHours() % 12 || 12;
-    var m = today.getMinutes();
-    var s = today.getSeconds();
-
-    // Pad the time with leading zeros if less than '10'
-    h = h < 10 ? "0" + h : h;
-    m = m < 10 ? "0" + m : m;
-    s = s < 10 ? "0" + s : s;
-
-    // Update the elements in the HTML with the time values
-    document.getElementById("hours").innerHTML = h;
-    document.getElementById("minutes").innerHTML = m;
-    document.getElementById("seconds").innerHTML = s;
-
-    // Update the timer countdown if running
-    if (timerEndTime) {
-      updateCountdown(timerEndTime, today);
-    }
-  }
-  // Call the 'clock' method every second to update the clock every second by
-  setInterval(clock, 1000);
-
-  // TIMER FUNCTIONALITY: Set event listeners to call the methods to update the
-  //  timer depending on which button was pressed
-  document.getElementById("calculate").addEventListener("click", calculate);
-  document.getElementById("reset").addEventListener("click", reset);
-  document.getElementById("stop").addEventListener("click", stopAlarm);
-
-  // The alarm sound is from freesound.org
+  // Alarm sound setup
   const alarmSound = new Audio("alarm.mp3");
   alarmSound.loop = true;
 
   /********************************************************************************
-   * This method determines the endtime used to setup the countdown timer and
-   * sets up the interval for the alarm
+   * Updates the clock display and advances countdown timer if active
    ********************************************************************************/
-  function calculate() {
-    const date = document.getElementById("date").value;
-    const time = document.getElementById("time").value;
-    if (!date || !time) {
-      alert("Please enter a valid date and time.");
-      return;
+  function updateClock() {
+    const now = new Date();
+
+    // Update Date text (e.g. "Sunday, March 23, 2025")
+    if (dateEl) {
+      dateEl.textContent = `${DAY_NAMES[now.getDay()]}, ${MONTH_NAMES[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
     }
-    timerEndTime = new Date(`${date}T${time}:00`);
-    clock(); // Immediately update display
+
+    // Format 12-hour time with leading zeros
+    const rawHours = now.getHours() % 12 || 12;
+    const hours = String(rawHours).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    if (hoursEl) hoursEl.textContent = hours;
+    if (minutesEl) minutesEl.textContent = minutes;
+    if (secondsEl) secondsEl.textContent = seconds;
+
+    // Update countdown timer if currently active
+    if (timerEndTime) {
+      updateCountdown(timerEndTime, now);
+    }
   }
 
   /********************************************************************************
-   * This method does the actual calculation of the end time of the countdown
-   * timer. The user picks the end time and date from the dropdown menus in the
-   * timer section of the WebClock and the time until the user's choice is
-   * calculated using the below script.
+   * Calculates remaining time for the countdown and triggers alarm when complete
    ********************************************************************************/
   function updateCountdown(endTime, now) {
-    const days = document.getElementById("countdown-days");
-    const hours = document.getElementById("countdown-hours");
-    const minutes = document.getElementById("countdown-minutes");
-    const seconds = document.getElementById("countdown-seconds");
+    if (!countdownDays || !countdownHours || !countdownMinutes || !countdownSeconds) return;
 
     if (endTime > now) {
       const timeLeft = Math.floor((endTime - now) / 1000);
-      days.innerText = String(Math.floor(timeLeft / (24 * 60 * 60))).padStart(2, "0");
-      hours.innerText = String(Math.floor((timeLeft / (60 * 60)) % 24)).padStart(2, "0");
-      minutes.innerText = String(Math.floor((timeLeft / 60) % 60)).padStart(2, "0");
-      seconds.innerText = String(timeLeft % 60).padStart(2, "0");
+      countdownDays.textContent = String(Math.floor(timeLeft / 86400)).padStart(2, "0");
+      countdownHours.textContent = String(Math.floor((timeLeft / 3600) % 24)).padStart(2, "0");
+      countdownMinutes.textContent = String(Math.floor((timeLeft / 60) % 60)).padStart(2, "0");
+      countdownSeconds.textContent = String(timeLeft % 60).padStart(2, "0");
     } else {
-      // Play the alarm sound when timer reaches zero
-      alarmSound.play();
+      // Countdown complete: reset timer state, display zeroes, and trigger alarm
       timerEndTime = null;
-      // Optionally, set the countdown display to zero
-      days.innerText = "00";
-      hours.innerText = "00";
-      minutes.innerText = "00";
-      seconds.innerText = "00";
+      countdownDays.textContent = "00";
+      countdownHours.textContent = "00";
+      countdownMinutes.textContent = "00";
+      countdownSeconds.textContent = "00";
+
+      alarmSound.play().catch(function (err) {
+        console.warn("Audio playback was prevented by browser policy:", err);
+      });
     }
   }
 
   /********************************************************************************
-   * Method to stop the countdown & alarm sound that plays at the end
+   * Validates inputs, resets previous alarms, and begins countdown
+   ********************************************************************************/
+  function startTimer() {
+    const dateVal = inputDate ? inputDate.value : "";
+    const timeVal = inputTime ? inputTime.value : "";
+
+    if (!dateVal || !timeVal) {
+      alert("Please enter both a date and time for the countdown.");
+      return;
+    }
+
+    const targetDate = new Date(`${dateVal}T${timeVal}:00`);
+    const now = new Date();
+
+    if (isNaN(targetDate.getTime())) {
+      alert("Invalid date or time entered. Please try again.");
+      return;
+    }
+
+    if (targetDate <= now) {
+      alert("Please choose a future date and time.");
+      return;
+    }
+
+    // Stop any existing ringing alarm and set new target
+    stopAlarm();
+    timerEndTime = targetDate;
+    updateClock(); // Immediately update countdown numbers without waiting 1s
+  }
+
+  /********************************************************************************
+   * Stops and resets the alarm sound
    ********************************************************************************/
   function stopAlarm() {
     alarmSound.pause();
     alarmSound.currentTime = 0;
-    timerEndTime = null;
   }
 
   /********************************************************************************
-   * Method to stop the countdown timer. This clears all visible digits as well.
+   * Resets the countdown timer, silences alarm, and clears display values
    ********************************************************************************/
-  function reset() {
+  function resetTimer() {
     stopAlarm();
-    document.getElementById("countdown-days").innerText = "--";
-    document.getElementById("countdown-hours").innerText = "--";
-    document.getElementById("countdown-minutes").innerText = "--";
-    document.getElementById("countdown-seconds").innerText = "--";
+    timerEndTime = null;
+    if (countdownDays) countdownDays.textContent = "--";
+    if (countdownHours) countdownHours.textContent = "--";
+    if (countdownMinutes) countdownMinutes.textContent = "--";
+    if (countdownSeconds) countdownSeconds.textContent = "--";
   }
+
+  // Attach button event listeners
+  const startBtn = document.getElementById("calculate");
+  const resetBtn = document.getElementById("reset");
+
+  if (startBtn) startBtn.addEventListener("click", startTimer);
+  if (resetBtn) resetBtn.addEventListener("click", resetTimer);
+
+  // Initialize clock immediately on page load, then update every second
+  updateClock();
+  setInterval(updateClock, 1000);
 });
+

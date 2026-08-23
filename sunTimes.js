@@ -1,79 +1,65 @@
 /********************************************************************************
- * sunTimes.js -- March 2025 -- Joe Paradiso
+ * sunTimes.js -- March 2025 -- Joe Paradiso (Refactored & Optimized)
  * DETAILS:
- *  This script uses the sunrisesunset.io API to get the sunrise and sunset times
- *  for Dedham, MA. The script uses the UNIX time option in the API call and
- *  converts the time to an HH:MM format instead of the default HH:MM:SS XM format
- *  This script updates the HTML elements in the WebClock with the sunrise and
- *  sunset times for the current day.
+ *  Fetches astronomical data (sunrise and sunset) for Dedham, MA from the
+ *  sunrisesunset.io API using UNIX timestamps, formats the times to 12-hour
+ *  HH:MM display, and updates the dashboard.
  ********************************************************************************/
 
-// Coordinates for Dedham, MA
-const latitude = 42.228205;
-const longitude = -71.174505;
+(function () {
+  // Coordinates for Dedham, MA
+  const LATITUDE = 42.228205;
+  const LONGITUDE = -71.174505;
+  const SUN_API_URL = `https://api.sunrisesunset.io/json?lat=${LATITUDE}&lng=${LONGITUDE}&time_format=unix`;
 
-// The default time style is 12 hr in the API call. Options are 24hr, military, and UNIX
-// const url = `https://api.sunrisesunset.io/json?lat=${latitude}&lng=${longitude}`;
-
-// I'm using UNIX time format because I want to custom format the time results (w/o seconds and am/pm)
-const url = `https://api.sunrisesunset.io/json?lat=${latitude}&lng=${longitude}&time_format=unix`;
-
-/********************************************************************************
- * This method makes the API call using the above url and stores the response in a
- * JSON document called data. Next, the html elements are updated by the script
- * to display the sunrise/sunset times that are custom formatted using the method
- * convertTime(). NOTE: If you use this on an actual website, you must list the
- * API website somewhere to give proper credit for the source of the times...
- ********************************************************************************/
-async function fetchSun() {
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    // Set the div with the ID 'sunrise' with the sunrise time text
-    document.getElementById("sunrise").innerText = convertTime(
-      data.results.sunrise
-    );
-
-    // Set the div with the ID 'sunset' with the sunset time text
-    document.getElementById("sunset").innerText = convertTime(
-      data.results.sunset
-    );
-
-    // Set the div with the ID 'data' to display all JSON contents
-    // document.getElementById("data").innerText = JSON.stringify(data);
-  } catch (error) {
-    console.error("Error fetching weather data:", error);
+  /********************************************************************************
+   * Converts a UNIX timestamp into a 12-hour "HH:MM" padded string
+   * @param {number} unixTimestamp - Sunrise or sunset timestamp in seconds
+   * @returns {string} Formatted 12-hour time (e.g., "06:45")
+   ********************************************************************************/
+  function formatUnixTo12Hr(unixTimestamp) {
+    if (!unixTimestamp) return "--:--";
+    const date = new Date(unixTimestamp * 1000);
+    const hours = date.getHours() % 12 || 12;
+    const hoursStr = String(hours).padStart(2, "0");
+    const minutesStr = String(date.getMinutes()).padStart(2, "0");
+    return `${hoursStr}:${minutesStr}`;
   }
-}
-// Run this script every hour to refresh
-fetchSun();
-setInterval(fetchSun, 3600000);
 
-/********************************************************************************
- * This method will take in the current sunrise time in UNIX format and convert it
- * to a HH:MM format that includes prefix '0's if necessary
- * @param {*} current_time - This is the API's returned sunrise or sunset time
- * for the day in UNIX format
- * @returns - string with the sunrise/sunset time in an HH:MM format
- ********************************************************************************/
-function convertTime(current_time) {
-  // const current_time = 1679852400; // Example Unix timestamp (seconds since epoch)
+  /********************************************************************************
+   * Fetches sunrise/sunset data and updates the corresponding DOM elements
+   ********************************************************************************/
+  async function fetchSunTimes() {
+    const sunriseEl = document.getElementById("sunrise");
+    const sunsetEl = document.getElementById("sunset");
 
-  // Convert the Unix timestamp to milliseconds (JavaScript Date works with ms)
-  const date = new Date(current_time * 1000);
+    try {
+      const response = await fetch(SUN_API_URL);
+      if (!response.ok) {
+        throw new Error(`Sun API returned status ${response.status}`);
+      }
 
-  // Extract and convert the hours from 24 hr style time into 12 hr time:
-  let hours = date.getHours() % 12;
+      const data = await response.json();
+      if (data && data.results) {
+        if (sunriseEl) sunriseEl.textContent = formatUnixTo12Hr(data.results.sunrise);
+        if (sunsetEl) sunsetEl.textContent = formatUnixTo12Hr(data.results.sunset);
+      }
+    } catch (error) {
+      console.error("Error fetching sun times:", error);
+      if (sunriseEl && sunriseEl.textContent === "--:--") sunriseEl.textContent = "N/A";
+      if (sunsetEl && sunsetEl.textContent === "--:--") sunsetEl.textContent = "N/A";
+    }
+  }
 
-  // Convert the hours number to a padded string to display in the UI
-  hours = hours.toString().padStart(2, "0");
+  // Initialize on DOM ready, then refresh hourly
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      fetchSunTimes();
+      setInterval(fetchSunTimes, 3600000);
+    });
+  } else {
+    fetchSunTimes();
+    setInterval(fetchSunTimes, 3600000);
+  }
+})();
 
-  // Extract and convert the minutes to a padded string to display in the UI
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-
-  // Combine hours and minutes into HH:MM format
-  const timeString = `${hours}:${minutes}`;
-
-  return timeString;
-}

@@ -320,7 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
       buttonbg1: "rgba(112,121,122, .8)",
       buttonbg2: "rgba(223,205,168, .8)",
       navbar: "rgba(51,54,56, 0.45)",
-      text: "rgb(243,228,201",
+      text: "rgb(243, 228, 201)",
       input: "rgba(185,176,149, .6)",
     },
     "Natural Dystopia": {
@@ -627,9 +627,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // groupB follows the manual list but only includes keys that exist
   const groupB = manualGroupB.filter(k => Object.prototype.hasOwnProperty.call(masterThemes, k));
 
+  // Helper to parse any color format (hex, rgb, rgba) into #rrggbb for color inputs
+  function colorToHex(colorStr) {
+    if (!colorStr) return "#000000";
+    colorStr = colorStr.trim();
+
+    if (colorStr.startsWith("#")) {
+      if (colorStr.length === 4) {
+        return `#${colorStr[1]}${colorStr[1]}${colorStr[2]}${colorStr[2]}${colorStr[3]}${colorStr[3]}`;
+      }
+      return colorStr.slice(0, 7);
+    }
+
+    const rgbMatch = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if (rgbMatch) {
+      const r = parseInt(rgbMatch[1], 10).toString(16).padStart(2, "0");
+      const g = parseInt(rgbMatch[2], 10).toString(16).padStart(2, "0");
+      const b = parseInt(rgbMatch[3], 10).toString(16).padStart(2, "0");
+      return `#${r}${g}${b}`;
+    }
+
+    return "#000000";
+  }
+
   // Populate the dropdowns
   const themeSelector = document.getElementById("themeSelector");
   const themeSelector2 = document.getElementById("themeSelector2");
+
   if (themeSelector) {
     themeSelector.innerHTML = "";
     groupA.forEach(key => {
@@ -639,6 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
       themeSelector.appendChild(option);
     });
   }
+
   if (themeSelector2) {
     themeSelector2.innerHTML = "";
     groupB.forEach(key => {
@@ -649,11 +674,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Helper to apply a theme object to CSS variables and background
-  function applyThemeByKey(key) {
+  // Synchronizes the navbar color picker inputs to reflect current theme values
+  function syncColorPickers(theme) {
+    if (!theme) return;
+    const colorMap = [
+      { id: "shadowColor", val: theme.shadow },
+      { id: "clockBg1", val: theme.clockbg1 },
+      { id: "clockBg2", val: theme.clockbg2 },
+      { id: "timerBg1", val: theme.timerbg1 },
+      { id: "timerBg2", val: theme.timerbg2 },
+      { id: "buttonBg1", val: theme.buttonbg1 },
+      { id: "buttonBg2", val: theme.buttonbg2 },
+      { id: "pageBg1", val: theme.pagebg1 },
+      { id: "pageBg2", val: theme.pagebg2 },
+      { id: "navbarColor", val: theme.navbar },
+      { id: "textColor", val: theme.text },
+      { id: "inputBoxColor", val: theme.input },
+    ];
+
+    colorMap.forEach(({ id, val }) => {
+      const inputEl = document.getElementById(id);
+      if (inputEl && val) {
+        inputEl.value = colorToHex(val);
+      }
+    });
+  }
+
+  // Helper to apply a theme object to CSS variables, body background, and color pickers
+  function applyThemeByKey(key, savePreference = true) {
     const theme = masterThemes[key];
     if (!theme) return;
-    // Apply CSS variables if present
+
     if (theme.shadow) document.documentElement.style.setProperty("--box-shadow-color", theme.shadow);
     if (theme.clockbg1) document.documentElement.style.setProperty("--clock-bg1", theme.clockbg1);
     if (theme.clockbg2) document.documentElement.style.setProperty("--clock-bg2", theme.clockbg2);
@@ -661,113 +712,106 @@ document.addEventListener("DOMContentLoaded", function () {
     if (theme.timerbg2) document.documentElement.style.setProperty("--timer-bg2", theme.timerbg2);
     if (theme.buttonbg1) document.documentElement.style.setProperty("--button-bg1", theme.buttonbg1);
     if (theme.buttonbg2) document.documentElement.style.setProperty("--button-bg2", theme.buttonbg2);
+    if (theme.pagebg1) document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
+    if (theme.pagebg2) document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
     if (theme.navbar) document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
     if (theme.text) document.documentElement.style.setProperty("--text-color", theme.text);
     if (theme.input) document.documentElement.style.setProperty("--input-box-color", theme.input);
-    // Apply background image if available, otherwise preserve gradient
+
     if (theme.backgroundImage) {
       document.body.style.background = theme.backgroundImage;
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
+    } else {
+      document.body.style.background = "linear-gradient(45deg, var(--page-bg1), var(--page-bg2))";
+    }
+
+    syncColorPickers(theme);
+
+    if (savePreference) {
+      try {
+        localStorage.setItem("webclock_theme_key", key);
+      } catch (e) {}
     }
   }
 
-  // Wire change handlers
+  // Wire dropdown change handlers
   if (themeSelector) {
     themeSelector.addEventListener("change", function () {
       applyThemeByKey(this.value);
     });
-    // apply initial selection
-    if (themeSelector.options.length) applyThemeByKey(themeSelector.options[0].value);
   }
+
   if (themeSelector2) {
     themeSelector2.addEventListener("change", function () {
       applyThemeByKey(this.value);
     });
-    if (themeSelector2.options.length) applyThemeByKey(themeSelector2.options[0].value);
   }
 
-  /********************************************************************************
-   * This script updates the visible elements in the HTML document with the
-   * colors that are chosen by the user in the color picker options found in the
-   * navbar menu. See above for HTML element descriptions for updated elements.
-   ********************************************************************************/
+  // Generic helper for updating CSS variables from color pickers
   function updateCSSVariable(variable, value) {
     document.documentElement.style.setProperty(variable, value);
   }
 
-  document.getElementById("shadowColor").addEventListener("input", function () {
-    updateCSSVariable("--box-shadow-color", this.value);
+  // Attach color picker event listeners
+  const colorPickers = [
+    { id: "shadowColor", varName: "--box-shadow-color" },
+    { id: "clockBg1", varName: "--clock-bg1" },
+    { id: "clockBg2", varName: "--clock-bg2" },
+    { id: "timerBg1", varName: "--timer-bg1" },
+    { id: "timerBg2", varName: "--timer-bg2" },
+    { id: "buttonBg1", varName: "--button-bg1" },
+    { id: "buttonBg2", varName: "--button-bg2" },
+    { id: "textColor", varName: "--text-color" },
+    { id: "inputBoxColor", varName: "--input-box-color" },
+    { id: "navbarColor", varName: "--navbar-bg" },
+  ];
+
+  colorPickers.forEach(({ id, varName }) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("input", function () {
+        updateCSSVariable(varName, this.value);
+      });
+    }
   });
 
-  document.getElementById("clockBg1").addEventListener("input", function () {
-    updateCSSVariable("--clock-bg1", this.value);
-  });
+  // Page background color pickers also switch background from image to gradient
+  const pageBg1El = document.getElementById("pageBg1");
+  const pageBg2El = document.getElementById("pageBg2");
 
-  document.getElementById("clockBg2").addEventListener("input", function () {
-    updateCSSVariable("--clock-bg2", this.value);
-  });
+  function handlePageBgChange(variable, value) {
+    updateCSSVariable(variable, value);
+    document.body.style.backgroundImage = "none";
+    document.body.style.background = "linear-gradient(45deg, var(--page-bg1), var(--page-bg2))";
+  }
 
-  document.getElementById("timerBg1").addEventListener("input", function () {
-    updateCSSVariable("--timer-bg1", this.value);
-  });
-
-  document.getElementById("timerBg2").addEventListener("input", function () {
-    updateCSSVariable("--timer-bg2", this.value);
-  });
-
-  document.getElementById("buttonBg1").addEventListener("input", function () {
-    updateCSSVariable("--button-bg1", this.value);
-  });
-
-  document.getElementById("buttonBg2").addEventListener("input", function () {
-    updateCSSVariable("--button-bg2", this.value);
-  });
-
-  document.getElementById("pageBg1").addEventListener("input", function () {
-    updateCSSVariable("--page-bg1", this.value);
-  });
-
-  document.getElementById("pageBg2").addEventListener("input", function () {
-    updateCSSVariable("--page-bg2", this.value);
-  });
-
-  document.getElementById("textColor").addEventListener("input", function () {
-    updateCSSVariable("--text-color", this.value);
-  });
-
-  document.getElementById("textColor").addEventListener("input", function () {
-    updateCSSVariable("--text-color", this.value);
-  });
-
-  document
-    .getElementById("inputBoxColor")
-    .addEventListener("input", function () {
-      updateCSSVariable("--input-box-color", this.value);
+  if (pageBg1El) {
+    pageBg1El.addEventListener("input", function () {
+      handlePageBgChange("--page-bg1", this.value);
     });
+  }
 
-  document.getElementById("navbarColor").addEventListener("input", function () {
-    updateCSSVariable("--navbar-bg", this.value);
-  });
-});
+  if (pageBg2El) {
+    pageBg2El.addEventListener("input", function () {
+      handlePageBgChange("--page-bg2", this.value);
+    });
+  }
 
+  // Restore saved theme or apply initial default theme
+  let initialTheme = "default";
+  try {
+    const saved = localStorage.getItem("webclock_theme_key");
+    if (saved && masterThemes[saved]) {
+      initialTheme = saved;
+    }
+  } catch (e) {}
 
+  applyThemeByKey(initialTheme, false);
 
-/********************************************************************************
- * This script is the result of inexperienced JS coding. This script fixes the
- * issue of not being able to update the background colors of a pre defined theme
- * instead of using the default theme background image. Using the below script,
- * backgound colors can be updated by the user instead of using default images.
- ********************************************************************************/
-function updateCSSVariable(variable, value) {
-  document.documentElement.style.setProperty(variable, value);
-  document.body.style.background = `linear-gradient(45deg, var(--page-bg1), var(--page-bg2))`;
-}
-
-document.getElementById("pageBg1").addEventListener("input", function () {
-  updateCSSVariable("--page-bg1", this.value);
-});
-
-document.getElementById("pageBg2").addEventListener("input", function () {
-  updateCSSVariable("--page-bg2", this.value);
+  if (themeSelector && groupA.includes(initialTheme)) {
+    themeSelector.value = initialTheme;
+  } else if (themeSelector2 && groupB.includes(initialTheme)) {
+    themeSelector2.value = initialTheme;
+  }
 });
