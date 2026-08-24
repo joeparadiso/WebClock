@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(98,72,45,.4)",
-      text: "rgb(255,221,189)",
+      text: "rgb(255,244,189)",
       input: "rgba(177,157,114,0.6)",
     },
     "Space Clouds": {
@@ -739,7 +739,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (savePreference) {
       try {
         localStorage.setItem("webclock_theme_key", key);
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -815,7 +815,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (saved && masterThemes[saved]) {
       initialTheme = saved;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   applyThemeByKey(initialTheme, false);
 
