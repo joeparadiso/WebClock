@@ -27,7 +27,7 @@
     <!-- Navbar -->
     <nav class="navbar" aria-label="Main Navigation">
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
-      <button class="create-timer-nav-btn" id="open-timer-modal" type="button">＋ Create Timer</button>
+      <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
       <ul class="nav-links">
         <li>
           <label for="themeSelector">General Themes:</label>
@@ -147,6 +147,10 @@
           <div class="form-group">
             <label for="timer-label">Timer Label / Meeting Name</label>
             <input type="text" id="timer-label" placeholder="e.g., Sprint Planning, Client Sync, Lunch" maxlength="40" />
+          </div>
+          <div class="form-group">
+            <label for="timer-note">Note / Description (Optional)</label>
+            <input type="text" id="timer-note" placeholder="e.g., Bring updated datasheets, Conference Room B" maxlength="60" />
           </div>
           <div class="form-row">
             <div class="form-group">

@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalOverlay = document.getElementById("timer-modal-overlay");
   const createTimerForm = document.getElementById("create-timer-form");
   const timerLabelInput = document.getElementById("timer-label");
+  const timerNoteInput = document.getElementById("timer-note");
   const timerDateInput = document.getElementById("timer-date");
   const timerTimeInput = document.getElementById("timer-time");
   const presetButtons = document.querySelectorAll(".preset-btn");
@@ -46,8 +47,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const alarmSound = new Audio("alarm.mp3");
   alarmSound.loop = true;
 
-  // Active timers state array
+  // Active timers state & editing tracking
   let activeTimers = [];
+  let editingTimerId = null;
+
+  const modalTitle = document.getElementById("modal-title");
+  const submitTimerBtn = document.getElementById("submit-timer-btn");
 
   /********************************************************************************
    * Escapes HTML to prevent XSS injection in timer labels
@@ -144,32 +149,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const timeStr = `${hours}:${minutes} ${ampm}`;
 
     if (isToday) {
-      return `Target: Today, ${timeStr}`;
+      return `Today, ${timeStr}`;
     }
 
     const monthShort = MONTH_NAMES[targetDate.getMonth()].slice(0, 3);
-    return `Target: ${monthShort} ${targetDate.getDate()}, ${timeStr}`;
-  }
-
-  /********************************************************************************
-   * Formats relative status text (e.g. "Due in 18 minutes", "⚠️ 2m overdue")
-   ********************************************************************************/
-  function formatRelativeStatus(totalSeconds, isOverdue) {
-    const abs = Math.abs(totalSeconds);
-    const minutes = Math.floor(abs / 60);
-    const hours = Math.floor(abs / 3600);
-    const days = Math.floor(abs / 86400);
-
-    if (isOverdue) {
-      if (abs < 60) return `⚠️ Overdue by ${abs}s`;
-      if (minutes < 60) return `⚠️ Overdue by ${minutes}m ${abs % 60}s`;
-      return `⚠️ Overdue by ${hours}h ${minutes % 60}m`;
-    }
-
-    if (days > 0) return `Due in ${days}d ${hours % 24}h`;
-    if (hours > 0) return `Due in ${hours}h ${minutes % 60}m`;
-    if (minutes > 0) return `Due in ${minutes} min`;
-    return `Due in ${abs}s`;
+    return `${monthShort} ${targetDate.getDate()}, ${timeStr}`;
   }
 
   /********************************************************************************
@@ -199,16 +183,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const targetDate = new Date(targetTime);
       const targetText = formatTargetTime(targetDate);
-      const relativeText = formatRelativeStatus(remainingSec, isOverdue);
+      const headerTitle = `${escapeHtml(timer.label)}: ${targetText}`;
       const digitsText = formatDigits(remainingSec, isOverdue);
 
       return `
         <div class="timer-card ${isOverdue ? "overdue" : ""}" data-id="${timer.id}">
           <div class="timer-card-header">
-            <span class="timer-card-title" title="${escapeHtml(timer.label)}">${escapeHtml(timer.label)}</span>
-            <button type="button" class="timer-delete-btn" data-id="${timer.id}" aria-label="${isOverdue ? "Dismiss timer" : "Delete timer"}">
-              ${isOverdue ? "✕ Dismiss" : "✕"}
-            </button>
+            <span class="timer-card-title" title="${headerTitle}">${headerTitle}</span>
+            <div class="timer-card-actions">
+              <button type="button" class="timer-edit-btn" data-id="${timer.id}" aria-label="Edit timer" title="Edit timer">✎</button>
+              <button type="button" class="timer-delete-btn" data-id="${timer.id}" aria-label="${isOverdue ? "Dismiss timer" : "Delete timer"}" title="${isOverdue ? "Dismiss timer" : "Delete timer"}">
+                ${isOverdue ? "✕ Dismiss" : "✕"}
+              </button>
+            </div>
           </div>
           <div class="timer-card-body">
             <div class="timer-gauge-container">
@@ -221,14 +208,24 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="timer-readout-container">
               <div class="timer-digits">${digitsText}</div>
               <div class="timer-subtext">
-                <span class="timer-target-time">${targetText}</span>
-                <span class="timer-status-badge">${relativeText}</span>
+                ${isOverdue ? `<span class="timer-status-badge">⚠️ Overdue</span>` : ""}
+                ${timer.note ? `<span class="timer-note-text" title="${escapeHtml(timer.note)}">${escapeHtml(timer.note)}</span>` : ""}
               </div>
             </div>
           </div>
         </div>
       `;
     }).join("");
+
+    // Attach Edit click handlers
+    const editBtns = timersGrid.querySelectorAll(".timer-edit-btn");
+    editBtns.forEach(btn => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const id = this.getAttribute("data-id");
+        openEditModal(id);
+      });
+    });
 
     // Attach delete/dismiss click handlers
     const deleteBtns = timersGrid.querySelectorAll(".timer-delete-btn");
@@ -273,6 +270,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (deleteBtn) {
           deleteBtn.textContent = "✕ Dismiss";
           deleteBtn.setAttribute("aria-label", "Dismiss timer");
+          deleteBtn.setAttribute("title", "Dismiss timer");
+        }
+
+        const subtextEl = card.querySelector(".timer-subtext");
+        if (subtextEl && !subtextEl.querySelector(".timer-status-badge")) {
+          const badge = document.createElement("span");
+          badge.className = "timer-status-badge";
+          badge.textContent = "⚠️ Overdue";
+          subtextEl.insertBefore(badge, subtextEl.firstChild);
         }
       }
 
@@ -280,12 +286,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const digitsEl = card.querySelector(".timer-digits");
       if (digitsEl) {
         digitsEl.textContent = formatDigits(remainingSec, isOverdue);
-      }
-
-      // Update relative status
-      const statusEl = card.querySelector(".timer-status-badge");
-      if (statusEl) {
-        statusEl.textContent = formatRelativeStatus(remainingSec, isOverdue);
       }
 
       // Update circular SVG gauge
@@ -318,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
   /********************************************************************************
    * Adds a new timer to the system
    ********************************************************************************/
-  function addTimer(label, targetDate) {
+  function addTimer(label, targetDate, note) {
     const now = Date.now();
     const targetTimestamp = targetDate.getTime();
     const duration = Math.max(1000, targetTimestamp - now);
@@ -326,6 +326,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const newTimer = {
       id: "timer_" + now + "_" + Math.random().toString(36).substr(2, 4),
       label: label.trim() || "Countdown Timer",
+      note: note ? note.trim() : "",
       targetTimestamp: targetTimestamp,
       createdAt: now,
       initialDurationMs: duration,
@@ -334,6 +335,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
     activeTimers.push(newTimer);
     saveTimers();
+    renderTimers();
+  }
+
+  /********************************************************************************
+   * Updates an existing timer in the system
+   ********************************************************************************/
+  function updateTimer(id, label, targetDate, note) {
+    const timer = activeTimers.find(t => t.id === id);
+    if (!timer) return;
+
+    const newTarget = targetDate.getTime();
+    const now = Date.now();
+
+    timer.label = label.trim() || "Countdown Timer";
+    timer.note = note ? note.trim() : "";
+
+    if (newTarget !== timer.targetTimestamp) {
+      timer.targetTimestamp = newTarget;
+      timer.initialDurationMs = Math.max(1000, newTarget - now);
+      timer.alarmTriggered = false;
+    }
+
+    saveTimers();
+
+    // Check if alarm should be silenced after editing
+    const hasRemainingOverdue = activeTimers.some(t => t.targetTimestamp <= Date.now());
+    if (!hasRemainingOverdue) {
+      stopAlarm();
+    }
+
     renderTimers();
   }
 
@@ -362,10 +393,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /********************************************************************************
-   * Modal Management & Date Defaults
+   * Modal Management (Creation & Editing)
    ********************************************************************************/
-  function openModal() {
+  function openCreateModal() {
     if (!modalOverlay) return;
+
+    editingTimerId = null;
+    if (modalTitle) modalTitle.textContent = "Create Countdown Timer";
+    if (submitTimerBtn) submitTimerBtn.textContent = "Start Timer";
 
     // Default Date input to today (YYYY-MM-DD)
     const today = new Date();
@@ -380,9 +415,37 @@ document.addEventListener("DOMContentLoaded", function () {
     const defMinutes = String(defaultTime.getMinutes()).padStart(2, "0");
     if (timerTimeInput) timerTimeInput.value = `${defHours}:${defMinutes}`;
 
+    if (timerLabelInput) timerLabelInput.value = "";
+    if (timerNoteInput) timerNoteInput.value = "";
+
+    modalOverlay.classList.add("modal-open");
+    modalOverlay.setAttribute("aria-hidden", "false");
+
     if (timerLabelInput) {
-      timerLabelInput.value = "";
+      setTimeout(() => timerLabelInput.focus(), 50);
     }
+  }
+
+  function openEditModal(timerId) {
+    const timer = activeTimers.find(t => t.id === timerId);
+    if (!timer || !modalOverlay) return;
+
+    editingTimerId = timerId;
+    if (modalTitle) modalTitle.textContent = "Edit Countdown Timer";
+    if (submitTimerBtn) submitTimerBtn.textContent = "Save Changes";
+
+    if (timerLabelInput) timerLabelInput.value = timer.label || "";
+    if (timerNoteInput) timerNoteInput.value = timer.note || "";
+
+    const targetDate = new Date(timer.targetTimestamp);
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, "0");
+    const day = String(targetDate.getDate()).padStart(2, "0");
+    const hours = String(targetDate.getHours()).padStart(2, "0");
+    const mins = String(targetDate.getMinutes()).padStart(2, "0");
+
+    if (timerDateInput) timerDateInput.value = `${year}-${month}-${day}`;
+    if (timerTimeInput) timerTimeInput.value = `${hours}:${mins}`;
 
     modalOverlay.classList.add("modal-open");
     modalOverlay.setAttribute("aria-hidden", "false");
@@ -396,10 +459,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!modalOverlay) return;
     modalOverlay.classList.remove("modal-open");
     modalOverlay.setAttribute("aria-hidden", "true");
+    editingTimerId = null;
   }
 
   // Attach Modal event listeners
-  if (openModalBtn) openModalBtn.addEventListener("click", openModal);
+  if (openModalBtn) openModalBtn.addEventListener("click", openCreateModal);
   if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
   if (cancelModalBtn) cancelModalBtn.addEventListener("click", closeModal);
 
@@ -436,12 +500,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Handle Form Submission
+  // Handle Form Submission (Create or Edit)
   if (createTimerForm) {
     createTimerForm.addEventListener("submit", function (e) {
       e.preventDefault();
 
       const label = timerLabelInput ? timerLabelInput.value : "";
+      const note = timerNoteInput ? timerNoteInput.value : "";
       const dateVal = timerDateInput ? timerDateInput.value : "";
       const timeVal = timerTimeInput ? timerTimeInput.value : "";
 
@@ -463,7 +528,12 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      addTimer(label, targetDate);
+      if (editingTimerId) {
+        updateTimer(editingTimerId, label, targetDate, note);
+      } else {
+        addTimer(label, targetDate, note);
+      }
+
       closeModal();
     });
   }

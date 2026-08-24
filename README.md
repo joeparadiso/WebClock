@@ -45,9 +45,10 @@ _The customization menu allowing for theme selection and manual color adjustment
 
 ### ⏳ Dynamic Multi-Timer System
 - **Simultaneous Countdowns:** Run multiple independent meeting or event timers at the same time.
-- **Option 3 Modern Hybrid Design:** Compact cards featuring an SVG circular progress ring indicating elapsed percentage alongside large countdown digits and target timestamps.
-- **Overdue Count-Up & Alarm:** When a countdown reaches `00:00:00`, audio alarm (`alarm.mp3`) triggers, card turns into a pulsing warning state, and digits switch to counting **UP** (e.g. `+02:15 past due`) until dismissed.
-- **Popup Creation Modal:** Clean "＋ Create Timer" button in the top navbar opens a modal with custom label, date, time picker, and quick `+15m / +30m / +45m / +1h` presets.
+- **Option 3 Modern Hybrid Design:** Compact cards featuring an SVG circular progress ring indicating elapsed percentage alongside large countdown digits and target timestamps (e.g. *"Sprint Planning: Today, 7:51 PM"*).
+- **Custom Notes & Overdue Count-Up:** Optional note attached to any timer (e.g. *"Bring updated datasheets"*); when a timer finishes, audio alarm (`alarm.mp3`) triggers and digits switch to counting **UP** until dismissed.
+- **In-Place Editing:** Edit timer labels, notes, dates, or times directly via the **`✎` Edit** button on each card.
+- **Popup Creation Modal:** Right-aligned "＋ Create Timer" navbar link opens a modal with custom label, note, date/time pickers, and quick `+15m / +30m / +45m / +1h` presets.
 - **Dynamic Shelf & Persistence:** Automatic reflowing shelf; timers persist in `localStorage` across page reloads.
 
 ---
@@ -72,12 +73,13 @@ Because this is a static web project, no server installation or build step is re
 
 ### 3. Using the Multi-Timer System
 
-1. Click the **"＋ Create Timer"** button in the top navbar.
-2. Enter a **Timer Label / Meeting Name** (e.g. *"Team Standup"*, *"Sprint Demo"*).
+1. Click the **"＋ Create Timer"** link on the right side of the navbar.
+2. Enter a **Timer Label / Meeting Name** and optional **Note** (e.g. *"Bring updated datasheets"*).
 3. Select the target Date (defaults to today) and Time, or use the **Quick Add** buttons (*+15m, +30m, +45m, +1h*).
 4. Click **Start Timer**. A new modern card will appear on the dashboard shelf.
-5. When the timer finishes, it alerts you with audio and switches to count-up mode showing how long overdue the meeting is. Click **✕ Dismiss** to silence and remove it.
-6. Delete any active timer at any time by clicking **✕** on the card header.
+5. Click **`✎`** on any timer card to edit its details, date, or time in place.
+6. When the timer finishes, it alerts you with audio and switches to count-up mode showing how long overdue the meeting is. Click **✕ Dismiss** to silence and remove it.
+7. Delete any active timer at any time by clicking **✕** on the card header.
 
 ---
 

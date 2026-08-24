@@ -253,28 +253,28 @@ body {
 }
 
 /*============================================================================================= 
-*     Create Timer Navbar Button & Modal Dialog
+*     Create Timer Navbar Link & Modal Dialog
 ===============================================================================================*/
 
-.create-timer-nav-btn {
-  background: linear-gradient(0turn, var(--button-bg1), var(--button-bg2));
+.nav-timer-link {
+  background: none;
+  border: none;
   color: var(--text-color);
-  border: 1px solid var(--box-shadow-color);
-  border-radius: 8px;
-  padding: 6px 14px;
   font-family: "Baumans", serif;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   cursor: pointer;
-  margin-left: 15px;
-  transition: all 0.25s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  margin-left: auto;
+  margin-right: 28px;
+  padding: 4px 8px;
+  transition: transform 0.2s ease, opacity 0.2s ease, text-shadow 0.2s ease;
+  line-height: 1;
+  text-decoration: none;
+  letter-spacing: 0.5px;
 }
 
-.create-timer-nav-btn:hover {
-  box-shadow: 0 4px 12px var(--box-shadow-color);
-  transform: translateY(-1px);
+.nav-timer-link:hover {
+  transform: scale(1.06);
+  text-shadow: 0 0 10px var(--box-shadow-color);
 }
 
 .modal-overlay {
@@ -485,7 +485,7 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 24px var(--box-shadow-color);
   color: var(--text-color);
-  width: 360px;
+  width: 380px;
   max-width: 95vw;
   padding: 16px 18px;
   display: flex;
@@ -507,17 +507,50 @@ body {
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 8px;
+  gap: 10px;
 }
 
 .timer-card-title {
   font-family: "Baumans", serif;
   font-size: 1.15rem;
   font-weight: bold;
+  color: var(--text-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 240px;
+  flex: 1;
   text-align: left;
+}
+
+.timer-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.timer-edit-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-color);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.95rem;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-edit-btn:hover {
+  background: rgba(255, 236, 4, 0.2);
+  border-color: var(--box-shadow-color);
+  color: #fff;
+  transform: scale(1.05);
 }
 
 .timer-delete-btn {
@@ -531,6 +564,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .timer-delete-btn:hover {
@@ -607,20 +641,28 @@ body {
 .timer-subtext {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 3px;
   margin-top: 4px;
-}
-
-.timer-target-time {
-  font-family: "Baumans", serif;
-  font-size: 0.85rem;
-  opacity: 0.8;
+  width: 100%;
 }
 
 .timer-status-badge {
   font-family: "Baumans", serif;
-  font-size: 0.8rem;
-  opacity: 0.9;
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+.timer-note-text {
+  font-family: "Baumans", serif;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  text-align: left;
 }
 
 /* Overdue Alarm State */
@@ -692,10 +734,9 @@ body {
 }
 
 @media (max-width: 600px) {
-  .create-timer-nav-btn {
-    font-size: 0.85rem;
-    padding: 5px 10px;
-    margin-left: 8px;
+  .nav-timer-link {
+    font-size: 1rem;
+    margin-right: 10px;
   }
 
   .modal-card {
