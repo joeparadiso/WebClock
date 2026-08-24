@@ -1,10 +1,12 @@
 <!--******************************************************************************
  index.html -- March 2025 -- Joe Paradiso
  DETAILS:
-  This file sets up the HTML skeleton for a clock that displays the current
-  date, time, weather details, and a countdown timer. There is a navbar with 
-  menu options for the user to select pre-defined themes or the user can 
-  change the color of each individual element in the display.
+  This file sets up the HTML skeleton for the WebClock dashboard featuring:
+  - 12-hour digital clock, day/date, sunrise/sunset, and real-time weather widget.
+  - Commuter rail inbound train schedule tracker (MBTA API).
+  - Dynamic Multi-Timer system with modal creation dialog, in-place editing,
+    and Option 3 modern hybrid cards with SVG progress ring meters.
+  - Top navigation bar with theme selection presets and individual color pickers.
 ******************************************************************************-->
 <!DOCTYPE html>
 <html lang="en">
@@ -72,6 +74,14 @@
         <li>
           <label for="textColor">Text Color:</label>
           <input type="color" id="textColor" aria-label="Text Color" />
+        </li>
+        <li>
+          <label for="timerVisualColor">Timer Gauge Visual:</label>
+          <input type="color" id="timerVisualColor" aria-label="Timer Gauge Visual Color" />
+        </li>
+        <li>
+          <label for="navbarTextColor">Navbar Text Color:</label>
+          <input type="color" id="navbarTextColor" aria-label="Navbar Text Color" />
         </li>
         <li>
           <label for="inputBoxColor">Input Box Color:</label>

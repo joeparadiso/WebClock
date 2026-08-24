@@ -2,7 +2,7 @@
 
 **WebClock** is a customizable, feature-rich digital dashboard designed to run in any modern web browser. It aggregates essential daily information—live clock, weather conditions, astronomical sun data, and MBTA commuter rail schedules—configured for **Dedham, MA**.
 
-It features an advanced theming engine with preset visual styles, dynamic background imagery, interactive color pickers with automatic synchronization, persistent preferences, and a built-in countdown timer.
+It features an advanced theming engine with preset visual styles, dynamic background imagery, interactive color pickers with automatic synchronization, persistent preferences, and a dynamic multi-timer system.
 
 ## 📸 Screenshots
 
@@ -39,7 +39,7 @@ _The customization menu allowing for theme selection and manual color adjustment
 
 ### 🎨 Advanced Theming & Persistence
 - **Dual Theme Selectors:** Choose from "General Themes" (abstract/color palettes) or "Field Themes" (scenic nature backgrounds).
-- **Interactive Color Pickers:** Fine-grained runtime control over Box Shadows, Clock Backgrounds, Text Colors, Timer Colors, and Navbar Colors.
+- **Interactive Color Pickers:** Fine-grained runtime control over Box Shadows, Clock Backgrounds, Text Colors, Timer Colors, Navbar Background, Timer Gauge Visuals, and Navbar Text Colors.
 - **Bi-directional Color Sync:** Selecting any preset theme automatically syncs the color pickers to the theme's palette.
 - **Persistence:** Selected themes and settings automatically persist across page reloads via `localStorage`.
 
@@ -105,7 +105,7 @@ The project is currently configured for **Dedham, MA**. To customize the locatio
 /
 ├── index.html       # Semantic HTML layout and Google Fonts integration
 ├── styles.css       # Core styling, layout geometry, and CSS custom properties
-├── clock.js         # Digital clock, date formatting, and countdown timer logic
+├── clock.js         # Digital clock, date formatting, and dynamic Multi-Timer engine
 ├── themes.js        # Theme definitions, color picker sync, and localStorage persistence
 ├── weather.js       # OpenWeatherMap API integration and weather widget rendering
 ├── sunTimes.js      # SunriseSunset.io API integration and astronomical formatting

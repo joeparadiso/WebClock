@@ -689,6 +689,8 @@ document.addEventListener("DOMContentLoaded", function () {
       { id: "pageBg2", val: theme.pagebg2 },
       { id: "navbarColor", val: theme.navbar },
       { id: "textColor", val: theme.text },
+      { id: "timerVisualColor", val: theme.timerVisual || theme.shadow },
+      { id: "navbarTextColor", val: theme.navbarText || theme.text },
       { id: "inputBoxColor", val: theme.input },
     ];
 
@@ -717,6 +719,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (theme.navbar) document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
     if (theme.text) document.documentElement.style.setProperty("--text-color", theme.text);
     if (theme.input) document.documentElement.style.setProperty("--input-box-color", theme.input);
+
+    const timerVisual = theme.timerVisual || theme.shadow;
+    if (timerVisual) document.documentElement.style.setProperty("--timer-visual-color", timerVisual);
+
+    const navbarText = theme.navbarText || theme.text;
+    if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
 
     if (theme.backgroundImage) {
       document.body.style.background = theme.backgroundImage;
@@ -763,6 +771,8 @@ document.addEventListener("DOMContentLoaded", function () {
     { id: "buttonBg1", varName: "--button-bg1" },
     { id: "buttonBg2", varName: "--button-bg2" },
     { id: "textColor", varName: "--text-color" },
+    { id: "timerVisualColor", varName: "--timer-visual-color" },
+    { id: "navbarTextColor", varName: "--navbar-text-color" },
     { id: "inputBoxColor", varName: "--input-box-color" },
     { id: "navbarColor", varName: "--navbar-bg" },
   ];
