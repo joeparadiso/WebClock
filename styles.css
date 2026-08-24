@@ -41,8 +41,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 80px 15px 40px;
+  justify-content: flex-start;
+  padding: 65px 15px 40px;
   width: 100%;
 }
 
@@ -301,14 +301,14 @@ body {
 }
 
 .modal-card {
-  background: linear-gradient(135deg, rgba(20, 20, 35, 0.95), rgba(10, 10, 25, 0.98));
+  background: linear-gradient(135deg, var(--clock-bg1), var(--clock-bg2));
   border: 2px solid var(--box-shadow-color);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--box-shadow-color);
   border-radius: 16px;
   width: 100%;
-  max-width: 460px;
+  max-width: 480px;
   padding: 24px 28px;
-  color: #fff;
+  color: var(--text-color);
   text-align: left;
   transform: scale(0.95);
   transition: transform 0.25s ease;
@@ -337,17 +337,19 @@ body {
 .modal-close-btn {
   background: none;
   border: none;
-  color: #aaa;
+  color: var(--text-color);
   font-size: 1.3rem;
   cursor: pointer;
   line-height: 1;
   padding: 4px;
   border-radius: 4px;
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.2s;
+  opacity: 0.8;
 }
 
 .modal-close-btn:hover {
-  color: #fff;
+  opacity: 1;
+  transform: scale(1.15);
 }
 
 .form-group {
@@ -358,6 +360,7 @@ body {
   display: block;
   font-family: "Baumans", serif;
   font-size: 0.95rem;
+  font-weight: bold;
   color: var(--text-color);
   margin-bottom: 6px;
 }
@@ -366,9 +369,10 @@ body {
   width: 100%;
   padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.45);
   color: #fff;
+  color-scheme: dark;
   font-family: inherit;
   font-size: 1rem;
   outline: none;
@@ -399,8 +403,9 @@ body {
 
 .preset-label {
   font-family: "Baumans", serif;
-  font-size: 0.85rem;
-  color: #aaa;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.85;
   margin-right: 4px;
 }
 
@@ -430,8 +435,8 @@ body {
 
 .btn-cancel {
   background: transparent;
-  border: 1px solid #555;
-  color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-color);
   padding: 8px 18px;
   border-radius: 8px;
   font-family: "Baumans", serif;
@@ -442,7 +447,7 @@ body {
 
 .btn-cancel:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  border-color: var(--text-color);
 }
 
 .btn-submit {
@@ -469,7 +474,8 @@ body {
 #timers-shelf {
   width: 100%;
   max-width: 1150px;
-  margin-top: 25px;
+  margin-top: 48px;
+  margin-bottom: 25px;
 }
 
 #timers-grid {
@@ -480,8 +486,8 @@ body {
 }
 
 .timer-card {
-  background: linear-gradient(135deg, var(--timer-bg1), var(--timer-bg2));
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, var(--clock-bg1), var(--clock-bg2));
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 16px;
   box-shadow: 0 8px 24px var(--box-shadow-color);
   color: var(--text-color);
