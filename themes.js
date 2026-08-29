@@ -15,15 +15,19 @@
 
   // Built-in color theme definitions
   const defaultColorThemes = {
-    default: {
-      shadow: "#F8E3AF",
-      clockbg1: "#2D4067",
-      clockbg2: "#0D0B41",
+    "Morning Light": {
+      shadow: "#eaa593",
+      clockbg1: "#8eaec1",
+      clockbg2: "#8b7995",
+      timerbg1: "#c7938a",
+      timerbg2: "#7775ae",
       pagebg1: "#08001f",
       pagebg2: "#30197d",
-      navbar: "#000000e6",
-      text: "#DCC48F",
+      navbar: "rgba(138, 122, 148, 0.9)",
+      text: "#ffdb8f",
       input: "#DCC48F",
+      timerVisual: "#F8E3AF",
+      navbarText: "#DCC48F",
     },
     lava: {
       shadow: "#F99B4E",
@@ -343,9 +347,8 @@
 
   // Built-in background image definitions
   const defaultBgThemes = {
-    default: {
-      backgroundImage:
-        "url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm00NzItMjBhLmpwZw.jpg')",
+    "Morning Light": {
+      backgroundImage: "url('images/morningLight.jpg')",
     },
     lava: {
       backgroundImage:
