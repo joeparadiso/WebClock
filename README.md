@@ -33,9 +33,11 @@ _The customization menu allowing for theme selection and manual color adjustment
 - _Powered by OpenWeatherMap API_.
 
 ### 🚆 MBTA Commuter Rail Tracker
-- **Route:** Monitors the **Dedham Corporate Center** to **South Station** inbound line.
+- **Routes & Directions:**
+  - **Inbound:** Monitors **Dedham Corporate Center** to **South Station**.
+  - **Outbound:** Monitors **Dedham Corporate Center** to **Forge Park/495**.
 - **Real-Time Data:** Fetches live real-time predictions; seamlessly falls back to scheduled times if live data is unavailable.
-- **Info:** Displays next Departure Time, official Train Number with Route Name (e.g. `5768 (Franklin/Foxboro)`), and estimated Arrival Time at South Station, styled with bold headers and typography sized to match the weather widget (1.5em).
+- **Streamlined Layout:** Displays next Departure Time, official Train Number with Route Name (e.g. `5768 (Franklin/Foxboro)`), and estimated Arrival Time at each respective destination inside glassmorphic, grid-aligned horizontal pill rows with dedicated direction badges and custom commuter rail icons.
 - _Powered by MBTA V3 API_.
 
 ### 🎨 Theme Studio & Visual Designer
@@ -126,7 +128,7 @@ The project is currently configured for **Dedham, MA**. To customize the locatio
   - Update `const LATITUDE` and `const LONGITUDE`.
 - **MBTA Stops & Direction:**
   - Open `nextTrain.js`
-  - Update `DEDHAM_STOP_ID` (origin) and `SOUTH_STATION_STOP_ID` (destination).
+  - Update `DEDHAM_STOP_ID` (origin), `SOUTH_STATION_STOP_ID` (inbound destination), and `FORGE_PARK_STOP_ID` (outbound destination).
 
 ---
 

@@ -258,7 +258,8 @@ body {
 }
 
 .clock.collapsed #clockSunContainer,
-.clock.collapsed #trainContainer,
+.clock.collapsed #transitWidget,
+.clock.collapsed .transit-widget,
 .clock.collapsed #weather-widget {
   display: none !important;
 }
@@ -359,26 +360,130 @@ body {
   display: inline-block;
 }
 
-#trainContainer {
+/*============================================================================
+ *     MBTA TRANSIT TRACKER WIDGET (STREAMLINED OPTION 3 ROWS)
+ =============================================================================*/
+
+.transit-widget {
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  margin-bottom: 25px;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 auto 24px;
+  width: 100%;
+  max-width: 790px;
 }
 
-#departureContainer,
-#trainInfoContainer,
-#arrivalContainer {
+.transit-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 24px 1.2fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 20px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   font-family: "Baumans", serif;
-  font-weight: 100;
-  font-size: 1.5em;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
-#departureTimeTxt,
-#trainRoute,
-#arrivalTimeTxt {
+.transit-row:hover {
+  border-color: var(--text-color);
+  box-shadow: 0 0 16px var(--box-shadow-color);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.transit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-color);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.inbound-badge {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.outbound-badge {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.transit-station {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.station-name {
+  font-size: 0.85rem;
   font-weight: bold;
-  opacity: 0.95;
+  opacity: 0.85;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.station-time {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+.transit-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  opacity: 0.6;
+  user-select: none;
+  width: 24px;
+}
+
+.transit-train-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  color: var(--text-color);
+  justify-self: end;
+}
+
+.train-icon-img {
+  width: 20px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+}
+
+.train-icon {
+  font-size: 1rem;
+}
+
+.train-route {
+  font-weight: 500;
 }
 
 /* Weather Widget */
@@ -1710,28 +1815,89 @@ body {
   padding: 0 2px;
 }
 
-.mock-train-row {
-  display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 14px;
-  font-family: "Baumans", serif;
-  font-size: 1.25em;
-}
-
-.mock-train-block {
+/* Mock Transit Widget (Theme Studio) */
+.mock-transit-widget {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  width: 100%;
+}
+
+.mock-transit-row {
+  display: grid;
+  grid-template-columns: 74px 1fr 18px 1.2fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: "Baumans", serif;
+  font-size: 0.92rem;
+}
+
+.mock-transit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  box-sizing: border-box;
   text-align: center;
-}
-
-.mock-train-label {
-  font-size: 0.78rem;
+  font-size: 0.65rem;
   font-weight: bold;
-  opacity: 0.95;
+  letter-spacing: 0.5px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.mock-train-val {
-  font-size: 1rem;
+.mock-transit-station {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mock-station-name {
+  font-size: 0.68rem;
+  font-weight: bold;
+  opacity: 0.85;
+}
+
+.mock-station-time {
+  font-size: 0.9rem;
+}
+
+.mock-transit-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  font-size: 0.85rem;
+  width: 18px;
+}
+
+.mock-train-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.78rem;
+  justify-self: end;
+}
+
+.mock-train-icon-img {
+  width: 15px;
+  height: 19px;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 .mock-weather-row {
@@ -2968,9 +3134,15 @@ body {
     gap: 6px;
   }
 
-  #trainContainer {
-    flex-direction: column;
-    gap: 8px;
+  .transit-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 14px;
+    padding: 10px 12px;
+  }
+
+  .transit-station {
+    min-width: auto;
   }
 
   #weather-info {

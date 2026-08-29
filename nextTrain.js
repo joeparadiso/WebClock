@@ -1,8 +1,9 @@
 // =============================================================================
-// MBTA Next Inbound Train Display
+// MBTA Next Inbound & Outbound Train Display
 // DETAILS:
-//  Fetches and displays the next inbound train from Dedham Corporate Center
-//  to South Station using the MBTA v3 API. Updates every 60 seconds.
+//  Fetches and displays the next inbound train (Dedham Corporate Center -> South Station)
+//  and next outbound train (Dedham Corporate Center -> Forge Park/495) using the
+//  MBTA v3 API. Updates automatically every 60 seconds.
 // =============================================================================
 
 (function () {
@@ -10,7 +11,9 @@
   const BASE_URL = "https://api-v3.mbta.com";
   const DEDHAM_STOP_ID = "place-FB-0118";
   const SOUTH_STATION_STOP_ID = "place-sstat";
+  const FORGE_PARK_STOP_ID = "place-FB-0303";
   const INBOUND_DIRECTION_ID = 1;
+  const OUTBOUND_DIRECTION_ID = 0;
 
   let firstLoad = true;
 
@@ -91,7 +94,7 @@
     const now = new Date();
     const future = [];
 
-    for (const item of data.data || []) {
+    for (const item of (data && data.data) || []) {
       const attrs = item.attributes;
       const dep = attrs.departure_time;
       const dir = attrs.direction_id;
@@ -108,10 +111,10 @@
     return future;
   }
 
-  // Optimized: Queries only the specific trip at South Station instead of the entire terminal
+  // Queries arrival time for a specific trip at a destination station
   async function getArrivalTimeAtStation(tripId, stopId) {
     try {
-      // 1. Try real-time predictions for this trip at South Station
+      // 1. Try real-time predictions for this trip at destination station
       const pred = await fetchJson(`${BASE_URL}/predictions`, {
         "filter[trip]": tripId,
         "filter[stop]": stopId,
@@ -126,7 +129,7 @@
         }
       }
 
-      // 2. Fallback to schedule for this trip at South Station
+      // 2. Fallback to schedule for this trip at destination station
       const sched = await fetchJson(`${BASE_URL}/schedules`, {
         "filter[trip]": tripId,
         "filter[stop]": stopId,
@@ -146,105 +149,213 @@
     return null;
   }
 
-  // Main function to fetch and display the next inbound train
-  async function showNextInboundTrain() {
-    const departureElem = document.getElementById("departure-time");
-    const arrivalElem = document.getElementById("arrival-time");
-    const routeElem = document.getElementById("train-route");
-
-    if (firstLoad) {
-      if (departureElem) departureElem.textContent = "Loading...";
-      if (arrivalElem) arrivalElem.textContent = "Loading...";
-      if (routeElem) routeElem.textContent = "Loading...";
-    }
+  // Processes and displays train info for a specific direction and destination
+  async function processTrainDirection(
+    predictionsData,
+    schedulesData,
+    directionId,
+    destStopId,
+    elements,
+    directionLabel
+  ) {
+    const { departureElem, routeElem, arrivalElem } = elements;
 
     try {
-      // Step 1: Query predictions for Dedham
-      let response = await getPredictions(DEDHAM_STOP_ID);
-      let future = filterFutureTrains(response, INBOUND_DIRECTION_ID);
+      // Step 1: Filter predictions for Dedham in this direction
+      let future = filterFutureTrains(predictionsData, directionId);
+      let dataSource = predictionsData;
 
-      // Step 2: Fallback to scheduled trains if no predictions found
+      // Step 2: Fallback to scheduled trains if no future predictions found
       if (!future.length) {
-        response = await getSchedules(DEDHAM_STOP_ID);
-        future = filterFutureTrains(response, INBOUND_DIRECTION_ID);
+        if (!schedulesData) {
+          try {
+            schedulesData = await getSchedules(DEDHAM_STOP_ID);
+          } catch (e) {
+            console.warn("Could not fetch schedules for fallback:", e);
+            schedulesData = { data: [], included: [] };
+          }
+        }
+        dataSource = schedulesData;
+        future = filterFutureTrains(schedulesData, directionId);
       }
 
       // Step 3: Handle no trains remaining today
       if (!future.length) {
         if (departureElem) departureElem.textContent = "-";
-        if (arrivalElem) arrivalElem.innerHTML = '<span class="error">No inbound trains</span>';
+        if (arrivalElem) arrivalElem.innerHTML = `<span class="error">No ${directionLabel} trains</span>`;
         if (routeElem) routeElem.textContent = "-";
-        firstLoad = false;
         return;
       }
 
       // Index included trips and routes for fast lookup
       const tripsMap = new Map(
-        (response.included || []).filter(x => x.type === "trip").map(t => [t.id, t])
+        (dataSource.included || []).filter(x => x.type === "trip").map(t => [t.id, t])
       );
       const routesMap = new Map(
-        (response.included || []).filter(x => x.type === "route").map(r => [r.id, r])
+        (dataSource.included || []).filter(x => x.type === "route").map(r => [r.id, r])
       );
 
-      // Step 4: Extract info for soonest train
-      const next = future[0].item;
-      const depTime = future[0].time;
+      // Step 4: Find the first future train that serves the destination station
+      let selectedTrain = null;
+      let selectedDepTime = null;
+      let selectedTripObj = null;
+      let selectedRouteObj = null;
+      let selectedTripId = null;
+      let selectedRouteId = null;
+      let selectedArrTime = null;
 
-      let tripId = null;
-      if (next.relationships && next.relationships.trip && next.relationships.trip.data) {
-        tripId = next.relationships.trip.data.id;
-      } else if (next.attributes && next.attributes.trip_id) {
-        tripId = next.attributes.trip_id;
+      for (const entry of future) {
+        const item = entry.item;
+        const depTime = entry.time;
+
+        let tripId = null;
+        if (item.relationships && item.relationships.trip && item.relationships.trip.data) {
+          tripId = item.relationships.trip.data.id;
+        } else if (item.attributes && item.attributes.trip_id) {
+          tripId = item.attributes.trip_id;
+        }
+
+        let routeId = null;
+        if (item.relationships && item.relationships.route && item.relationships.route.data) {
+          routeId = item.relationships.route.data.id;
+        } else if (item.attributes && item.attributes.route_id) {
+          routeId = item.attributes.route_id;
+        }
+
+        let arrTime = null;
+        if (tripId && destStopId) {
+          arrTime = await getArrivalTimeAtStation(tripId, destStopId);
+          // If destination stop was specified and this trip does not stop there, try next train
+          if (!arrTime && future.length > 1) {
+            continue;
+          }
+        }
+
+        selectedTrain = item;
+        selectedDepTime = depTime;
+        selectedTripId = tripId;
+        selectedRouteId = routeId;
+        selectedTripObj = tripId ? tripsMap.get(tripId) : null;
+        selectedRouteObj = routeId ? routesMap.get(routeId) : null;
+        selectedArrTime = arrTime;
+        break;
       }
 
-      let routeId = null;
-      if (next.relationships && next.relationships.route && next.relationships.route.data) {
-        routeId = next.relationships.route.data.id;
-      } else if (next.attributes && next.attributes.route_id) {
-        routeId = next.attributes.route_id;
+      if (!selectedTrain) {
+        const first = future[0];
+        selectedTrain = first.item;
+        selectedDepTime = first.time;
+        selectedTripId = selectedTrain.relationships?.trip?.data?.id || selectedTrain.attributes?.trip_id;
+        selectedRouteId = selectedTrain.relationships?.route?.data?.id || selectedTrain.attributes?.route_id;
+        selectedTripObj = selectedTripId ? tripsMap.get(selectedTripId) : null;
+        selectedRouteObj = selectedRouteId ? routesMap.get(selectedRouteId) : null;
       }
-
-      const tripObj = tripId ? tripsMap.get(tripId) : null;
-      const routeObj = routeId ? routesMap.get(routeId) : null;
 
       // Extract real train number (e.g. "5768")
-      const trainNumber = getTrainNumber(tripObj, tripId, next.id);
+      const trainNumber = getTrainNumber(selectedTripObj, selectedTripId, selectedTrain.id);
 
       // Format route label (e.g. "Franklin" or "Fairmount")
       let routeLabel = "";
-      if (routeObj && routeObj.attributes && routeObj.attributes.long_name) {
-        routeLabel = routeObj.attributes.long_name.replace(" Line", "");
-      } else if (routeId) {
-        routeLabel = routeId.replace("CR-", "");
+      if (selectedRouteObj && selectedRouteObj.attributes && selectedRouteObj.attributes.long_name) {
+        routeLabel = selectedRouteObj.attributes.long_name.replace(" Line", "");
+      } else if (selectedRouteId) {
+        routeLabel = selectedRouteId.replace("CR-", "");
       }
 
       const displayTrainInfo = routeLabel ? `${trainNumber} (${routeLabel})` : trainNumber;
 
-      // Step 5: Query estimated arrival at South Station
-      let arrTime = null;
-      if (tripId) {
-        arrTime = await getArrivalTimeAtStation(tripId, SOUTH_STATION_STOP_ID);
-      }
-
-      // Step 6: Update DOM
-      const depStr = formatTime(depTime);
+      // Update DOM
+      const depStr = formatTime(selectedDepTime);
       if (departureElem) departureElem.textContent = depStr;
 
       if (arrivalElem) {
-        if (arrTime) {
-          arrivalElem.textContent = formatTime(arrTime);
+        if (selectedArrTime) {
+          arrivalElem.textContent = formatTime(selectedArrTime);
         } else {
           arrivalElem.textContent = "N/A";
         }
       }
 
       if (routeElem) routeElem.textContent = displayTrainInfo;
-      firstLoad = false;
     } catch (e) {
-      console.error("Error updating MBTA train status:", e);
+      console.error(`Error updating MBTA ${directionLabel} train status:`, e);
       if (departureElem) departureElem.textContent = "-";
       if (arrivalElem) arrivalElem.innerHTML = `<span class="error">Data Unavailable</span>`;
       if (routeElem) routeElem.textContent = "-";
+    }
+  }
+
+  // Main function to fetch and display both inbound and outbound trains
+  async function showNextTrains() {
+    const inboundElements = {
+      departureElem: document.getElementById("departure-time"),
+      arrivalElem: document.getElementById("arrival-time"),
+      routeElem: document.getElementById("train-route"),
+    };
+
+    const outboundElements = {
+      departureElem: document.getElementById("outbound-departure-time"),
+      arrivalElem: document.getElementById("outbound-arrival-time"),
+      routeElem: document.getElementById("outbound-train-route"),
+    };
+
+    if (firstLoad) {
+      Object.values(inboundElements).forEach(el => {
+        if (el) el.textContent = "Loading...";
+      });
+      Object.values(outboundElements).forEach(el => {
+        if (el) el.textContent = "Loading...";
+      });
+    }
+
+    try {
+      // Step 1: Query predictions for Dedham (includes all directions)
+      let predictions = null;
+      let schedules = null;
+
+      try {
+        predictions = await getPredictions(DEDHAM_STOP_ID);
+      } catch (e) {
+        console.warn("Could not fetch predictions from MBTA API:", e);
+        predictions = { data: [], included: [] };
+      }
+
+      // Check if we need schedules fallback for either direction
+      const hasInboundPred = filterFutureTrains(predictions, INBOUND_DIRECTION_ID).length > 0;
+      const hasOutboundPred = filterFutureTrains(predictions, OUTBOUND_DIRECTION_ID).length > 0;
+
+      if (!hasInboundPred || !hasOutboundPred) {
+        try {
+          schedules = await getSchedules(DEDHAM_STOP_ID);
+        } catch (e) {
+          console.warn("Could not fetch schedules from MBTA API:", e);
+          schedules = { data: [], included: [] };
+        }
+      }
+
+      // Step 2: Process Inbound and Outbound in parallel
+      await Promise.all([
+        processTrainDirection(
+          predictions,
+          schedules,
+          INBOUND_DIRECTION_ID,
+          SOUTH_STATION_STOP_ID,
+          inboundElements,
+          "inbound"
+        ),
+        processTrainDirection(
+          predictions,
+          schedules,
+          OUTBOUND_DIRECTION_ID,
+          FORGE_PARK_STOP_ID,
+          outboundElements,
+          "outbound"
+        ),
+      ]);
+
+      firstLoad = false;
+    } catch (e) {
+      console.error("Error updating MBTA train status:", e);
       firstLoad = false;
     }
   }
@@ -252,12 +363,12 @@
   // Initialize on DOM ready, then refresh every 60 seconds
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
-      showNextInboundTrain();
-      setInterval(showNextInboundTrain, 60000);
+      showNextTrains();
+      setInterval(showNextTrains, 60000);
     });
   } else {
-    showNextInboundTrain();
-    setInterval(showNextInboundTrain, 60000);
+    showNextTrains();
+    setInterval(showNextTrains, 60000);
   }
 })();
 

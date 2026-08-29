@@ -109,18 +109,42 @@
             <li class="point">:</li>
             <li id="seconds">00</li>
           </ul>
-          <div id="trainContainer">
-            <div id="departureContainer">
-              <div id="departureTimeTxt">Departure at Dedham</div>
-              <div id="departure-time">Loading...</div>
+          <!-- MBTA Commuter Rail Transit Tracker (Option 3 Streamlined Rows) -->
+          <div id="transitWidget" class="transit-widget" aria-label="MBTA Commuter Rail Transit Times">
+            <!-- Inbound Row: Dedham to South Station -->
+            <div class="transit-row" id="transitInboundRow">
+              <div class="transit-badge inbound-badge">INBOUND</div>
+              <div class="transit-station departure-station">
+                <span class="station-name">Dedham</span>
+                <span class="station-time" id="departure-time">Loading...</span>
+              </div>
+              <span class="transit-arrow" aria-hidden="true">→</span>
+              <div class="transit-station arrival-station">
+                <span class="station-name">South Station</span>
+                <span class="station-time" id="arrival-time">Loading...</span>
+              </div>
+              <div class="transit-train-pill">
+                <img src="images/commuter_rail_icon.png?v=3.3" alt="" class="train-icon-img" aria-hidden="true" />
+                <span class="train-route" id="train-route">Loading...</span>
+              </div>
             </div>
-            <div id="trainInfoContainer">
-              <div id="trainRoute">Train/Route</div>
-              <div id="train-route">Loading...</div>
-            </div>
-            <div id="arrivalContainer">
-              <div id="arrivalTimeTxt">Arrival at South Station</div>
-              <div id="arrival-time">Loading...</div>
+
+            <!-- Outbound Row: Dedham to Forge Park/495 -->
+            <div class="transit-row" id="transitOutboundRow">
+              <div class="transit-badge outbound-badge">OUTBOUND</div>
+              <div class="transit-station departure-station">
+                <span class="station-name">Dedham</span>
+                <span class="station-time" id="outbound-departure-time">Loading...</span>
+              </div>
+              <span class="transit-arrow" aria-hidden="true">→</span>
+              <div class="transit-station arrival-station">
+                <span class="station-name">Forge Park/495</span>
+                <span class="station-time" id="outbound-arrival-time">Loading...</span>
+              </div>
+              <div class="transit-train-pill">
+                <img src="images/commuter_rail_icon.png?v=3.3" alt="" class="train-icon-img" aria-hidden="true" />
+                <span class="train-route" id="outbound-train-route">Loading...</span>
+              </div>
             </div>
           </div>
           <!-- Weather Widget -->
@@ -262,18 +286,40 @@
                         <span>10</span><span class="mock-point">:</span><span>42</span><span class="mock-point">:</span><span>18</span>
                       </div>
 
-                      <div class="mock-train-row">
-                        <div class="mock-train-block">
-                          <span class="mock-train-label">Departure Dedham</span>
-                          <span class="mock-train-val">10:48 AM</span>
+                      <!-- Mock Transit Widget -->
+                      <div class="mock-transit-widget">
+                        <div class="mock-transit-row">
+                          <span class="mock-transit-badge mock-inbound-badge">INBOUND</span>
+                          <div class="mock-transit-station">
+                            <span class="mock-station-name">Dedham</span>
+                            <span class="mock-station-time">10:48 AM</span>
+                          </div>
+                          <span class="mock-transit-arrow" aria-hidden="true">→</span>
+                          <div class="mock-transit-station">
+                            <span class="mock-station-name">South Station</span>
+                            <span class="mock-station-time">11:15 AM</span>
+                          </div>
+                          <div class="mock-train-pill">
+                            <img src="images/commuter_rail_icon.png?v=3.3" alt="" class="mock-train-icon-img" aria-hidden="true" />
+                            <span class="mock-train-route">5768 (Franklin)</span>
+                          </div>
                         </div>
-                        <div class="mock-train-block">
-                          <span class="mock-train-label">Train/Route</span>
-                          <span class="mock-train-val">5768 (Franklin/Foxboro)</span>
-                        </div>
-                        <div class="mock-train-block">
-                          <span class="mock-train-label">Arrival South Station</span>
-                          <span class="mock-train-val">11:15 AM</span>
+
+                        <div class="mock-transit-row">
+                          <span class="mock-transit-badge mock-outbound-badge">OUTBOUND</span>
+                          <div class="mock-transit-station">
+                            <span class="mock-station-name">Dedham</span>
+                            <span class="mock-station-time">10:52 AM</span>
+                          </div>
+                          <span class="mock-transit-arrow" aria-hidden="true">→</span>
+                          <div class="mock-transit-station">
+                            <span class="mock-station-name">Forge Park/495</span>
+                            <span class="mock-station-time">11:32 AM</span>
+                          </div>
+                          <div class="mock-train-pill">
+                            <img src="images/commuter_rail_icon.png?v=3.3" alt="" class="mock-train-icon-img" aria-hidden="true" />
+                            <span class="mock-train-route">5731 (Franklin)</span>
+                          </div>
                         </div>
                       </div>
 
