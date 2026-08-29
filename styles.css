@@ -273,7 +273,7 @@ body {
   border: 2px solid var(--text-color);
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 20px var(--box-shadow-color);
   cursor: grab;
   position: relative;
   z-index: 2;
@@ -281,7 +281,7 @@ body {
 }
 
 .clock.collapsed:hover .clock-display {
-  box-shadow: 0 0 20px var(--box-shadow-color);
+  box-shadow: 0 0 24px var(--box-shadow-color);
 }
 
 .clock.is-dragging {
