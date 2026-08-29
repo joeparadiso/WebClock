@@ -6,7 +6,8 @@
   - Commuter rail inbound train schedule tracker (MBTA API).
   - Dynamic Multi-Timer system with modal creation dialog, in-place editing,
     and Option 3 modern hybrid cards with SVG progress ring meters.
-  - Top navigation bar with theme selection presets and individual color pickers.
+  - Top navigation bar with theme selection presets and Theme Studio modal launcher.
+  - Interactive Theme Studio & Management System with Mock WebClock Preview.
 ******************************************************************************-->
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Baumans&family=Chivo+Mono:wght@100..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script type="text/javascript" src="themes.js" defer></script>
+    <script type="text/javascript" src="themeStudio.js" defer></script>
     <script type="text/javascript" src="weather.js" defer></script>
     <script type="text/javascript" src="clock.js" defer></script>
     <script type="text/javascript" src="sunTimes.js" defer></script>
@@ -30,62 +32,27 @@
     <nav class="navbar" aria-label="Main Navigation">
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
       <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
+      
+      <!-- Hamburger Dropdown Menu -->
       <ul class="nav-links">
+        <li class="nav-menu-header">Theme Presets</li>
         <li>
           <label for="themeSelector">General Themes:</label>
-          <select id="themeSelector">
+          <select id="themeSelector" aria-label="General Themes">
             <!-- options populated via JS -->
           </select>
         </li>
         <li>
           <label for="themeSelector2">Field Themes:</label>
-          <select id="themeSelector2">
+          <select id="themeSelector2" aria-label="Field Themes">
             <!-- options populated via JS -->
           </select>
         </li>
-        <li>
-          <label for="shadowColor">Box Shadow & Button Borders:</label>
-          <input type="color" id="shadowColor" aria-label="Box Shadow & Button Borders" />
-        </li>
-        <li>
-          <label for="clockBg1">Clock Background:</label>
-          <input type="color" id="clockBg1" aria-label="Clock Background Color 1" />
-          <input type="color" id="clockBg2" aria-label="Clock Background Color 2" />
-        </li>
-        <li>
-          <label for="timerBg1">Timer Background:</label>
-          <input type="color" id="timerBg1" aria-label="Timer Background Color 1" />
-          <input type="color" id="timerBg2" aria-label="Timer Background Color 2" />
-        </li>
-        <li>
-          <label for="buttonBg1">Button Background:</label>
-          <input type="color" id="buttonBg1" aria-label="Button Background Color 1" />
-          <input type="color" id="buttonBg2" aria-label="Button Background Color 2" />
-        </li>
-        <li>
-          <label for="pageBg1">Page Background:</label>
-          <input type="color" id="pageBg1" aria-label="Page Background Color 1" />
-          <input type="color" id="pageBg2" aria-label="Page Background Color 2" />
-        </li>
-        <li>
-          <label for="navbarColor">Navbar Background:</label>
-          <input type="color" id="navbarColor" aria-label="Navbar Background Color" />
-        </li>
-        <li>
-          <label for="textColor">Text Color:</label>
-          <input type="color" id="textColor" aria-label="Text Color" />
-        </li>
-        <li>
-          <label for="timerVisualColor">Timer Gauge Visual:</label>
-          <input type="color" id="timerVisualColor" aria-label="Timer Gauge Visual Color" />
-        </li>
-        <li>
-          <label for="navbarTextColor">Navbar Text Color:</label>
-          <input type="color" id="navbarTextColor" aria-label="Navbar Text Color" />
-        </li>
-        <li>
-          <label for="inputBoxColor">Input Box Color:</label>
-          <input type="color" id="inputBoxColor" aria-label="Input Box Color" />
+        <li class="nav-studio-item">
+          <button id="open-theme-studio-btn" class="nav-studio-btn" type="button" onclick="if(window.ThemeStudio) window.ThemeStudio.openStudio();">
+            <span class="btn-icon">🎨</span>
+            <span class="btn-text">Open Theme Studio</span>
+          </button>
         </li>
       </ul>
     </nav>
@@ -186,5 +153,486 @@
         </form>
       </div>
     </div>
+
+    <!-- =========================================================================
+         Theme Studio & Management Modal Overlay
+    ========================================================================= -->
+    <div id="theme-studio-modal-overlay" class="studio-modal-overlay" aria-hidden="true">
+      <div class="studio-modal-card" role="dialog" aria-modal="true" aria-labelledby="studio-title">
+        
+        <!-- Studio Header with Tabs & Close Button -->
+        <header class="studio-header">
+          <div class="studio-title-block">
+            <h2 id="studio-title">🎨 Theme Studio & Manager</h2>
+            <p class="studio-subtitle">Design, customize, preview, and manage themes for WebClock</p>
+          </div>
+          
+          <nav class="studio-tabs" aria-label="Theme Studio Tabs">
+            <button type="button" class="studio-tab-btn active" data-tab="studio">
+              <span class="tab-icon">🖌️</span> Studio & Mock Preview
+            </button>
+            <button type="button" class="studio-tab-btn" data-tab="library">
+              <span class="tab-icon">📚</span> Theme Library
+            </button>
+            <button type="button" class="studio-tab-btn" data-tab="export">
+              <span class="tab-icon">📋</span> Export Code
+            </button>
+          </nav>
+          
+          <button type="button" class="studio-close-btn" id="close-theme-studio" aria-label="Close Theme Studio">✕</button>
+        </header>
+
+        <!-- Studio Body / Tab Contents -->
+        <div class="studio-body">
+          
+          <!-- TAB 1: Studio & Mock Preview -->
+          <section id="tab-content-studio" class="studio-tab-content active">
+            <div class="studio-split-layout">
+              
+              <!-- LEFT COLUMN: Non-Live Mock WebClock Preview -->
+              <div class="mock-preview-column">
+                <div class="mock-column-header">
+                  <h3>Live Mock Display</h3>
+                  <div class="mock-header-actions">
+                    <span class="mock-badge" id="mock-active-theme-badge">Draft Theme</span>
+                    <button type="button" class="btn-mock-action" id="btn-preview-live" title="Test on full background without saving">
+                      👁️ Test Live
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Mock Preview Viewport -->
+                <div class="mock-preview-viewport">
+                  <div id="mock-preview-container" class="mock-preview-container">
+                    
+                    <!-- Mock Navbar -->
+                    <div class="mock-navbar">
+                      <span class="mock-nav-menu">☰</span>
+                      <span class="mock-nav-brand">WebClock</span>
+                      <span class="mock-nav-timer-badge">＋ Create Timer</span>
+                    </div>
+
+                    <!-- Mock Main Clock Card -->
+                    <div class="mock-clock">
+                      <div class="mock-sun-row">
+                        <div class="mock-sun-block">
+                          <span class="mock-sun-label">Sunrise</span>
+                          <span class="mock-sun-val">05:58 AM</span>
+                        </div>
+                        <div class="mock-date-val">Friday, March 14, 2025</div>
+                        <div class="mock-sun-block">
+                          <span class="mock-sun-label">Sunset</span>
+                          <span class="mock-sun-val">07:42 PM</span>
+                        </div>
+                      </div>
+
+                      <div class="mock-clock-digits">
+                        <span>10</span><span class="mock-point">:</span><span>42</span><span class="mock-point">:</span><span>18</span>
+                      </div>
+
+                      <div class="mock-train-row">
+                        <div class="mock-train-block">
+                          <span class="mock-train-label">Departure Dedham</span>
+                          <span class="mock-train-val">10:48 AM</span>
+                        </div>
+                        <div class="mock-train-block">
+                          <span class="mock-train-label">Train/Route</span>
+                          <span class="mock-train-val">5768 (Franklin/Foxboro)</span>
+                        </div>
+                        <div class="mock-train-block">
+                          <span class="mock-train-label">Arrival South Station</span>
+                          <span class="mock-train-val">11:15 AM</span>
+                        </div>
+                      </div>
+
+                      <div class="mock-weather-row">
+                        <span class="mock-weather-temp">72°F</span>
+                        <span class="mock-weather-sub">Feels like 70°F</span>
+                        <span class="mock-weather-divider">•</span>
+                        <span class="mock-weather-sky">Clear Sky</span>
+                        <span class="mock-weather-divider">•</span>
+                        <span class="mock-weather-wind">Wind 8 MPH</span>
+                      </div>
+                    </div>
+
+                    <!-- Mock Multi-Timer Card -->
+                    <div class="mock-timer-shelf">
+                      <div class="mock-timer-card">
+                        <div class="mock-timer-top">
+                          <div class="mock-timer-meta">
+                            <span class="mock-timer-label">Sprint Planning</span>
+                            <span class="mock-timer-target">Today, 7:51 PM</span>
+                          </div>
+                          <button type="button" class="mock-timer-btn">✕</button>
+                        </div>
+                        <div class="mock-timer-mid">
+                          <svg class="mock-timer-gauge" width="64" height="64" viewBox="0 0 64 64">
+                            <circle cx="32" cy="32" r="26" class="mock-gauge-track"></circle>
+                            <circle cx="32" cy="32" r="26" class="mock-gauge-fill" stroke-dasharray="163.36" stroke-dashoffset="57.17"></circle>
+                          </svg>
+                          <div class="mock-timer-digits">01:08:42</div>
+                        </div>
+                        <div class="mock-timer-bot">
+                          <span class="mock-timer-note">📝 Bring updated datasheets</span>
+                          <button type="button" class="mock-timer-btn-edit">✎ Edit</button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT COLUMN: Theme Design Controls -->
+              <div class="studio-controls-column">
+                
+                <!-- Section 1: Template & Identity -->
+                <details class="studio-section-accordion" id="accordion-section-1">
+                  <summary class="studio-accordion-header">
+                    <div class="accordion-title-wrap">
+                      <span class="accordion-step-num">1</span>
+                      <span class="accordion-title-text">Theme Identity & Template</span>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                  </summary>
+                  <div class="studio-accordion-body">
+                    <div class="form-group-studio">
+                      <label for="studio-template-select">Start from Existing Preset / Template:</label>
+                      <select id="studio-template-select" class="studio-select">
+                        <option value="">-- Choose existing theme as baseline --</option>
+                      </select>
+                    </div>
+
+                    <div class="studio-row">
+                      <div class="form-group-studio flex-2">
+                        <label for="studio-theme-name">Theme Name:</label>
+                        <input type="text" id="studio-theme-name" class="studio-input" placeholder="e.g., Midnight Aurora, Sunset Gold" maxlength="40" required />
+                      </div>
+                      <div class="form-group-studio flex-1">
+                        <label for="studio-theme-group">Category / Group:</label>
+                        <select id="studio-theme-group" class="studio-select">
+                          <option value="groupA">General Themes</option>
+                          <option value="groupB">Field Themes</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+
+                <!-- Section 2: Background Configuration -->
+                <details class="studio-section-accordion" id="accordion-section-2">
+                  <summary class="studio-accordion-header">
+                    <div class="accordion-title-wrap">
+                      <span class="accordion-step-num">2</span>
+                      <span class="accordion-title-text">Background Style</span>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                  </summary>
+                  <div class="studio-accordion-body">
+                    <div class="bg-mode-toggle">
+                      <button type="button" class="bg-mode-btn active" id="btn-mode-image" data-mode="image">🖼️ Image Background</button>
+                      <button type="button" class="bg-mode-btn" id="btn-mode-gradient" data-mode="gradient">🌈 Gradient Background</button>
+                    </div>
+
+                    <!-- Image Selector Area -->
+                    <div id="studio-image-controls" class="bg-controls-panel">
+                      <div class="form-group-studio">
+                        <label for="studio-image-select">Choose Bundled Image:</label>
+                        <select id="studio-image-select" class="studio-select">
+                          <!-- Populated by JS -->
+                        </select>
+                      </div>
+                      <div class="form-group-studio">
+                        <label for="studio-image-url">Or Custom Image URL / Path:</label>
+                        <div class="studio-image-input-group">
+                          <input type="text" id="studio-image-url" class="studio-input" placeholder="e.g. images/myNewImage.png or https://example.com/bg.jpg" />
+                          <button type="button" class="btn-studio-browse" id="btn-browse-image" title="Select a file from your computer">📁 Browse</button>
+                          <input type="file" id="studio-image-file" accept="image/*" style="display: none;" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Gradient Info Area (Hidden when Image is active) -->
+                    <div id="studio-gradient-controls" class="bg-controls-panel" style="display: none;">
+                      <p class="studio-hint">Gradient mode uses <strong>Page Background 1</strong> and <strong>Page Background 2</strong> from the color palette below.</p>
+                    </div>
+                  </div>
+                </details>
+
+                <!-- Section 3: Detailed Color Palette Controls -->
+                <details class="studio-section-accordion" id="accordion-section-3">
+                  <summary class="studio-accordion-header">
+                    <div class="accordion-title-wrap">
+                      <span class="accordion-step-num">3</span>
+                      <span class="accordion-title-text">Visual Color Palette</span>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                  </summary>
+                  <div class="studio-accordion-body">
+                    <p class="studio-hint">Adjust colors and fine-tune transparency using the opacity sliders.</p>
+
+                    <div class="palette-grid">
+                      
+                      <!-- Text Color -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-text">Text Color</label>
+                          <span class="color-hex-badge" id="val-text">#DCC48F</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-text" class="color-picker-input" />
+                        </div>
+                      </div>
+
+                      <!-- Box Shadow & Button Borders -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-shadow">Box Shadow & Borders</label>
+                          <span class="color-hex-badge" id="val-shadow">#F8E3AF</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-shadow" class="color-picker-input" />
+                        </div>
+                      </div>
+
+                      <!-- Timer Gauge Visual -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-timerVisual">Timer Gauge Visual</label>
+                          <span class="color-hex-badge" id="val-timerVisual">#F8E3AF</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-timerVisual" class="color-picker-input" />
+                        </div>
+                      </div>
+
+                      <!-- Navbar Text Color -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-navbarText">Navbar Text Color</label>
+                          <span class="color-hex-badge" id="val-navbarText">#DCC48F</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-navbarText" class="color-picker-input" />
+                        </div>
+                      </div>
+
+                      <!-- Input Box Color -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-input">Input Box Color</label>
+                          <span class="color-hex-badge" id="val-input">#DCC48F</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-input" class="color-picker-input" />
+                          <div class="slider-group">
+                            <span class="slider-label">Opacity: <b id="val-input-alpha">100%</b></span>
+                            <input type="range" id="slider-input" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Navbar Background -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-navbar">Navbar Background</label>
+                          <span class="color-hex-badge" id="val-navbar">#000000</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-navbar" class="color-picker-input" />
+                          <div class="slider-group">
+                            <span class="slider-label">Opacity: <b id="val-navbar-alpha">90%</b></span>
+                            <input type="range" id="slider-navbar" min="0" max="1" step="0.05" value="0.9" class="alpha-slider" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Clock Background 1 -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-clockbg1">Clock Background 1</label>
+                          <span class="color-hex-badge" id="val-clockbg1">#2D4067</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-clockbg1" class="color-picker-input" />
+                          <div class="slider-group">
+                            <span class="slider-label">Opacity: <b id="val-clockbg1-alpha">100%</b></span>
+                            <input type="range" id="slider-clockbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Clock Background 2 -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-clockbg2">Clock Background 2</label>
+                          <span class="color-hex-badge" id="val-clockbg2">#0D0B41</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-clockbg2" class="color-picker-input" />
+                          <div class="slider-group">
+                            <span class="slider-label">Opacity: <b id="val-clockbg2-alpha">100%</b></span>
+                            <input type="range" id="slider-clockbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Timer Card Background 1 -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-timerbg1">Timer Card Background 1</label>
+                          <span class="color-hex-badge" id="val-timerbg1">#08001F</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-timerbg1" class="color-picker-input" />
+                          <div class="slider-group">
+                            <span class="slider-label">Opacity: <b id="val-timerbg1-alpha">100%</b></span>
+                            <input type="range" id="slider-timerbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Timer Card Background 2 -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-timerbg2">Timer Card Background 2</label>
+                          <span class="color-hex-badge" id="val-timerbg2">#1C52B8</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-timerbg2" class="color-picker-input" />
+                          <div class="slider-group">
+                            <span class="slider-label">Opacity: <b id="val-timerbg2-alpha">100%</b></span>
+                            <input type="range" id="slider-timerbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          </div>
+                        </div>
+                      </div>
+
+
+                      <!-- Page Background 1 -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-pagebg1">Page Background 1</label>
+                          <span class="color-hex-badge" id="val-pagebg1">#08001F</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-pagebg1" class="color-picker-input" />
+                        </div>
+                      </div>
+
+                      <!-- Page Background 2 -->
+                      <div class="color-control-card">
+                        <div class="color-label-row">
+                          <label for="ctrl-pagebg2">Page Background 2</label>
+                          <span class="color-hex-badge" id="val-pagebg2">#30197D</span>
+                        </div>
+                        <div class="color-input-row">
+                          <input type="color" id="ctrl-pagebg2" class="color-picker-input" />
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </details>
+
+                <!-- Section 4: Action Footer -->
+                <div class="studio-action-bar">
+                  <button type="button" class="btn-studio-primary" id="btn-save-theme">
+                    ✨ Import into WebClock
+                  </button>
+                  <button type="button" class="btn-studio-secondary" id="btn-quick-copy">
+                    📋 Copy JS Code
+                  </button>
+                  <button type="button" class="btn-studio-outline" id="btn-reset-studio">
+                    🔄 Reset
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          <!-- TAB 2: Theme Library & Manager -->
+          <section id="tab-content-library" class="studio-tab-content">
+            <div class="library-toolbar">
+              <div class="library-search-box">
+                <input type="text" id="library-search-input" class="studio-input" placeholder="🔍 Search themes by name..." />
+              </div>
+              <div class="library-filter-buttons">
+                <button type="button" class="lib-filter-btn active" data-filter="all">All</button>
+                <button type="button" class="lib-filter-btn" data-filter="groupA">General</button>
+                <button type="button" class="lib-filter-btn" data-filter="groupB">Field</button>
+                <button type="button" class="lib-filter-btn" data-filter="custom">Custom</button>
+              </div>
+              <button type="button" class="btn-studio-primary" id="btn-library-new-theme">
+                ＋ Create New Theme
+              </button>
+            </div>
+
+            <!-- Theme Cards Grid -->
+            <div id="library-theme-grid" class="library-grid">
+              <!-- Dynamically populated by themeStudio.js -->
+            </div>
+
+            <!-- Library Footer Actions -->
+            <div class="library-footer">
+              <button type="button" class="btn-studio-danger-outline" id="btn-reset-defaults">
+                ↺ Restore Default Built-in Themes
+              </button>
+            </div>
+          </section>
+
+          <!-- TAB 3: Export Code Generator -->
+          <section id="tab-content-export" class="studio-tab-content">
+            <div class="export-container">
+              <div class="export-header-info">
+                <h3>Direct themes.js JavaScript Code</h3>
+                <p>Copy this JavaScript code directly into <code>themes.js</code> to make all your custom themes permanent in your project repository.</p>
+              </div>
+              
+              <div class="export-code-box">
+                <pre><code id="export-code-display"></code></pre>
+              </div>
+
+              <div class="export-action-row">
+                <button type="button" class="btn-studio-primary" id="btn-copy-full-code">
+                  📋 Copy Code to Clipboard
+                </button>
+                <button type="button" class="btn-studio-secondary" id="btn-download-themes-js">
+                  💾 Download themes.js
+                </button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Live Test Control Bar (Option 1) -->
+    <aside id="studio-live-test-bar" class="studio-live-test-bar" aria-label="Live Theme Test Bar">
+      <div class="live-bar-info">
+        <span class="live-pulse-dot" aria-hidden="true"></span>
+        <span class="live-bar-label">TESTING LIVE:</span>
+        <strong id="live-test-theme-name" class="live-bar-theme-name">Draft Theme</strong>
+      </div>
+      <div class="live-bar-actions">
+        <button type="button" id="btn-live-test-reopen" class="btn-live-bar btn-live-edit" title="Reopen Theme Studio to continue tweaking colors">
+          ✏️ Back to Studio
+        </button>
+        <button type="button" id="btn-live-test-copy" class="btn-live-bar btn-live-copy" title="Copy JavaScript code snippet to clipboard for themes.js">
+          📋 Copy JS Code
+        </button>
+        <button type="button" id="btn-live-test-save" class="btn-live-bar btn-live-save" title="Save and permanently import this theme into WebClock">
+          ✨ Keep &amp; Import
+        </button>
+        <button type="button" id="btn-live-test-stop" class="btn-live-bar btn-live-stop" title="Exit live test and restore previous theme">
+          ✕ Discard &amp; Exit
+        </button>
+      </div>
+    </aside>
+
+    <!-- Feedback Toast Notification -->
+    <div id="studio-toast" class="studio-toast" aria-live="polite"></div>
+
   </body>
 </html>

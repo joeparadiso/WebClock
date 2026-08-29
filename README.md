@@ -2,7 +2,7 @@
 
 **WebClock** is a customizable, feature-rich digital dashboard designed to run in any modern web browser. It aggregates essential daily information—live clock, weather conditions, astronomical sun data, and MBTA commuter rail schedules—configured for **Dedham, MA**.
 
-It features an advanced theming engine with preset visual styles, dynamic background imagery, interactive color pickers with automatic synchronization, persistent preferences, and a dynamic multi-timer system.
+It features an advanced theming engine with preset visual styles, dynamic background imagery, interactive color pickers with automatic synchronization, persistent preferences, a dynamic multi-timer system, and a full-featured **Theme Studio**.
 
 ## 📸 Screenshots
 
@@ -37,16 +37,21 @@ _The customization menu allowing for theme selection and manual color adjustment
 - **Info:** Displays next Departure Time, official Train Number with Route Name (e.g. `5768 (Franklin/Foxboro)`), and estimated Arrival Time at South Station.
 - _Powered by MBTA V3 API_.
 
-### 🎨 Advanced Theming & Persistence
-- **Dual Theme Selectors:** Choose from "General Themes" (abstract/color palettes) or "Field Themes" (scenic nature backgrounds).
-- **Interactive Color Pickers:** Fine-grained runtime control over Box Shadows, Clock Backgrounds, Text Colors, Timer Colors, Navbar Background, Timer Gauge Visuals, and Navbar Text Colors.
-- **Bi-directional Color Sync:** Selecting any preset theme automatically syncs the color pickers to the theme's palette.
-- **Persistence:** Selected themes and settings automatically persist across page reloads via `localStorage`.
+### 🎨 Theme Studio & Visual Designer
+- **Full-Screen Workspace & Collapsible Accordions:** An expansive design environment featuring clean, collapsible section accordions for fast navigation across theme metadata, backgrounds, and color palettes.
+- **Interactive Mock Display:** Design new themes against an isolated, non-live mock WebClock dashboard showing real-time updates for clock digits, date, sun times, transit tracker, weather widget, and timer gauges.
+- **Live Test Mode:** Minimize the studio into a sleek, floating bottom toolbar (`👁️ Test Live`) to test changes directly on the active WebClock dashboard. Reopen the studio with your in-progress draft preserved, copy the code directly, or keep and import with one click.
+- **Local Image Browsing & Instant Preview:** Pick any image file directly from your computer (Desktop, Downloads, etc.) to preview immediately in both the mock display and live test mode. The studio suggests a clean theme name and pre-fills the project path (`images/<filename>`) for seamless export.
+- **Precision Color & Opacity Controls:** Fine-grained color pickers paired with opacity range sliders (0–100%) for core theme properties (Clock backgrounds, Timer card backgrounds, Box shadows, Navbar, Text, Inputs, and Timer visual ring).
+- **Cohesive Auto-Inheritance:** Button gradients and default timer card backgrounds automatically inherit the theme's two-tone clock gradient for unified aesthetics, with full support for custom timer background overrides.
+- **Direct Code Generator:** Instantly copy clean JavaScript snippets with standard unquoted keys formatted for direct pasting into `themes.js`.
+- **Theme Library & Management:** Browse all themes with category filters (All, General, Field, Custom), search by name, edit existing themes, clone/duplicate presets, or delete unwanted themes.
 
 ### ⏳ Dynamic Multi-Timer System
 - **Simultaneous Countdowns:** Run multiple independent meeting or event timers at the same time.
-- **Option 3 Modern Hybrid Design:** Compact cards featuring an SVG circular progress ring indicating elapsed percentage alongside large countdown digits and target timestamps (e.g. *"Sprint Planning: Today, 7:51 PM"*).
+- **Modern Hybrid Card Design:** Compact cards featuring an SVG circular progress ring indicating elapsed percentage alongside large countdown digits and target timestamps (e.g. *"Sprint Planning: Today, 7:51 PM"*).
 - **Custom Notes & Overdue Count-Up:** Optional note attached to any timer (e.g. *"Bring updated datasheets"*); when a timer finishes, audio alarm (`alarm.mp3`) triggers and digits switch to counting **UP** until dismissed.
+- **Dedicated "Stop Alarm" Button:** When a timer alarm goes off, a prominent glowing button appears in the bottom-right corner of the card allowing you to **silence the alarm sound** while keeping the count-up timer visible.
 - **In-Place Editing:** Edit timer labels, notes, dates, or times directly via the **`✎` Edit** button on each card.
 - **Popup Creation Modal:** Right-aligned "＋ Create Timer" navbar link opens a modal with custom label, note, date/time pickers, and quick `+15m / +30m / +45m / +1h` presets.
 - **Dynamic Shelf & Persistence:** Automatic reflowing shelf; timers persist in `localStorage` across page reloads.
@@ -59,7 +64,7 @@ _The customization menu allowing for theme selection and manual color adjustment
 
 Because this is a static web project, no server installation or build step is required.
 
-1. Download/clone the repository.
+1. Download or clone the repository.
 2. Ensure you have the `alarm.mp3` file in the root directory for timer audio.
 3. Open `index.html` in any modern web browser.
 
@@ -69,7 +74,7 @@ Because this is a static web project, no server installation or build step is re
 2. **Select a Preset:**
    - **General Themes:** Abstract palettes (e.g., _Lava, Thunderstorm, Under The Sea_).
    - **Field Themes:** Nature and seasonal themes (e.g., _Morning Field, Rainy Field, Autumnal Field_).
-3. **Manual Customization:** Use the color pickers to customize specific elements. Picking a custom Page Background automatically transitions from image mode to a sleek custom gradient.
+3. **Launch Theme Studio:** Click **"🎨 Open Theme Studio"** to design custom themes, browse local images, test live changes, and export clean JavaScript code.
 
 ### 3. Using the Multi-Timer System
 
@@ -78,8 +83,7 @@ Because this is a static web project, no server installation or build step is re
 3. Select the target Date (defaults to today) and Time, or use the **Quick Add** buttons (*+15m, +30m, +45m, +1h*).
 4. Click **Start Timer**. A new modern card will appear on the dashboard shelf.
 5. Click **`✎`** on any timer card to edit its details, date, or time in place.
-6. When the timer finishes, it alerts you with audio and switches to count-up mode showing how long overdue the meeting is. Click **✕ Dismiss** to silence and remove it.
-7. Delete any active timer at any time by clicking **✕** on the card header.
+6. When the timer finishes, it alerts you with audio and switches to count-up mode. Click **"🔔 Stop Alarm"** in the bottom-right corner to silence the sound, or click **"✕ Dismiss"** to remove the timer.
 
 ---
 
@@ -103,15 +107,16 @@ The project is currently configured for **Dedham, MA**. To customize the locatio
 
 ```text
 /
-├── index.html       # Semantic HTML layout and Google Fonts integration
-├── styles.css       # Core styling, layout geometry, and CSS custom properties
-├── clock.js         # Digital clock, date formatting, and dynamic Multi-Timer engine
-├── themes.js        # Theme definitions, color picker sync, and localStorage persistence
-├── weather.js       # OpenWeatherMap API integration and weather widget rendering
-├── sunTimes.js      # SunriseSunset.io API integration and astronomical formatting
-├── nextTrain.js     # MBTA v3 API integration for real-time commuter rail tracking
-├── alarm.mp3        # Audio sound for timer completion
-└── images/          # Background images for scenic and seasonal themes
+├── index.html          # Semantic HTML layout, Theme Studio modal, and timer markup
+├── styles.css          # Core styling, responsive layout geometry, and CSS custom properties
+├── clock.js            # Digital clock, date formatting, and dynamic Multi-Timer engine
+├── themes.js           # Theme engine definitions, dropdown synchronization, and persistence
+├── themeStudio.js      # Full-Screen Theme Studio visual customizer and live test controller
+├── weather.js          # OpenWeatherMap API integration and weather widget rendering
+├── sunTimes.js         # SunriseSunset.io API integration and astronomical formatting
+├── nextTrain.js        # MBTA v3 API integration for real-time commuter rail tracking
+├── alarm.mp3           # Audio sound for timer completion
+└── images/             # Background images for scenic and seasonal themes
 ```
 
 ---

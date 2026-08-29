@@ -1,74 +1,24 @@
 /* *********************************************************************************
- * themes.js -- March 2025 -- Joe Paradiso
+ * themes.js -- March 2025 -- Joe Paradiso (Enhanced Theme Engine)
  *
  * PURPOSE:
- *  - Centralizes theme definitions (colors + background images) in one master
- *    object so theme data is easy to maintain.
- *  - Populates two independent dropdowns in the navbar: `themeSelector` and
- *    `themeSelector2`. Each dropdown may contain a different subset of themes
- *    (initially defined by `manualGroupB`). Selecting an option applies the
- *    associated theme (CSS variables and background image) immediately.
- *  - Provides color picker handlers that allow the user to override CSS
- *    variables at runtime.
- *
- * HOW TO ADD NEW THEMES / CONTROL WHICH DROPDOWN THEY APPEAR IN
- *  1) Add the theme's color properties into the `colorThemes` object below.
- *     Use the same property keys other themes use (shadow, clockbg1, clockbg2,
- *     timerbg1, timerbg2, buttonbg1, buttonbg2, pagebg1, pagebg2, navbar, text,
- *     input). You can omit properties that aren't relevant for a theme.
- *
- *  2) Add the theme's background image entry into `bgThemes` below. The key
- *     must match the key you used in `colorThemes`.
- *
- *  3) Control which dropdown contains the theme:
- *     - To place a theme in the SECOND dropdown (`themeSelector2`) initially,
- *       add its exact key (string) to the `manualGroupB` array (near the
- *       grouping logic). The order in `manualGroupB` dictates the order the
- *       theme appears inside `themeSelector2`.
- *     - Themes not listed in `manualGroupB` will appear in the FIRST dropdown
- *       (`themeSelector`) in the same order they are defined in `colorThemes`
- *       / `masterThemes`.
- *
- *  NOTES:
- *  - This is just the initial placement. If you later want to reassign a
- *    theme, edit `manualGroupB` and reload the page.
- *  - Theme keys are treated as exact strings. Be consistent with capitalization.
- *  - For maintainability, keep colorThemes and bgThemes near each other so
- *    adding a theme is a small, local change.
- *
- * INTERNALS / IMPLEMENTATION SUMMARY:
- *  - `colorThemes` contains the color-related properties for each theme.
- *  - `bgThemes` contains backgroundImage entries.
- *  - `masterThemes` merges the two so a single lookup contains both colors and
- *    background image for a theme.
- *  - Dropdowns are populated from `masterThemes` using either manual lists or
- *    ordering preserved from `masterThemes`.
+ *  - Centralizes built-in theme definitions (colors + background images) in master
+ *    objects and manages runtime theme persistence in localStorage.
+ *  - Populates two independent dropdowns in the navbar: `themeSelector` (General)
+ *    and `themeSelector2` (Field Themes).
+ *  - Exposes the global `window.ThemeEngine` API allowing the Theme Studio to
+ *    visually create, edit, delete, preview, import, and export themes.
  *********************************************************************************/
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Hamburger Menu Toggle
-  const menuToggle = document.getElementById("mobile-menu");
-  const navLinks = document.querySelector(".nav-links");
+(function () {
+  "use strict";
 
-  // Toggles the navbar menu between active/inactive when clicked
-  menuToggle.addEventListener("click", function () {
-    navLinks.classList.toggle("nav-active");
-  });
-
-  /********************************************************************************
-   * Master theme store: colors + background images in one place. We'll split the
-   * available keys into two groups and populate `themeSelector` and
-   * `themeSelector2` from those groups.
-   ********************************************************************************/
-  const colorThemes = {
+  // Built-in color theme definitions
+  const defaultColorThemes = {
     default: {
       shadow: "#F8E3AF",
       clockbg1: "#2D4067",
       clockbg2: "#0D0B41",
-      timerbg1: "#08001f",
-      timerbg2: "#1c52b8",
-      buttonbg1: "#08001f",
-      buttonbg2: "#062963",
       pagebg1: "#08001f",
       pagebg2: "#30197d",
       navbar: "#000000e6",
@@ -79,24 +29,16 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#F99B4E",
       clockbg1: "#223138",
       clockbg2: "#586566",
-      timerbg1: "#4C595E",
-      timerbg2: "#1C221E",
-      buttonbg1: "#814108",
-      buttonbg2: "#071113",
       pagebg1: "#08001f",
       pagebg2: "#30197d",
       navbar: "#000000e6",
       text: "#e6740a",
       input: "#F3B268",
     },
-    "Thunderstorm": {
+    Thunderstorm: {
       shadow: "#ADADAD",
       clockbg1: "rgba(25, 35, 39, .7)",
       clockbg2: "rgba(83, 94, 102, .7)",
-      timerbg1: "rgba(86, 111, 129, .6)",
-      timerbg2: "rgba(61, 71, 77, .6)",
-      buttonbg1: "#232d33",
-      buttonbg2: "#6a737c",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "#333537",
@@ -107,10 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#FFFFFF",
       clockbg1: "#0049a3",
       clockbg2: "#89a2c2",
-      timerbg1: "#0049a3",
-      timerbg2: "#668cbf",
-      buttonbg1: "#0254ac",
-      buttonbg2: "#b9c1cb",
       pagebg1: "#000000",
       pagebg2: "#000000",
       navbar: "#1f5ea2",
@@ -121,10 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#c88437",
       clockbg1: "rgba(65,108,100,.65)",
       clockbg2: "rgba(242,130,38,.65)",
-      timerbg1: "rgba(201,135,44,.65)",
-      timerbg2: "rgba(39,73,98,.65)",
-      buttonbg1: "rgba(209,126,31,.65)",
-      buttonbg2: "rgba(21, 98, 121, 0.65)",
       navbar: "rgba(70, 74, 109, .5)",
       text: "rgb(254, 233, 129)",
       input: "rgba(220,143,80,.5)",
@@ -133,10 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#FB8728",
       clockbg1: "rgba(89, 1, 147, .8)",
       clockbg2: "rgba(242, 130, 38, .8)",
-      timerbg1: "rgba(236, 87, 46, .8)",
-      timerbg2: "rgba(88, 64, 212, .8)",
-      buttonbg1: "rgba(3, 0, 204, .6)",
-      buttonbg2: "rgba(167, 88, 88, .6)",
       pagebg1: "#593BA0",
       pagebg2: "#673104",
       navbar: "#9A4F42",
@@ -147,10 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#d2d5a9",
       clockbg1: "rgba(39,51,19,.8)",
       clockbg2: "rgba(98,170,56,.8)",
-      timerbg1: "rgba(86, 128, 58, .8)",
-      timerbg2: "rgba(27, 78, 7, .8)",
-      buttonbg1: "rgba(68, 83, 67, .8)",
-      buttonbg2: "rgba(83, 100, 67, .8)",
       pagebg1: "#593BA0",
       pagebg2: "#673104",
       navbar: "#000000",
@@ -161,24 +87,18 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#39a0b1",
       clockbg1: "rgba(70,164,156,.8)",
       clockbg2: "rgba(18,68,97,.8)",
-      timerbg1: "rgba(15, 56, 75, .8)",
-      timerbg2: "rgba(70, 177, 136, .8)",
-      buttonbg1: "rgba(53, 156, 123, .8)",
-      buttonbg2: "rgba(10, 45, 65, .8)",
       pagebg1: "#593BA0",
       pagebg2: "#673104",
       navbar: "#296551",
       text: "#ffc766",
       input: "rgba(244,179,97,.7)",
+      timerVisual: "#00d9ff",
+      navbarText: "#ffc766",
     },
     "City Rain": {
       shadow: "#ADADAD",
       clockbg1: "rgba(38,30,20,.8)",
       clockbg2: "rgba(124,111,106,.8)",
-      timerbg1: "rgba(129,119,111,.8)",
-      timerbg2: "rgba(97,93,95,.8)",
-      buttonbg1: "rgba(88,74,60,.8)",
-      buttonbg2: "rgba(197,177,164,.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(38,30,20,.8)",
@@ -189,24 +109,18 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(37,47,57)",
       clockbg1: "rgba(129,144,147,0.8)",
       clockbg2: "rgba(228,194,136,0.8)",
-      timerbg1: "rgba(96,95,32, 0.8)",
-      timerbg2: "rgba(204,156,0, 0.8)",
-      buttonbg1: "rgba(212,183,139,0.8)",
-      buttonbg2: "rgba(223,185,119,0.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(108,103,74)",
       text: "rgb(98,23,04)",
       input: "rgba(226,190,124,0.9)",
+      timerVisual: "#f3d482",
+      navbarText: "#d6ca8a",
     },
     "Mid Morning Field": {
       shadow: "rgb(118,137,142)",
       clockbg1: "rgba(151,178,201,0.8)",
       clockbg2: "rgba(243,230,210,0.8)",
-      timerbg1: "rgba(95, 116, 37, 0.8)",
-      timerbg2: "rgba(204, 184, 0, 0.8)",
-      buttonbg1: "rgba(212,183,139,0.8)",
-      buttonbg2: "rgba(223,185,119,0.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(108,103,74)",
@@ -217,38 +131,48 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(181,192,196)",
       clockbg1: "rgba(255,255,255,0.7)",
       clockbg2: "rgba(190,216,247,0.7)",
-      timerbg1: "rgba(145,141,13, 0.8)",
-      timerbg2: "rgba(202,198,99, 0.8)",
-      buttonbg1: "rgba(156,176,120,0.8)",
-      buttonbg2: "rgba(249,255,209,0.8)",
+      timerbg1: "rgba(255,255,255,0.7)",
+      timerbg2: "rgba(190,216,247,0.7)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(023,038,009)",
       text: "rgb(002,076,136)",
       input: "rgba(208,201,57,0.9)",
+      timerVisual: "rgb(181,192,196)",
+      navbarText: "#cce8ff",
     },
     "Rainy Field": {
       shadow: "rgb(37,41,32)",
-      clockbg1: "rgba(65,75,66,.8)",
-      clockbg2: "rgba(136,150,145,.8)",
-      timerbg1: "rgba(71,88,39,.8)",
-      timerbg2: "rgba(97,113,86,.8)",
-      buttonbg1: "rgba(80,99,57,.8)",
-      buttonbg2: "rgba(115,131,123,.8)",
+      clockbg1: "rgba(59, 59, 59, 0.8)",
+      clockbg2: "rgba(153, 153, 153, 0.8)",
+      timerbg1: "rgba(79, 79, 79, 0.8)",
+      timerbg2: "rgba(156, 156, 156, 0.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(60,68,64,.8)",
       text: "rgb(215,211,209)",
       input: "rgba(161,161,161,.9)",
+      timerVisual: "rgb(37,41,32)",
+      navbarText: "rgb(215,211,209)",
+    },
+    "Post Rain Field": {
+      shadow: "rgb(181,192,196)",
+      clockbg1: "rgba(163, 181, 210, 0.7)",
+      clockbg2: "rgba(241, 244, 249, 0.8)",
+      timerbg1: "rgba(233, 236, 241, 0.7)",
+      timerbg2: "rgba(102, 118, 143, 0.8)",
+      pagebg1: "#303030",
+      pagebg2: "#000000",
+      navbar: "rgba(023,038,009)",
+      text: "rgb(002,076,136)",
+      input: "rgba(208,201,57,0.9)",
+      timerVisual: "#485d7e",
+      navbarText: "#e1f1fe",
     },
     "Cloudy Field": {
       shadow: "rgb(19,29,08)",
       clockbg1: "rgba(44,63,63,.9)",
       clockbg2: "rgba(102,124,127,.9)",
-      timerbg1: "rgba(40,63,0,.8)",
-      timerbg2: "rgba(97,113,86,.8)",
-      buttonbg1: "rgba(80,99,57,.8)",
-      buttonbg2: "rgba(115,131,123,.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(60,68,64,.8)",
@@ -259,10 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(46,41,24)",
       clockbg1: "rgba(99,110,99,.9)",
       clockbg2: "rgba(61,70,76,.9)",
-      timerbg1: "rgba(39,45,06,.8)",
-      timerbg2: "rgba(95,106,38,.8)",
-      buttonbg1: "rgba(61,70,32,.8)",
-      buttonbg2: "rgba(115,131,123,.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(60,68,64,.8)",
@@ -273,10 +193,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(121,89,42)",
       clockbg1: "rgba(47,39,31,.8)",
       clockbg2: "rgba(11,15,18,.8)",
-      timerbg1: "rgba(11,15,2,.8)",
-      timerbg2: "rgba(71,53,2,.8)",
-      buttonbg1: "rgba(96,80,52,.7)",
-      buttonbg2: "rgba(11,16,17,.7)",
       pagebg1: "#000000",
       pagebg2: "#000000",
       navbar: "rgba(24,21,17,.8)",
@@ -287,10 +203,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(121,62,24)",
       clockbg1: "rgba(138,149,153,0.85)",
       clockbg2: "rgba(55,78,55,0.85)",
-      timerbg1: "rgba(167,174,175,0.8)",
-      timerbg2: "rgba(30,40,32,0.8)",
-      buttonbg1: "rgba(122,54,7,0.8)",
-      buttonbg2: "rgba(176,185,186,0.8)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(58,69,57)",
@@ -301,10 +213,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(194,130,45)",
       clockbg1: "rgba(35,74,97,0.6)",
       clockbg2: "rgba(179,132,85,0.6)",
-      timerbg1: "rgba(178,141,94,0.5)",
-      timerbg2: "rgba(95,101,85,0.5)",
-      buttonbg1: "rgba(167,133,95,0.6)",
-      buttonbg2: "rgba(105,104,83,0.6)",
       pagebg1: "#303030",
       pagebg2: "#000000",
       navbar: "rgba(98,72,45,.4)",
@@ -315,36 +223,30 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(152,159,160)",
       clockbg1: "rgba(177,170,160,.7)",
       clockbg2: "rgba(14,19,40,.8)",
-      timerbg1: "rgba(117,117,119, .7)",
-      timerbg2: "rgba(210,187,150, .8)",
-      buttonbg1: "rgba(112,121,122, .8)",
-      buttonbg2: "rgba(223,205,168, .8)",
+      pagebg1: "#000000",
+      pagebg2: "#000000",
       navbar: "rgba(51,54,56, 0.45)",
       text: "rgb(243, 228, 201)",
       input: "rgba(185,176,149, .6)",
+      timerVisual: "#98b2e7",
+      navbarText: "rgb(243, 228, 201)",
     },
     "Natural Dystopia": {
       shadow: "rgb(133,123,63)",
       clockbg1: "rgba(196,162,115,.7)",
       clockbg2: "rgba(68,48,19,.7)",
-      timerbg1: "rgba(18,31,14,.8)",
-      timerbg2: "rgba(99,83,54,.8)",
-      buttonbg1: "rgba(53,40,14,.8)",
-      buttonbg2: "rgba(166,158,63,.8)",
       pagebg1: "#593BA0",
       pagebg2: "#673104",
       navbar: "rgba(118, 109, 11, 0.45)",
       text: "rgb(244,242,203)",
       input: "rgba(149,147,91,.6)",
+      timerVisual: "#e4d167",
+      navbarText: "rgb(244,242,203)",
     },
     "Autumnal Field": {
       shadow: "rgb(189,128,62)",
       clockbg1: "rgba(223,154,114,.7)",
       clockbg2: "rgba(128,52,15,.7)",
-      timerbg1: "rgba(243,186,88,.8)",
-      timerbg2: "rgba(152,97,46,.8)",
-      buttonbg1: "rgba(160,69,24,.8)",
-      buttonbg2: "rgba(246,212,157,.8)",
       navbar: "rgba(161,100,38, 0.45)",
       text: "rgb(244,242,203)",
       input: "rgba(211,196,173,.6)",
@@ -353,10 +255,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(145,122,85)",
       clockbg1: "rgba(193,190,179,.7)",
       clockbg2: "rgba(153,173,178,.7)",
-      timerbg1: "rgba(238,153,33,.8)",
-      timerbg2: "rgba(177,103,11,.8)",
-      buttonbg1: "rgba(62,49,4,.8)",
-      buttonbg2: "rgba(246,212,157,.8)",
       navbar: "rgba(161,100,38, 0.45)",
       text: "rgb(66,43,6)",
       input: "rgba(211,196,173,.6)",
@@ -365,10 +263,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(77,48,10)",
       clockbg1: "rgba(162,153,134,.8)",
       clockbg2: "rgba(129,130,124,.8)",
-      timerbg1: "rgba(185,146,95,.8)",
-      timerbg2: "rgba(90,69,38,.8)",
-      buttonbg1: "rgba(102,77,47,.8)",
-      buttonbg2: "rgba(169,140,102,.8)",
       navbar: "rgba(60,68,64,.8)",
       text: "rgb(215,211,209)",
       input: "rgba(175,167,150,.9)",
@@ -377,10 +271,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(77,48,10)",
       clockbg1: "rgba(198,168,120,.8)",
       clockbg2: "rgba(56,56,52,.8)",
-      timerbg1: "rgba(185,146,95,.8)",
-      timerbg2: "rgba(90,69,38,.8)",
-      buttonbg1: "rgba(102,77,47,.8)",
-      buttonbg2: "rgba(169,140,102,.8)",
       navbar: "rgba(60,68,64,.8)",
       text: "rgb(215,211,209)",
       input: "rgba(175,167,150,.9)",
@@ -389,10 +279,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(189,128,62)",
       clockbg1: "rgba(223,154,114,.7)",
       clockbg2: "rgba(128,52,15,.7)",
-      timerbg1: "rgba(243,186,88,.8)",
-      timerbg2: "rgba(152,97,46,.8)",
-      buttonbg1: "rgba(160,69,24,.8)",
-      buttonbg2: "rgba(246,212,157,.8)",
       navbar: "rgba(161,100,38, 0.45)",
       text: "rgb(244,242,203)",
       input: "rgba(211,196,173,.6)",
@@ -401,10 +287,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(242,212,173)",
       clockbg1: "rgba(251,230,195,.7)",
       clockbg2: "rgba(147,150,161,.7)",
-      timerbg1: "rgba(177,154,140,.8)",
-      timerbg2: "rgba(236,194,147,.8)",
-      buttonbg1: "rgba(170,151,136,.8)",
-      buttonbg2: "rgba(238,198,160,.8)",
       navbar: "rgba(161,100,38, 0.45)",
       text: "rgb(104,80,39)",
       input: "rgba(211,196,173,.6)",
@@ -413,10 +295,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(119,134,154)",
       clockbg1: "rgba(251,230,195,.7)",
       clockbg2: "rgba(147,150,161,.7)",
-      timerbg1: "rgba(171,171,171,.8)",
-      timerbg2: "rgba(248,235,210,.8)",
-      buttonbg1: "rgba(170,176,183,.8)",
-      buttonbg2: "rgba(240,225,201,.8)",
       navbar: "rgba(95,95,100, 0.45)",
       text: "rgb(90,72,43)",
       input: "rgba(211,215,222,.6)",
@@ -425,10 +303,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(119,134,154)",
       clockbg1: "rgba(242,247,253,.7)",
       clockbg2: "rgba(159,166,186,.7)",
-      timerbg1: "rgba(144,147,167,.8)",
-      timerbg2: "rgba(247,247,247,.8)",
-      buttonbg1: "rgba(236,239,244,.8)",
-      buttonbg2: "rgba(185,190,208,.8)",
       navbar: "rgba(95,95,100, 0.45)",
       text: "rgb(90,72,43)",
       input: "rgba(211,215,222,.6)",
@@ -437,10 +311,6 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(188,146,91)",
       clockbg1: "rgba(206,147,80,.5)",
       clockbg2: "rgba(59,69,109,.5)",
-      timerbg1: "rgba(197,162,124,.8)",
-      timerbg2: "rgba(55,56,72,.8)",
-      buttonbg1: "rgba(192,158,125,.8)",
-      buttonbg2: "rgba(85,78,106,.8)",
       navbar: "rgba(95,95,100, 0.45)",
       text: "rgb(197,205,211)",
       input: "rgba(192,159,128,.6)",
@@ -449,29 +319,30 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "rgb(209,212,228)",
       clockbg1: "rgba(242,247,253,.5)",
       clockbg2: "rgba(159,166,186,.8)",
-      timerbg1: "rgba(144,147,167,.6)",
-      timerbg2: "rgba(247,247,247,.6)",
-      buttonbg1: "rgba(236,239,244,.6)",
-      buttonbg2: "rgba(185,190,208,.6)",
+      pagebg1: "#000000",
+      pagebg2: "#000000",
       navbar: "rgba(95,95,100, 0.45)",
       text: "rgb(90,72,43)",
       input: "rgba(211,215,222,.6)",
+      timerVisual: "rgb(209,212,228)",
+      navbarText: "#dfe3ea",
     },
     "Iridescent Clouds": {
       shadow: "rgb(192,136,114)",
       clockbg1: "rgba(247,215,183,.5)",
       clockbg2: "rgba(154,100,88,.8)",
-      timerbg1: "rgba(255,151,122,.6)",
-      timerbg2: "rgba(180,128,112,.6)",
-      buttonbg1: "rgba(219,175,164,.6)",
-      buttonbg2: "rgba(224,153,127,.6)",
+      pagebg1: "#000000",
+      pagebg2: "#000000",
       navbar: "rgba(128,108,120, 0.45)",
       text: "rgb(70,52,61)",
       input: "rgba(197,135,114,.6)",
+      timerVisual: "#faccab",
+      navbarText: "rgb(70,52,61)",
     },
   };
 
-  const bgThemes = {
+  // Built-in background image definitions
+  const defaultBgThemes = {
     default: {
       backgroundImage:
         "url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm00NzItMjBhLmpwZw.jpg')",
@@ -480,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function () {
       backgroundImage:
         "url('https://static.vecteezy.com/system/resources/thumbnails/045/698/869/small_2x/black-marble-texture-with-gold-veins-luxurious-surface-design-photo.jpg')",
     },
-    "Thunderstorm": {
+    Thunderstorm: {
       backgroundImage:
         "url('https://media.istockphoto.com/id/106529026/photo/threatening-dark-clouds-covering-the-sky.jpg?s=612x612&w=0&k=20&c=XOSnMeZbKOW541FgTISJkDVvFK_bVHyTvusmAk9jjAs=')",
     },
@@ -489,8 +360,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "url('https://burst.shopifycdn.com/photos/bright-blue-sky-dotted-with-fluffy-white-clouds.jpg?exif=0&iptc=0')",
     },
     "Dusk Road": {
-      backgroundImage:
-        "url('images/duskRoad.png')",
+      backgroundImage: "url('images/duskRoad.png')",
     },
     "Brilliant Sunset": {
       backgroundImage:
@@ -507,41 +377,35 @@ document.addEventListener("DOMContentLoaded", function () {
       backgroundImage: "url('https://wallpapersok.com/images/hd/foggy-road-in-the-redwood-forest-hekos5o4bl1makkv.jpg')",
     },
     "Morning Field": {
-      backgroundImage:
-        // "url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-        "url('images/morningField_26.png')",
+      backgroundImage: "url('images/morningField_26.png')",
     },
     "Mid Morning Field": {
-      backgroundImage:
-        "url('images/midMorningField.png')",
+      backgroundImage: "url('images/midMorningField.png')",
     },
     "Mid Day Field": {
-      backgroundImage:
-        "url('images/middayField_26.png')",
+      backgroundImage: "url('images/middayField_26.png')",
     },
     "Rainy Field": {
-      backgroundImage:
-        "url('images/rainyField.png')",
+      backgroundImage: "url('images/rainyField.png')",
+    },
+    "Post Rain Field": {
+      backgroundImage: "url('images/postRainField_26.png')",
     },
     "Cloudy Field": {
-      backgroundImage:
-        "url('images/cloudyField.png')",
+      backgroundImage: "url('images/cloudyField.png')",
     },
     "Overcast Field": {
-      backgroundImage:
-        "url('images/cloudyAfternoonField.png')",
+      backgroundImage: "url('images/cloudyAfternoonField.png')",
     },
     "Stormy Field": {
-      backgroundImage:
-        "url('images/darkStormyField.png')",
+      backgroundImage: "url('images/darkStormyField.png')",
     },
     "City Rain": {
       backgroundImage:
         "url('https://t3.ftcdn.net/jpg/01/18/77/84/240_F_118778493_2wK8Eom8T1PIRZU564kaowvLNooggsVZ.jpg')",
     },
     "Whispering Cottage": {
-      backgroundImage:
-        "url('images/whisperingCottage.png')",
+      backgroundImage: "url('images/whisperingCottage.png')",
     },
     "Space Clouds": {
       backgroundImage: "url('images/spaceClouds.png')",
@@ -584,26 +448,8 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
-  // Build a single master themes object by merging colorThemes and bgThemes
-  const masterThemes = {};
-  Object.keys(colorThemes).forEach(key => {
-    masterThemes[key] = Object.assign({}, colorThemes[key]);
-    if (bgThemes[key]) masterThemes[key].backgroundImage = bgThemes[key].backgroundImage;
-  });
-  // Include any bg-only keys
-  Object.keys(bgThemes).forEach(key => {
-    if (!masterThemes[key]) masterThemes[key] = { backgroundImage: bgThemes[key].backgroundImage };
-  });
-
-  // Split keys into two groups using a manual list for groupB so you can control
-  // initial assignment and order. The remaining keys (groupA) will preserve the
-  // order they appear in the code (masterThemes insertion order).
-  const allKeys = Object.keys(masterThemes);
-  // MANUAL: list themes that should initially appear in the second selector
-  // (themeSelector2). Change this array to control which themes belong to
-  // selector2 and the order they appear. This is a one-time initial mapping;
-  // you can add/remove names here as you add new themes later.
-  const manualGroupB = [
+  // Manual list of themes assigned to Group B (Field Themes)
+  const defaultManualGroupB = [
     "Morning Field",
     "Mid Morning Field",
     "Mid Day Field",
@@ -618,16 +464,89 @@ document.addEventListener("DOMContentLoaded", function () {
     "Scattered Clouds Fall Field",
     "Afternoon Pumpkin Field",
     "Rainy Field",
+    "Post Rain Field",
     "Cloudy Field",
     "Overcast Field",
     "Stormy Field",
   ];
-  // groupA keeps the master order but excludes the manual groupB entries
-  const groupA = allKeys.filter(k => !manualGroupB.includes(k));
-  // groupB follows the manual list but only includes keys that exist
-  const groupB = manualGroupB.filter(k => Object.prototype.hasOwnProperty.call(masterThemes, k));
 
-  // Helper to parse any color format (hex, rgb, rgba) into #rrggbb for color inputs
+  // List of pre-bundled images in the images/ directory
+  const BUNDLED_IMAGES = [
+    { name: "Morning Field 26", path: "images/morningField_26.png" },
+    { name: "Mid Morning Field", path: "images/midMorningField.png" },
+    { name: "Mid Day Field 26", path: "images/middayField_26.png" },
+    { name: "Midday Field", path: "images/middayField.png" },
+    { name: "Afternoon Field", path: "images/afternoonField.png" },
+    { name: "Cool Midday Field", path: "images/coolMiddayField.png" },
+    { name: "Morning Haze", path: "images/morningHaze.png" },
+    { name: "Cloudy Field", path: "images/cloudyField.png" },
+    { name: "Cloudy Afternoon Field", path: "images/cloudyAfternoonField.png" },
+    { name: "Rainy Field", path: "images/rainyField.png" },
+    { name: "Dark Stormy Field", path: "images/darkStormyField.png" },
+    { name: "Autumnal Field", path: "images/autumnal_field.png" },
+    { name: "Sunny Autumnal Field", path: "images/sunnyAutumnalField.png" },
+    { name: "Autumnal Misty Field", path: "images/autumnal_misty_field.png" },
+    { name: "Cloudy Fall Field", path: "images/cloudyFallField.png" },
+    { name: "Afternoon Pumpkin Patch", path: "images/afternoonPumpkinPatchField.png" },
+    { name: "Mid Morning Frosty Field", path: "images/midMorningFrostyField.png" },
+    { name: "Morning Frosty Field", path: "images/morningFrostyField.png" },
+    { name: "Partly Sunny Frosty Field", path: "images/partlySunnyFrostyField.png" },
+    { name: "Evening Winter Field", path: "images/eveningWinterField.png" },
+    { name: "Winter Night Field", path: "images/winterNightField.png" },
+    { name: "Whispering Cottage", path: "images/whisperingCottage.png" },
+    { name: "Space Clouds", path: "images/spaceClouds.png" },
+    { name: "Dusk Road", path: "images/duskRoad.png" },
+    { name: "Iridescent Clouds", path: "images/iridescentClouds.png" },
+    { name: "Apocalypse Field", path: "images/apocalypseField.png" },
+  ];
+
+  // Storage keys
+  const STORAGE_CUSTOM_THEMES = "webclock_custom_themes";
+  const STORAGE_DELETED_THEMES = "webclock_deleted_themes";
+  const STORAGE_CURRENT_THEME = "webclock_theme_key";
+
+  /********************************************************************************
+   * Storage helpers
+   ********************************************************************************/
+  function getCustomThemesStore() {
+    try {
+      const data = localStorage.getItem(STORAGE_CUSTOM_THEMES);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      console.warn("Error reading custom themes:", e);
+      return {};
+    }
+  }
+
+  function setCustomThemesStore(store) {
+    try {
+      localStorage.setItem(STORAGE_CUSTOM_THEMES, JSON.stringify(store));
+    } catch (e) {
+      console.warn("Error saving custom themes:", e);
+    }
+  }
+
+  function getDeletedThemesList() {
+    try {
+      const data = localStorage.getItem(STORAGE_DELETED_THEMES);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.warn("Error reading deleted themes:", e);
+      return [];
+    }
+  }
+
+  function setDeletedThemesList(list) {
+    try {
+      localStorage.setItem(STORAGE_DELETED_THEMES, JSON.stringify(list));
+    } catch (e) {
+      console.warn("Error saving deleted themes:", e);
+    }
+  }
+
+  /********************************************************************************
+   * Color Parsing and Formatting Utilities
+   ********************************************************************************/
   function colorToHex(colorStr) {
     if (!colorStr) return "#000000";
     colorStr = colorStr.trim();
@@ -650,70 +569,155 @@ document.addEventListener("DOMContentLoaded", function () {
     return "#000000";
   }
 
-  // Populate the dropdowns
-  const themeSelector = document.getElementById("themeSelector");
-  const themeSelector2 = document.getElementById("themeSelector2");
+  function parseColor(colorStr) {
+    if (!colorStr) return { hex: "#000000", alpha: 1.0, isTransparent: false };
+    colorStr = colorStr.trim();
 
-  if (themeSelector) {
-    themeSelector.innerHTML = "";
-    groupA.forEach(key => {
-      const option = document.createElement("option");
-      option.value = key;
-      option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-      themeSelector.appendChild(option);
-    });
+    if (colorStr.startsWith("#")) {
+      let hex = colorStr;
+      let alpha = 1.0;
+      if (colorStr.length === 4) {
+        hex = `#${colorStr[1]}${colorStr[1]}${colorStr[2]}${colorStr[2]}${colorStr[3]}${colorStr[3]}`;
+      } else if (colorStr.length === 5) {
+        hex = `#${colorStr[1]}${colorStr[1]}${colorStr[2]}${colorStr[2]}${colorStr[3]}${colorStr[3]}`;
+        alpha = Math.round((parseInt(colorStr[4] + colorStr[4], 16) / 255) * 100) / 100;
+      } else if (colorStr.length >= 9) {
+        hex = colorStr.slice(0, 7);
+        const aInt = parseInt(colorStr.slice(7, 9), 16);
+        alpha = Math.round((aInt / 255) * 100) / 100;
+      } else {
+        hex = colorStr.slice(0, 7);
+      }
+      return { hex, alpha, isTransparent: alpha < 1.0 };
+    }
+
+    const match = colorStr.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+    if (match) {
+      const r = Math.min(255, parseInt(match[1], 10) || 0).toString(16).padStart(2, "0");
+      const g = Math.min(255, parseInt(match[2], 10) || 0).toString(16).padStart(2, "0");
+      const b = Math.min(255, parseInt(match[3], 10) || 0).toString(16).padStart(2, "0");
+      let alpha = 1.0;
+      if (match[4] !== undefined) {
+        alpha = parseFloat(match[4]);
+        if (isNaN(alpha)) alpha = 1.0;
+      }
+      return { hex: `#${r}${g}${b}`, alpha, isTransparent: alpha < 1.0 };
+    }
+
+    return { hex: "#000000", alpha: 1.0, isTransparent: false };
   }
 
-  if (themeSelector2) {
-    themeSelector2.innerHTML = "";
-    groupB.forEach(key => {
-      const option = document.createElement("option");
-      option.value = key;
-      option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-      themeSelector2.appendChild(option);
-    });
+  function formatColor(hex, alpha) {
+    if (!hex) return "#000000";
+    if (alpha === undefined || alpha === null || alpha >= 1.0) {
+      return hex;
+    }
+    const cleanHex = hex.replace("#", "");
+    const r = parseInt(cleanHex.substring(0, 2), 16) || 0;
+    const g = parseInt(cleanHex.substring(2, 4), 16) || 0;
+    const b = parseInt(cleanHex.substring(4, 6), 16) || 0;
+    const roundedAlpha = Math.round(alpha * 100) / 100;
+    return `rgba(${r}, ${g}, ${b}, ${roundedAlpha})`;
   }
 
-  // Synchronizes the navbar color picker inputs to reflect current theme values
-  function syncColorPickers(theme) {
-    if (!theme) return;
-    const colorMap = [
-      { id: "shadowColor", val: theme.shadow },
-      { id: "clockBg1", val: theme.clockbg1 },
-      { id: "clockBg2", val: theme.clockbg2 },
-      { id: "timerBg1", val: theme.timerbg1 },
-      { id: "timerBg2", val: theme.timerbg2 },
-      { id: "buttonBg1", val: theme.buttonbg1 },
-      { id: "buttonBg2", val: theme.buttonbg2 },
-      { id: "pageBg1", val: theme.pagebg1 },
-      { id: "pageBg2", val: theme.pagebg2 },
-      { id: "navbarColor", val: theme.navbar },
-      { id: "textColor", val: theme.text },
-      { id: "timerVisualColor", val: theme.timerVisual || theme.shadow },
-      { id: "navbarTextColor", val: theme.navbarText || theme.text },
-      { id: "inputBoxColor", val: theme.input },
-    ];
+  /********************************************************************************
+   * Master Theme Store Builder & Resolver
+   ********************************************************************************/
+  function getMasterThemes() {
+    const customThemes = getCustomThemesStore();
+    const deletedThemes = getDeletedThemesList();
 
-    colorMap.forEach(({ id, val }) => {
-      const inputEl = document.getElementById(id);
-      if (inputEl && val) {
-        inputEl.value = colorToHex(val);
+    const master = {};
+
+    // 1. Load built-in colors & bg images
+    Object.keys(defaultColorThemes).forEach(key => {
+      if (deletedThemes.includes(key)) return;
+      master[key] = Object.assign({}, defaultColorThemes[key]);
+      if (defaultBgThemes[key]) {
+        master[key].backgroundImage = defaultBgThemes[key].backgroundImage;
+      }
+      master[key].isCustom = false;
+      master[key].group = defaultManualGroupB.includes(key) ? "groupB" : "groupA";
+    });
+
+    Object.keys(defaultBgThemes).forEach(key => {
+      if (deletedThemes.includes(key)) return;
+      if (!master[key]) {
+        master[key] = {
+          backgroundImage: defaultBgThemes[key].backgroundImage,
+          isCustom: false,
+          group: defaultManualGroupB.includes(key) ? "groupB" : "groupA",
+        };
       }
     });
+
+    // 2. Overlay / add custom or modified themes from localStorage
+    Object.keys(customThemes).forEach(key => {
+      if (deletedThemes.includes(key)) return;
+      const customItem = customThemes[key];
+      master[key] = Object.assign({}, customItem.colors || customItem);
+      if (customItem.backgroundImage) {
+        master[key].backgroundImage = customItem.backgroundImage;
+      }
+      master[key].isCustom = true;
+      master[key].group = customItem.group || (defaultManualGroupB.includes(key) ? "groupB" : "groupA");
+    });
+
+    return master;
   }
 
-  // Helper to apply a theme object to CSS variables, body background, and color pickers
+  function getGroupA() {
+    const master = getMasterThemes();
+    return Object.keys(master).filter(k => master[k].group === "groupA");
+  }
+
+  function getGroupB() {
+    const master = getMasterThemes();
+    const groupBKeys = Object.keys(master).filter(k => master[k].group === "groupB");
+    return groupBKeys.sort((a, b) => {
+      const idxA = defaultManualGroupB.indexOf(a);
+      const idxB = defaultManualGroupB.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return 0;
+    });
+  }
+
+  /********************************************************************************
+   * Applies a theme to live CSS variables and document background
+   ********************************************************************************/
   function applyThemeByKey(key, savePreference = true) {
-    const theme = masterThemes[key];
-    if (!theme) return;
+    const master = getMasterThemes();
+    let theme = master[key];
+
+    // Fallback if key does not exist: pick first Group B theme or first available
+    if (!theme) {
+      const groupB = getGroupB();
+      if (groupB.length > 0) {
+        key = groupB[0];
+        theme = master[key];
+      } else {
+        const keys = Object.keys(master);
+        if (keys.length > 0) {
+          key = keys[0];
+          theme = master[key];
+        } else {
+          return;
+        }
+      }
+    }
 
     if (theme.shadow) document.documentElement.style.setProperty("--box-shadow-color", theme.shadow);
     if (theme.clockbg1) document.documentElement.style.setProperty("--clock-bg1", theme.clockbg1);
     if (theme.clockbg2) document.documentElement.style.setProperty("--clock-bg2", theme.clockbg2);
-    if (theme.timerbg1) document.documentElement.style.setProperty("--timer-bg1", theme.timerbg1);
-    if (theme.timerbg2) document.documentElement.style.setProperty("--timer-bg2", theme.timerbg2);
-    if (theme.buttonbg1) document.documentElement.style.setProperty("--button-bg1", theme.buttonbg1);
-    if (theme.buttonbg2) document.documentElement.style.setProperty("--button-bg2", theme.buttonbg2);
+
+    const timerbg1 = theme.timerbg1 || theme.clockbg1;
+    if (timerbg1) document.documentElement.style.setProperty("--timer-bg1", timerbg1);
+
+    const timerbg2 = theme.timerbg2 || theme.clockbg2;
+    if (timerbg2) document.documentElement.style.setProperty("--timer-bg2", timerbg2);
+
     if (theme.pagebg1) document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
     if (theme.pagebg2) document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
     if (theme.navbar) document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
@@ -726,102 +730,289 @@ document.addEventListener("DOMContentLoaded", function () {
     const navbarText = theme.navbarText || theme.text;
     if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
 
-    if (theme.backgroundImage) {
+    if (theme.backgroundImage && theme.backgroundImage !== "none") {
       document.body.style.background = theme.backgroundImage;
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
     } else {
+      document.body.style.backgroundImage = "none";
       document.body.style.background = "linear-gradient(45deg, var(--page-bg1), var(--page-bg2))";
     }
 
-    syncColorPickers(theme);
-
     if (savePreference) {
       try {
-        localStorage.setItem("webclock_theme_key", key);
+        localStorage.setItem(STORAGE_CURRENT_THEME, key);
       } catch (e) { }
     }
+
+    // Sync dropdown values: active dropdown gets theme key, inactive dropdown resets to neutral state
+    const selA = document.getElementById("themeSelector");
+    const selB = document.getElementById("themeSelector2");
+    if (selA) {
+      if (selA.querySelector(`option[value="${key}"]`)) {
+        selA.value = key;
+      } else {
+        selA.value = "";
+      }
+    }
+    if (selB) {
+      if (selB.querySelector(`option[value="${key}"]`)) {
+        selB.value = key;
+      } else {
+        selB.value = "";
+      }
+    }
   }
 
-  // Wire dropdown change handlers
-  if (themeSelector) {
-    themeSelector.addEventListener("change", function () {
-      applyThemeByKey(this.value);
+  /********************************************************************************
+   * Dropdown Management
+   ********************************************************************************/
+  function repopulateDropdowns() {
+    const themeSelector = document.getElementById("themeSelector");
+    const themeSelector2 = document.getElementById("themeSelector2");
+    const groupA = getGroupA();
+    const groupB = getGroupB();
+
+    let current = localStorage.getItem(STORAGE_CURRENT_THEME);
+    if (!current) {
+      current = groupB.length > 0 ? groupB[0] : (groupA[0] || "default");
+    }
+
+    if (themeSelector) {
+      themeSelector.innerHTML = '<option value="" disabled selected hidden>-- Select General Theme --</option>';
+      groupA.forEach(key => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+        themeSelector.appendChild(option);
+      });
+      if (groupA.includes(current)) {
+        themeSelector.value = current;
+      } else {
+        themeSelector.value = "";
+      }
+    }
+
+    if (themeSelector2) {
+      themeSelector2.innerHTML = '<option value="" disabled selected hidden>-- Select Field Theme --</option>';
+      groupB.forEach(key => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+        themeSelector2.appendChild(option);
+      });
+      if (groupB.includes(current)) {
+        themeSelector2.value = current;
+      } else {
+        themeSelector2.value = "";
+      }
+    }
+  }
+
+  /********************************************************************************
+   * Save, Delete, and Reset Theme Operations
+   ********************************************************************************/
+  function saveTheme(key, themeData, group = "groupA", shouldApply = true) {
+    if (!key || typeof key !== "string") return false;
+    key = key.trim();
+    if (!key) return false;
+
+    const customThemes = getCustomThemesStore();
+    const deletedThemes = getDeletedThemesList().filter(k => k !== key);
+    setDeletedThemesList(deletedThemes); // Un-delete if previously deleted
+
+    customThemes[key] = {
+      colors: {
+        shadow: themeData.shadow,
+        clockbg1: themeData.clockbg1,
+        clockbg2: themeData.clockbg2,
+        timerbg1: themeData.timerbg1 || themeData.clockbg1,
+        timerbg2: themeData.timerbg2 || themeData.clockbg2,
+        pagebg1: themeData.pagebg1,
+        pagebg2: themeData.pagebg2,
+        navbar: themeData.navbar,
+        text: themeData.text,
+        input: themeData.input,
+        timerVisual: themeData.timerVisual || themeData.shadow,
+        navbarText: themeData.navbarText || themeData.text,
+      },
+      backgroundImage: themeData.backgroundImage || "",
+      group: group === "groupB" ? "groupB" : "groupA",
+      isCustom: true,
+    };
+
+    setCustomThemesStore(customThemes);
+    repopulateDropdowns();
+
+    if (shouldApply) {
+      applyThemeByKey(key, true);
+    }
+    return true;
+  }
+
+  function deleteTheme(key) {
+    if (!key) return false;
+    const customThemes = getCustomThemesStore();
+    if (customThemes[key]) {
+      delete customThemes[key];
+      setCustomThemesStore(customThemes);
+    }
+
+    // Mark as deleted in deleted list (even if built-in)
+    const deletedThemes = getDeletedThemesList();
+    if (!deletedThemes.includes(key)) {
+      deletedThemes.push(key);
+      setDeletedThemesList(deletedThemes);
+    }
+
+    repopulateDropdowns();
+
+    // If deleted theme was active, switch to first available theme
+    const current = localStorage.getItem(STORAGE_CURRENT_THEME);
+    if (current === key) {
+      const master = getMasterThemes();
+      const firstAvailable = Object.keys(master)[0] || "default";
+      applyThemeByKey(firstAvailable, true);
+    }
+
+    return true;
+  }
+
+  function resetToDefaults() {
+    try {
+      localStorage.removeItem(STORAGE_CUSTOM_THEMES);
+      localStorage.removeItem(STORAGE_DELETED_THEMES);
+    } catch (e) { }
+
+    repopulateDropdowns();
+    applyThemeByKey("default", true);
+  }
+
+  /********************************************************************************
+   * Code Generator for themes.js
+   ********************************************************************************/
+  function generateThemesJsCode() {
+    const master = getMasterThemes();
+    const colorOutput = {};
+    const bgOutput = {};
+    const groupBOutput = [];
+
+    Object.keys(master).forEach(key => {
+      const t = master[key];
+      colorOutput[key] = {
+        shadow: t.shadow || "#FFFFFF",
+        clockbg1: t.clockbg1 || "#000000",
+        clockbg2: t.clockbg2 || "#000000",
+        timerbg1: t.timerbg1 || t.clockbg1 || "#000000",
+        timerbg2: t.timerbg2 || t.clockbg2 || "#000000",
+        pagebg1: t.pagebg1 || "#000000",
+        pagebg2: t.pagebg2 || "#000000",
+        navbar: t.navbar || "#000000",
+        text: t.text || "#FFFFFF",
+        input: t.input || "#FFFFFF",
+        timerVisual: t.timerVisual || t.shadow || "#FFFFFF",
+        navbarText: t.navbarText || t.text || "#FFFFFF",
+      };
+
+      if (t.backgroundImage) {
+        bgOutput[key] = {
+          backgroundImage: t.backgroundImage,
+        };
+      }
+
+      if (t.group === "groupB") {
+        groupBOutput.push(key);
+      }
     });
+
+    const codeSnippet = `/* =========================================================
+ * Generated Theme Definitions for themes.js
+ * ========================================================= */
+
+const colorThemes = ${JSON.stringify(colorOutput, null, 2)};
+
+const bgThemes = ${JSON.stringify(bgOutput, null, 2)};
+
+const manualGroupB = ${JSON.stringify(groupBOutput, null, 2)};
+`;
+    return codeSnippet;
   }
 
-  if (themeSelector2) {
-    themeSelector2.addEventListener("change", function () {
-      applyThemeByKey(this.value);
-    });
-  }
+  /********************************************************************************
+   * Public ThemeEngine API
+   ********************************************************************************/
+  window.ThemeEngine = {
+    getDefaultColorThemes: () => Object.assign({}, defaultColorThemes),
+    getDefaultBgThemes: () => Object.assign({}, defaultBgThemes),
+    getManualGroupB: () => [...defaultManualGroupB],
+    getBundledImages: () => [...BUNDLED_IMAGES],
+    getMasterThemes,
+    getGroupA,
+    getGroupB,
+    applyThemeByKey,
+    saveTheme,
+    deleteTheme,
+    resetToDefaults,
+    repopulateDropdowns,
+    colorToHex,
+    parseColor,
+    formatColor,
+    generateThemesJsCode,
+  };
 
-  // Generic helper for updating CSS variables from color pickers
-  function updateCSSVariable(variable, value) {
-    document.documentElement.style.setProperty(variable, value);
-  }
+  /********************************************************************************
+   * DOM Initialization
+   ********************************************************************************/
+  document.addEventListener("DOMContentLoaded", function () {
+    // Hamburger Menu Toggle
+    const menuToggle = document.getElementById("mobile-menu");
+    const navLinks = document.querySelector(".nav-links");
 
-  // Attach color picker event listeners
-  const colorPickers = [
-    { id: "shadowColor", varName: "--box-shadow-color" },
-    { id: "clockBg1", varName: "--clock-bg1" },
-    { id: "clockBg2", varName: "--clock-bg2" },
-    { id: "timerBg1", varName: "--timer-bg1" },
-    { id: "timerBg2", varName: "--timer-bg2" },
-    { id: "buttonBg1", varName: "--button-bg1" },
-    { id: "buttonBg2", varName: "--button-bg2" },
-    { id: "textColor", varName: "--text-color" },
-    { id: "timerVisualColor", varName: "--timer-visual-color" },
-    { id: "navbarTextColor", varName: "--navbar-text-color" },
-    { id: "inputBoxColor", varName: "--input-box-color" },
-    { id: "navbarColor", varName: "--navbar-bg" },
-  ];
-
-  colorPickers.forEach(({ id, varName }) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener("input", function () {
-        updateCSSVariable(varName, this.value);
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener("click", function () {
+        navLinks.classList.toggle("nav-active");
       });
     }
-  });
 
-  // Page background color pickers also switch background from image to gradient
-  const pageBg1El = document.getElementById("pageBg1");
-  const pageBg2El = document.getElementById("pageBg2");
+    // Populate dropdown selectors
+    repopulateDropdowns();
 
-  function handlePageBgChange(variable, value) {
-    updateCSSVariable(variable, value);
-    document.body.style.backgroundImage = "none";
-    document.body.style.background = "linear-gradient(45deg, var(--page-bg1), var(--page-bg2))";
-  }
+    // Wire dropdown change events
+    const themeSelector = document.getElementById("themeSelector");
+    const themeSelector2 = document.getElementById("themeSelector2");
 
-  if (pageBg1El) {
-    pageBg1El.addEventListener("input", function () {
-      handlePageBgChange("--page-bg1", this.value);
-    });
-  }
-
-  if (pageBg2El) {
-    pageBg2El.addEventListener("input", function () {
-      handlePageBgChange("--page-bg2", this.value);
-    });
-  }
-
-  // Restore saved theme or apply initial default theme
-  let initialTheme = "default";
-  try {
-    const saved = localStorage.getItem("webclock_theme_key");
-    if (saved && masterThemes[saved]) {
-      initialTheme = saved;
+    if (themeSelector) {
+      themeSelector.addEventListener("change", function () {
+        applyThemeByKey(this.value);
+      });
     }
-  } catch (e) { }
 
-  applyThemeByKey(initialTheme, false);
+    if (themeSelector2) {
+      themeSelector2.addEventListener("change", function () {
+        applyThemeByKey(this.value);
+      });
+    }
 
-  if (themeSelector && groupA.includes(initialTheme)) {
-    themeSelector.value = initialTheme;
-  } else if (themeSelector2 && groupB.includes(initialTheme)) {
-    themeSelector2.value = initialTheme;
-  }
-});
+    // Restore saved theme or default to the first Field Theme in Group B
+    let initialTheme = null;
+    try {
+      const saved = localStorage.getItem(STORAGE_CURRENT_THEME);
+      const master = getMasterThemes();
+      if (saved && master[saved]) {
+        initialTheme = saved;
+      }
+    } catch (e) { }
+
+    if (!initialTheme) {
+      const groupB = getGroupB();
+      const master = getMasterThemes();
+      if (groupB.length > 0) {
+        initialTheme = groupB[0];
+      } else {
+        initialTheme = Object.keys(master)[0] || "default";
+      }
+    }
+
+    applyThemeByKey(initialTheme, false);
+  });
+})();

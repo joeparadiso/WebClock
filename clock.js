@@ -213,6 +213,9 @@ document.addEventListener("DOMContentLoaded", function () {
               </div>
             </div>
           </div>
+          <button type="button" class="timer-stop-alarm-btn ${timer.alarmSilenced ? "silenced" : ""}" data-id="${timer.id}" title="${timer.alarmSilenced ? "Alarm sound stopped" : "Stop alarm sound"}" aria-label="Stop alarm sound">
+            ${timer.alarmSilenced ? "🔕 Silenced" : "🔔 Stop Alarm"}
+          </button>
         </div>
       `;
     }).join("");
@@ -236,6 +239,16 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteTimer(id);
       });
     });
+
+    // Attach Stop Alarm click handlers
+    const stopAlarmBtns = timersGrid.querySelectorAll(".timer-stop-alarm-btn");
+    stopAlarmBtns.forEach(btn => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const id = this.getAttribute("data-id");
+        silenceTimerAlarm(id);
+      });
+    });
   }
 
   /********************************************************************************
@@ -245,8 +258,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (activeTimers.length === 0) return;
 
     const now = nowDate.getTime();
-    let shouldCheckAlarm = false;
-    let anyOverdue = false;
 
     activeTimers.forEach(timer => {
       const card = timersGrid ? timersGrid.querySelector(`.timer-card[data-id="${timer.id}"]`) : null;
@@ -258,12 +269,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const isOverdue = remainingMs <= 0;
       const remainingSec = Math.floor(remainingMs / 1000);
 
-      if (isOverdue) anyOverdue = true;
-
       // Handle transition to overdue (trigger alarm)
       if (isOverdue && !timer.alarmTriggered) {
         timer.alarmTriggered = true;
-        shouldCheckAlarm = true;
+        timer.alarmSilenced = false;
         card.classList.add("overdue");
 
         const deleteBtn = card.querySelector(".timer-delete-btn");
@@ -279,6 +288,13 @@ document.addEventListener("DOMContentLoaded", function () {
           badge.className = "timer-status-badge";
           badge.textContent = "⚠️ Overdue";
           subtextEl.insertBefore(badge, subtextEl.firstChild);
+        }
+
+        const stopBtn = card.querySelector(".timer-stop-alarm-btn");
+        if (stopBtn) {
+          stopBtn.classList.remove("silenced");
+          stopBtn.textContent = "🔔 Stop Alarm";
+          stopBtn.setAttribute("title", "Stop alarm sound");
         }
       }
 
@@ -304,13 +320,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    if (shouldCheckAlarm && anyOverdue) {
-      alarmSound.play().catch(err => {
-        console.warn("Audio playback prevented by browser policy:", err);
-      });
-    }
-
-    if (!anyOverdue) {
+    const hasUnsilencedOverdue = activeTimers.some(t => t.targetTimestamp <= now && !t.alarmSilenced);
+    if (hasUnsilencedOverdue) {
+      if (alarmSound.paused) {
+        alarmSound.play().catch(err => {
+          console.warn("Audio playback prevented by browser policy:", err);
+        });
+      }
+    } else {
       stopAlarm();
     }
   }
@@ -330,7 +347,8 @@ document.addEventListener("DOMContentLoaded", function () {
       targetTimestamp: targetTimestamp,
       createdAt: now,
       initialDurationMs: duration,
-      alarmTriggered: false
+      alarmTriggered: false,
+      alarmSilenced: false
     };
 
     activeTimers.push(newTimer);
@@ -355,17 +373,45 @@ document.addEventListener("DOMContentLoaded", function () {
       timer.targetTimestamp = newTarget;
       timer.initialDurationMs = Math.max(1000, newTarget - now);
       timer.alarmTriggered = false;
+      timer.alarmSilenced = false;
     }
 
     saveTimers();
 
     // Check if alarm should be silenced after editing
-    const hasRemainingOverdue = activeTimers.some(t => t.targetTimestamp <= Date.now());
+    const hasRemainingOverdue = activeTimers.some(t => t.targetTimestamp <= Date.now() && !t.alarmSilenced);
     if (!hasRemainingOverdue) {
       stopAlarm();
     }
 
     renderTimers();
+  }
+
+  /********************************************************************************
+   * Silences the alarm for a specific timer without deleting it
+   ********************************************************************************/
+  function silenceTimerAlarm(id) {
+    const timer = activeTimers.find(t => t.id === id);
+    if (!timer) return;
+
+    timer.alarmSilenced = true;
+    saveTimers();
+
+    // If no unsilenced overdue timers remain, stop the sound
+    const hasUnsilencedOverdue = activeTimers.some(t => t.targetTimestamp <= Date.now() && !t.alarmSilenced);
+    if (!hasUnsilencedOverdue) {
+      stopAlarm();
+    }
+
+    const card = timersGrid ? timersGrid.querySelector(`.timer-card[data-id="${id}"]`) : null;
+    if (card) {
+      const btn = card.querySelector(".timer-stop-alarm-btn");
+      if (btn) {
+        btn.classList.add("silenced");
+        btn.textContent = "🔕 Silenced";
+        btn.setAttribute("title", "Alarm sound stopped");
+      }
+    }
   }
 
   /********************************************************************************
@@ -376,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
     saveTimers();
 
     // If no remaining timers are overdue, silence the alarm
-    const hasRemainingOverdue = activeTimers.some(t => t.targetTimestamp <= Date.now());
+    const hasRemainingOverdue = activeTimers.some(t => t.targetTimestamp <= Date.now() && !t.alarmSilenced);
     if (!hasRemainingOverdue) {
       stopAlarm();
     }
