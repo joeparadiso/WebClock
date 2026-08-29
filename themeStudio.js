@@ -80,14 +80,14 @@ document.addEventListener("DOMContentLoaded", function () {
     { key: "shadow", ctrlId: "ctrl-shadow", badgeId: "val-shadow", hasAlpha: false },
     { key: "timerVisual", ctrlId: "ctrl-timerVisual", badgeId: "val-timerVisual", hasAlpha: false },
     { key: "navbarText", ctrlId: "ctrl-navbarText", badgeId: "val-navbarText", hasAlpha: false },
-    { key: "input", ctrlId: "ctrl-input", badgeId: "val-input", hasAlpha: true, sliderId: "slider-input", alphaBadgeId: "val-input-alpha" },
     { key: "navbar", ctrlId: "ctrl-navbar", badgeId: "val-navbar", hasAlpha: true, sliderId: "slider-navbar", alphaBadgeId: "val-navbar-alpha" },
     { key: "clockbg1", ctrlId: "ctrl-clockbg1", badgeId: "val-clockbg1", hasAlpha: true, sliderId: "slider-clockbg1", alphaBadgeId: "val-clockbg1-alpha" },
     { key: "clockbg2", ctrlId: "ctrl-clockbg2", badgeId: "val-clockbg2", hasAlpha: true, sliderId: "slider-clockbg2", alphaBadgeId: "val-clockbg2-alpha" },
+    { key: "todobg1", ctrlId: "ctrl-todobg1", badgeId: "val-todobg1", hasAlpha: true, sliderId: "slider-todobg1", alphaBadgeId: "val-todobg1-alpha" },
+    { key: "todobg2", ctrlId: "ctrl-todobg2", badgeId: "val-todobg2", hasAlpha: true, sliderId: "slider-todobg2", alphaBadgeId: "val-todobg2-alpha" },
+    { key: "todoItemBg", ctrlId: "ctrl-todoItemBg", badgeId: "val-todoItemBg", hasAlpha: true, sliderId: "slider-todoItemBg", alphaBadgeId: "val-todoItemBg-alpha" },
     { key: "timerbg1", ctrlId: "ctrl-timerbg1", badgeId: "val-timerbg1", hasAlpha: true, sliderId: "slider-timerbg1", alphaBadgeId: "val-timerbg1-alpha" },
     { key: "timerbg2", ctrlId: "ctrl-timerbg2", badgeId: "val-timerbg2", hasAlpha: true, sliderId: "slider-timerbg2", alphaBadgeId: "val-timerbg2-alpha" },
-    { key: "pagebg1", ctrlId: "ctrl-pagebg1", badgeId: "val-pagebg1", hasAlpha: false },
-    { key: "pagebg2", ctrlId: "ctrl-pagebg2", badgeId: "val-pagebg2", hasAlpha: false },
   ];
 
   // Studio Draft State
@@ -100,13 +100,13 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#F8E3AF",
       clockbg1: "rgba(45, 64, 103, 0.8)",
       clockbg2: "rgba(13, 11, 65, 0.8)",
+      todobg1: "rgba(45, 64, 103, 0.8)",
+      todobg2: "rgba(13, 11, 65, 0.8)",
+      todoItemBg: "rgba(0, 0, 0, 0.25)",
       timerbg1: "rgba(45, 64, 103, 0.8)",
       timerbg2: "rgba(13, 11, 65, 0.8)",
-      pagebg1: "#08001F",
-      pagebg2: "#30197D",
       navbar: "rgba(0, 0, 0, 0.85)",
       text: "#DCC48F",
-      input: "rgba(220, 196, 143, 0.8)",
       timerVisual: "#F8E3AF",
       navbarText: "#DCC48F",
     },
@@ -314,6 +314,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Ensure opened sections scroll into view cleanly
+  if (studioModal) {
+    const accordions = studioModal.querySelectorAll(".studio-section-accordion");
+    accordions.forEach(acc => {
+      acc.addEventListener("toggle", function () {
+        if (this.open) {
+          setTimeout(() => {
+            this.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 60);
+        }
+      });
+    });
+  }
+
   /********************************************************************************
    * Populate Dropdowns (Templates & Bundled Images)
    ********************************************************************************/
@@ -435,17 +449,17 @@ document.addEventListener("DOMContentLoaded", function () {
     mockContainer.style.setProperty("--mock-box-shadow-color", currentDraft.colors.shadow || "#F8E3AF");
     mockContainer.style.setProperty("--mock-timer-visual-color", currentDraft.colors.timerVisual || currentDraft.colors.shadow || "#F8E3AF");
     mockContainer.style.setProperty("--mock-navbar-text-color", currentDraft.colors.navbarText || currentDraft.colors.text || "#DCC48F");
-    mockContainer.style.setProperty("--mock-input-box-color", currentDraft.colors.input || "#DCC48F");
     mockContainer.style.setProperty("--mock-navbar-bg", currentDraft.colors.navbar || "#000000e6");
     mockContainer.style.setProperty("--mock-clock-bg1", currentDraft.colors.clockbg1 || "#2D4067");
     mockContainer.style.setProperty("--mock-clock-bg2", currentDraft.colors.clockbg2 || "#0D0B41");
+    mockContainer.style.setProperty("--mock-todo-bg1", currentDraft.colors.todobg1 || currentDraft.colors.clockbg1 || "#2D4067");
+    mockContainer.style.setProperty("--mock-todo-bg2", currentDraft.colors.todobg2 || currentDraft.colors.clockbg2 || "#0D0B41");
+    mockContainer.style.setProperty("--mock-todo-item-bg", currentDraft.colors.todoItemBg || "rgba(0, 0, 0, 0.25)");
     mockContainer.style.setProperty("--mock-timer-bg1", currentDraft.colors.timerbg1 || currentDraft.colors.clockbg1 || "#08001F");
     mockContainer.style.setProperty("--mock-timer-bg2", currentDraft.colors.timerbg2 || currentDraft.colors.clockbg2 || "#1C52B8");
-    mockContainer.style.setProperty("--mock-page-bg1", currentDraft.colors.pagebg1 || "#08001F");
-    mockContainer.style.setProperty("--mock-page-bg2", currentDraft.colors.pagebg2 || "#30197D");
 
-    // Background Mode
-    if (currentDraft.bgMode === "image" && currentDraft.backgroundImage && currentDraft.backgroundImage !== "none") {
+    // Background Image
+    if (currentDraft.backgroundImage && currentDraft.backgroundImage !== "none") {
       mockContainer.style.backgroundImage = currentDraft.backgroundImage.startsWith("url")
         ? currentDraft.backgroundImage
         : `url('${currentDraft.backgroundImage}')`;
@@ -453,7 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
       mockContainer.style.backgroundPosition = "center";
     } else {
       mockContainer.style.backgroundImage = "none";
-      mockContainer.style.background = `linear-gradient(45deg, ${currentDraft.colors.pagebg1 || "#08001F"}, ${currentDraft.colors.pagebg2 || "#30197D"})`;
+      mockContainer.style.background = "#0b0f19";
     }
 
     if (mockBadge) {
@@ -640,6 +654,9 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: theme.shadow || "#FFFFFF",
       clockbg1: theme.clockbg1 || "#000000",
       clockbg2: theme.clockbg2 || "#000000",
+      todobg1: theme.todobg1 || theme.clockbg1 || "#000000",
+      todobg2: theme.todobg2 || theme.clockbg2 || "#000000",
+      todoItemBg: theme.todoItemBg || "rgba(0, 0, 0, 0.25)",
       timerbg1: theme.timerbg1 || theme.clockbg1 || "#000000",
       timerbg2: theme.timerbg2 || theme.clockbg2 || "#000000",
       pagebg1: theme.pagebg1 || "#000000",
@@ -684,13 +701,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (c.shadow) document.documentElement.style.setProperty("--box-shadow-color", c.shadow);
     if (c.clockbg1) document.documentElement.style.setProperty("--clock-bg1", c.clockbg1);
     if (c.clockbg2) document.documentElement.style.setProperty("--clock-bg2", c.clockbg2);
+
+    const todobg1 = c.todobg1 || c.clockbg1;
+    if (todobg1) document.documentElement.style.setProperty("--todo-bg1", todobg1);
+
+    const todobg2 = c.todobg2 || c.clockbg2;
+    if (todobg2) document.documentElement.style.setProperty("--todo-bg2", todobg2);
+
+    const todoItemBg = c.todoItemBg || "rgba(0, 0, 0, 0.25)";
+    if (todoItemBg) document.documentElement.style.setProperty("--todo-item-bg", todoItemBg);
+
     if (c.timerbg1) document.documentElement.style.setProperty("--timer-bg1", c.timerbg1);
     if (c.timerbg2) document.documentElement.style.setProperty("--timer-bg2", c.timerbg2);
-    if (c.pagebg1) document.documentElement.style.setProperty("--page-bg1", c.pagebg1);
-    if (c.pagebg2) document.documentElement.style.setProperty("--page-bg2", c.pagebg2);
     if (c.navbar) document.documentElement.style.setProperty("--navbar-bg", c.navbar);
     if (c.text) document.documentElement.style.setProperty("--text-color", c.text);
-    if (c.input) document.documentElement.style.setProperty("--input-box-color", c.input);
 
     const timerVisual = c.timerVisual || c.shadow;
     if (timerVisual) document.documentElement.style.setProperty("--timer-visual-color", timerVisual);
@@ -698,13 +722,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const navbarText = c.navbarText || c.text;
     if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
 
-    if (currentDraft.bgMode === "image" && currentDraft.backgroundImage) {
+    if (currentDraft.backgroundImage && currentDraft.backgroundImage !== "none") {
       document.body.style.background = currentDraft.backgroundImage;
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
     } else {
       document.body.style.backgroundImage = "none";
-      document.body.style.background = "linear-gradient(45deg, var(--page-bg1), var(--page-bg2))";
+      document.body.style.background = "#0b0f19";
     }
   }
 
@@ -841,13 +865,13 @@ document.addEventListener("DOMContentLoaded", function () {
     snippet += `    shadow: "${c.shadow || '#FFFFFF'}",\n`;
     snippet += `    clockbg1: "${c.clockbg1 || '#000000'}",\n`;
     snippet += `    clockbg2: "${c.clockbg2 || '#000000'}",\n`;
+    snippet += `    todobg1: "${c.todobg1 || c.clockbg1 || '#000000'}",\n`;
+    snippet += `    todobg2: "${c.todobg2 || c.clockbg2 || '#000000'}",\n`;
+    snippet += `    todoItemBg: "${c.todoItemBg || 'rgba(0, 0, 0, 0.25)'}",\n`;
     snippet += `    timerbg1: "${c.timerbg1 || c.clockbg1 || '#000000'}",\n`;
     snippet += `    timerbg2: "${c.timerbg2 || c.clockbg2 || '#000000'}",\n`;
-    snippet += `    pagebg1: "${c.pagebg1 || '#000000'}",\n`;
-    snippet += `    pagebg2: "${c.pagebg2 || '#000000'}",\n`;
     snippet += `    navbar: "${c.navbar || '#000000'}",\n`;
     snippet += `    text: "${c.text || '#FFFFFF'}",\n`;
-    snippet += `    input: "${c.input || '#FFFFFF'}",\n`;
     snippet += `    timerVisual: "${timerVisual}",\n`;
     snippet += `    navbarText: "${navbarText}",\n`;
     snippet += `  },\n\n`;

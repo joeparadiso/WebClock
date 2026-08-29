@@ -40,11 +40,17 @@ _The customization menu allowing for theme selection and manual color adjustment
 
 ### 🎨 Theme Studio & Visual Designer
 - **Full-Screen Workspace & Collapsible Accordions:** An expansive design environment featuring clean, collapsible section accordions for fast navigation across theme metadata, backgrounds, and color palettes.
-- **Interactive Mock Display:** Design new themes against an isolated, non-live mock WebClock dashboard showing real-time updates for clock digits, date, sun times, transit tracker, weather widget, and timer gauges.
+- **Interactive Mock Display:** Design new themes against an isolated, non-live mock WebClock dashboard showing real-time updates for clock digits, date, sun times, transit tracker, weather widget, timer gauges, and the To-Do list.
 - **Live Test Mode:** Minimize the studio into a sleek, floating bottom toolbar (`👁️ Test Live`) to test changes directly on the active WebClock dashboard. Reopen the studio with your in-progress draft preserved, copy the code directly, or keep and import with one click.
 - **Local Image Browsing & Instant Preview:** Pick any image file directly from your computer (Desktop, Downloads, etc.) to preview immediately in both the mock display and live test mode. The studio suggests a clean theme name and pre-fills the project path (`images/<filename>`) for seamless export.
-- **Precision Color & Opacity Controls:** Fine-grained color pickers paired with opacity range sliders (0–100%) for core theme properties (Clock backgrounds, Timer card backgrounds, Box shadows, Navbar, Text, Inputs, and Timer visual ring).
-- **Cohesive Auto-Inheritance:** Button gradients and default timer card backgrounds automatically inherit the theme's two-tone clock gradient for unified aesthetics, with full support for custom timer background overrides.
+- **Categorized Visual Color Palette:** Logically organized into 5 intuitive color groups with dedicated color pickers and 0–100% opacity range sliders:
+  - 🌐 **General & Global Colors:** Text Color and Box Shadow & Glow.
+  - 🧭 **Navigation Bar:** Navbar Background (with transparency) and Navbar Text Color.
+  - 🕒 **Main Clock Card:** Dual-tone Clock Background 1 & 2 gradients with opacity controls.
+  - 📝 **To-Do List Card:** Independent Two-Tone Card Background 1 & 2 gradients and Item Shading & Opacity.
+  - ⏳ **Countdown Timer Cards:** Two-tone Timer Card Backgrounds and circular Timer Gauge Visual fill ring.
+- **Independent Scrollable Panes & Auto-Scroll:** Each section accordion body contains an internal scrollbar alongside a full-height scrollable controls column with automatic smooth scrolling when opening sections.
+- **Cohesive Auto-Inheritance:** Button gradients, To-Do card backgrounds, and timer card backgrounds automatically inherit the theme's two-tone clock gradient for unified aesthetics, with full support for independent background and task item overrides.
 - **Direct Code Generator:** Instantly copy clean JavaScript snippets with standard unquoted keys formatted for direct pasting into `themes.js`.
 - **Theme Library & Management:** Browse all themes with category filters (All, General, Field, Custom), search by name, edit existing themes, clone/duplicate presets, or delete unwanted themes.
 

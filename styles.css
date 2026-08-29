@@ -14,9 +14,6 @@
   --clock-bg2: #1c52b8;
   --timer-bg1: #08001f;
   --timer-bg2: #1c52b8;
-  --page-bg1: #08001f;
-  --page-bg2: #30197d;
-  --input-box-color: #72a0e1;
   --navbar-bg: #000000e6;
   --navbar-text-color: #72a0e1;
   --timer-visual-color: #ffec04;
@@ -24,7 +21,7 @@
 
 /* Page background */
 body {
-  background: linear-gradient(45deg, var(--page-bg1), var(--page-bg2));
+  background: #08001f;
   font-family: Arial, sans-serif;
   color: var(--text-color);
   text-align: center;
@@ -654,7 +651,7 @@ body {
 
 .todo-card {
   position: relative;
-  background: linear-gradient(135deg, var(--clock-bg1), var(--clock-bg2));
+  background: linear-gradient(135deg, var(--todo-bg1, var(--clock-bg1)), var(--todo-bg2, var(--clock-bg2)));
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 8px 24px var(--box-shadow-color);
   border-radius: 16px;
@@ -830,15 +827,15 @@ body {
   align-items: flex-start;
   gap: 8px;
   padding: 6px 8px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--todo-item-bg, rgba(0, 0, 0, 0.25));
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .todo-item:hover {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  filter: brightness(1.25);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Left checkbox */
@@ -1448,7 +1445,8 @@ body {
 /* Studio Body */
 .studio-body {
   flex: 1;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
   padding: 16px 20px;
   background: #0b0f19;
 }
@@ -1456,18 +1454,38 @@ body {
 .studio-tab-content {
   display: none;
   height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  box-sizing: border-box;
 }
 
 .studio-tab-content.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+}
+
+#tab-content-library.active,
+#tab-content-export.active {
   display: block;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Split Layout for Studio Tab: Screen-wide with Large Mock Viewport */
 .studio-split-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(390px, 1fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(390px, 1fr);
   gap: 20px;
+  flex: 1;
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* =========================================================================
@@ -1478,6 +1496,9 @@ body {
   flex-direction: column;
   gap: 10px;
   height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .mock-column-header {
@@ -1549,12 +1570,9 @@ body {
   --mock-clock-bg2: #0D0B41;
   --mock-timer-bg1: #08001F;
   --mock-timer-bg2: #1C52B8;
-  --mock-page-bg1: #08001F;
-  --mock-page-bg2: #30197D;
   --mock-navbar-bg: #000000e6;
   --mock-navbar-text-color: #DCC48F;
   --mock-timer-visual-color: #F8E3AF;
-  --mock-input-box-color: #DCC48F;
 
   padding: 28px 36px;
   min-height: 600px;
@@ -1709,23 +1727,144 @@ body {
   opacity: 0.5;
 }
 
-/* Mock Timer Shelf & Card */
-.mock-timer-shelf {
+/* Mock Dashboard Widgets Row (To-Do List & Multi-Timer) */
+.mock-widgets-row {
+  display: flex;
+  gap: 14px;
   width: 100%;
   max-width: 820px;
 }
 
+@media (max-width: 768px) {
+  .mock-widgets-row {
+    flex-direction: column;
+  }
+}
+
+.mock-todo-card {
+  flex: 1;
+  background: linear-gradient(135deg, var(--mock-todo-bg1, var(--mock-clock-bg1)), var(--mock-todo-bg2, var(--mock-clock-bg2)));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px var(--mock-box-shadow-color);
+  padding: 12px 14px;
+  color: var(--mock-text-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mock-todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+}
+
+.mock-todo-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mock-todo-handle {
+  opacity: 0.45;
+  font-size: 0.85rem;
+}
+
+.mock-todo-title {
+  font-family: "Baumans", serif;
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.mock-todo-badge {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.mock-todo-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mock-todo-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: inherit;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+.mock-todo-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mock-todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: var(--mock-todo-item-bg, rgba(0, 0, 0, 0.25));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: "Baumans", serif;
+}
+
+.mock-todo-checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--mock-text-color);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.mock-todo-checkbox.checked {
+  background: var(--mock-text-color);
+  color: #000;
+  font-weight: bold;
+}
+
+.mock-todo-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mock-todo-item.completed .mock-todo-text {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.mock-todo-remove {
+  opacity: 0.5;
+  font-size: 0.75rem;
+}
+
 .mock-timer-card {
-  width: 100%;
+  flex: 1;
   background: linear-gradient(135deg, var(--mock-timer-bg1), var(--mock-timer-bg2));
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 14px;
   box-shadow: 0 6px 18px var(--mock-box-shadow-color);
-  padding: 14px 18px;
+  padding: 12px 14px;
   color: var(--mock-text-color);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .mock-timer-top {
@@ -1820,8 +1959,34 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  overflow-y: auto;
-  padding-right: 6px;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  padding-right: 10px;
+  padding-bottom: 50px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #5352ed rgba(255, 255, 255, 0.08);
+}
+
+.studio-controls-column::-webkit-scrollbar {
+  width: 8px;
+}
+
+.studio-controls-column::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+}
+
+.studio-controls-column::-webkit-scrollbar-thumb {
+  background: #5352ed;
+  border-radius: 4px;
+}
+
+.studio-controls-column::-webkit-scrollbar-thumb:hover {
+  background: #3742fa;
 }
 
 /* Collapsible Accordion Cards (Collapsed by default) */
@@ -1904,12 +2069,35 @@ body {
 }
 
 .studio-accordion-body {
-  padding: 16px 18px 18px;
+  padding: 14px 16px 16px;
   background: rgba(14, 19, 32, 0.7);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #5352ed rgba(255, 255, 255, 0.08);
+}
+
+.studio-accordion-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.studio-accordion-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.studio-accordion-body::-webkit-scrollbar-thumb {
+  background: #5352ed;
+  border-radius: 4px;
+}
+
+.studio-accordion-body::-webkit-scrollbar-thumb:hover {
+  background: #3742fa;
 }
 
 .studio-hint {
@@ -2010,7 +2198,40 @@ body {
   font-weight: bold;
 }
 
-/* Palette Grid */
+/* Palette Groups & Grids */
+.palette-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.palette-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(8, 12, 22, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px 14px;
+}
+
+.palette-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Baumans", serif;
+  font-size: 0.98rem;
+  font-weight: bold;
+  color: #70a1ff;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.3px;
+}
+
+.palette-group-icon {
+  font-size: 1rem;
+}
+
 .palette-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));

@@ -18,14 +18,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Baumans&family=Chivo+Mono:wght@100..900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-    <script type="text/javascript" src="themes.js" defer></script>
-    <script type="text/javascript" src="themeStudio.js" defer></script>
-    <script type="text/javascript" src="weather.js" defer></script>
-    <script type="text/javascript" src="clock.js" defer></script>
-    <script type="text/javascript" src="sunTimes.js" defer></script>
-    <script type="text/javascript" src="nextTrain.js" defer></script>
-    <script type="text/javascript" src="todo.js" defer></script>
+    <link rel="stylesheet" href="styles.css?v=3.0" />
+    <script type="text/javascript" src="themes.js?v=3.0" defer></script>
+    <script type="text/javascript" src="themeStudio.js?v=3.0" defer></script>
+    <script type="text/javascript" src="weather.js?v=3.0" defer></script>
+    <script type="text/javascript" src="clock.js?v=3.0" defer></script>
+    <script type="text/javascript" src="sunTimes.js?v=3.0" defer></script>
+    <script type="text/javascript" src="nextTrain.js?v=3.0" defer></script>
+    <script type="text/javascript" src="todo.js?v=3.0" defer></script>
     <link rel="icon" href="favicon.ico" />
   </head>
   <body>
@@ -287,8 +287,37 @@
                       </div>
                     </div>
 
-                    <!-- Mock Multi-Timer Card -->
-                    <div class="mock-timer-shelf">
+                    <!-- Mock Dashboard Widgets Row (To-Do List & Multi-Timer) -->
+                    <div class="mock-widgets-row">
+                      
+                      <!-- Mock To-Do Card -->
+                      <div class="mock-todo-card">
+                        <div class="mock-todo-header">
+                          <div class="mock-todo-left">
+                            <span class="mock-todo-handle">⠿</span>
+                            <span class="mock-todo-title">To-Do</span>
+                            <span class="mock-todo-badge">1/2</span>
+                          </div>
+                          <div class="mock-todo-actions">
+                            <span class="mock-todo-btn">▼</span>
+                            <span class="mock-todo-btn">＋</span>
+                          </div>
+                        </div>
+                        <div class="mock-todo-body">
+                          <div class="mock-todo-item completed">
+                            <span class="mock-todo-checkbox checked">✓</span>
+                            <span class="mock-todo-text">Prepare status report</span>
+                            <span class="mock-todo-remove">✕</span>
+                          </div>
+                          <div class="mock-todo-item">
+                            <span class="mock-todo-checkbox"></span>
+                            <span class="mock-todo-text">Review sprint roadmap</span>
+                            <span class="mock-todo-remove">✕</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Mock Multi-Timer Card -->
                       <div class="mock-timer-card">
                         <div class="mock-timer-top">
                           <div class="mock-timer-meta">
@@ -298,7 +327,7 @@
                           <button type="button" class="mock-timer-btn">✕</button>
                         </div>
                         <div class="mock-timer-mid">
-                          <svg class="mock-timer-gauge" width="64" height="64" viewBox="0 0 64 64">
+                          <svg class="mock-timer-gauge" width="56" height="56" viewBox="0 0 64 64">
                             <circle cx="32" cy="32" r="26" class="mock-gauge-track"></circle>
                             <circle cx="32" cy="32" r="26" class="mock-gauge-fill" stroke-dasharray="163.36" stroke-dashoffset="57.17"></circle>
                           </svg>
@@ -403,162 +432,214 @@
                   <div class="studio-accordion-body">
                     <p class="studio-hint">Adjust colors and fine-tune transparency using the opacity sliders.</p>
 
-                    <div class="palette-grid">
+                    <div class="palette-groups-container">
                       
-                      <!-- Text Color -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-text">Text Color</label>
-                          <span class="color-hex-badge" id="val-text">#DCC48F</span>
+                      <!-- Group 1: General & Global Colors -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">🌐</span>
+                          <span class="palette-group-title">General & Global Colors</span>
                         </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-text" class="color-picker-input" />
-                        </div>
-                      </div>
+                        <div class="palette-grid">
+                          <!-- Text Color -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-text">Text Color</label>
+                              <span class="color-hex-badge" id="val-text">#DCC48F</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-text" class="color-picker-input" />
+                            </div>
+                          </div>
 
-                      <!-- Box Shadow & Button Borders -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-shadow">Box Shadow & Borders</label>
-                          <span class="color-hex-badge" id="val-shadow">#F8E3AF</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-shadow" class="color-picker-input" />
-                        </div>
-                      </div>
-
-                      <!-- Timer Gauge Visual -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-timerVisual">Timer Gauge Visual</label>
-                          <span class="color-hex-badge" id="val-timerVisual">#F8E3AF</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-timerVisual" class="color-picker-input" />
-                        </div>
-                      </div>
-
-                      <!-- Navbar Text Color -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-navbarText">Navbar Text Color</label>
-                          <span class="color-hex-badge" id="val-navbarText">#DCC48F</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-navbarText" class="color-picker-input" />
-                        </div>
-                      </div>
-
-                      <!-- Input Box Color -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-input">Input Box Color</label>
-                          <span class="color-hex-badge" id="val-input">#DCC48F</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-input" class="color-picker-input" />
-                          <div class="slider-group">
-                            <span class="slider-label">Opacity: <b id="val-input-alpha">100%</b></span>
-                            <input type="range" id="slider-input" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          <!-- Box Shadow & Glow -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-shadow">Box Shadow & Glow</label>
+                              <span class="color-hex-badge" id="val-shadow">#F8E3AF</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-shadow" class="color-picker-input" />
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Navbar Background -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-navbar">Navbar Background</label>
-                          <span class="color-hex-badge" id="val-navbar">#000000</span>
+                      <!-- Group 2: Navigation Bar -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">🧭</span>
+                          <span class="palette-group-title">Navigation Bar</span>
                         </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-navbar" class="color-picker-input" />
-                          <div class="slider-group">
-                            <span class="slider-label">Opacity: <b id="val-navbar-alpha">90%</b></span>
-                            <input type="range" id="slider-navbar" min="0" max="1" step="0.05" value="0.9" class="alpha-slider" />
+                        <div class="palette-grid">
+                          <!-- Navbar Background -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-navbar">Navbar Background</label>
+                              <span class="color-hex-badge" id="val-navbar">#000000</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-navbar" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-navbar-alpha">90%</b></span>
+                                <input type="range" id="slider-navbar" min="0" max="1" step="0.05" value="0.9" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Navbar Text Color -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-navbarText">Navbar Text Color</label>
+                              <span class="color-hex-badge" id="val-navbarText">#DCC48F</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-navbarText" class="color-picker-input" />
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Clock Background 1 -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-clockbg1">Clock Background 1</label>
-                          <span class="color-hex-badge" id="val-clockbg1">#2D4067</span>
+                      <!-- Group 3: Main Clock Card -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">🕒</span>
+                          <span class="palette-group-title">Main Clock Card</span>
                         </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-clockbg1" class="color-picker-input" />
-                          <div class="slider-group">
-                            <span class="slider-label">Opacity: <b id="val-clockbg1-alpha">100%</b></span>
-                            <input type="range" id="slider-clockbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                        <div class="palette-grid">
+                          <!-- Clock Background 1 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-clockbg1">Clock Background 1</label>
+                              <span class="color-hex-badge" id="val-clockbg1">#2D4067</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-clockbg1" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-clockbg1-alpha">100%</b></span>
+                                <input type="range" id="slider-clockbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Clock Background 2 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-clockbg2">Clock Background 2</label>
+                              <span class="color-hex-badge" id="val-clockbg2">#0D0B41</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-clockbg2" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-clockbg2-alpha">100%</b></span>
+                                <input type="range" id="slider-clockbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Clock Background 2 -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-clockbg2">Clock Background 2</label>
-                          <span class="color-hex-badge" id="val-clockbg2">#0D0B41</span>
+                      <!-- Group 4: To-Do List Card -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">📝</span>
+                          <span class="palette-group-title">To-Do List Card</span>
                         </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-clockbg2" class="color-picker-input" />
-                          <div class="slider-group">
-                            <span class="slider-label">Opacity: <b id="val-clockbg2-alpha">100%</b></span>
-                            <input type="range" id="slider-clockbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                        <div class="palette-grid">
+                          <!-- To-Do Card Background 1 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-todobg1">To-Do Background 1</label>
+                              <span class="color-hex-badge" id="val-todobg1">#2D4067</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-todobg1" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-todobg1-alpha">100%</b></span>
+                                <input type="range" id="slider-todobg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- To-Do Card Background 2 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-todobg2">To-Do Background 2</label>
+                              <span class="color-hex-badge" id="val-todobg2">#0D0B41</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-todobg2" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-todobg2-alpha">100%</b></span>
+                                <input type="range" id="slider-todobg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- To-Do Item Shading & Opacity -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-todoItemBg">Item Shading</label>
+                              <span class="color-hex-badge" id="val-todoItemBg">#000000</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-todoItemBg" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-todoItemBg-alpha">25%</b></span>
+                                <input type="range" id="slider-todoItemBg" min="0" max="1" step="0.05" value="0.25" class="alpha-slider" />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Timer Card Background 1 -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-timerbg1">Timer Card Background 1</label>
-                          <span class="color-hex-badge" id="val-timerbg1">#08001F</span>
+                      <!-- Group 5: Countdown Timer Cards -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">⏳</span>
+                          <span class="palette-group-title">Countdown Timer Cards</span>
                         </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-timerbg1" class="color-picker-input" />
-                          <div class="slider-group">
-                            <span class="slider-label">Opacity: <b id="val-timerbg1-alpha">100%</b></span>
-                            <input type="range" id="slider-timerbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                        <div class="palette-grid">
+                          <!-- Timer Card Background 1 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-timerbg1">Timer Background 1</label>
+                              <span class="color-hex-badge" id="val-timerbg1">#08001F</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-timerbg1" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-timerbg1-alpha">100%</b></span>
+                                <input type="range" id="slider-timerbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
 
-                      <!-- Timer Card Background 2 -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-timerbg2">Timer Card Background 2</label>
-                          <span class="color-hex-badge" id="val-timerbg2">#1C52B8</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-timerbg2" class="color-picker-input" />
-                          <div class="slider-group">
-                            <span class="slider-label">Opacity: <b id="val-timerbg2-alpha">100%</b></span>
-                            <input type="range" id="slider-timerbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                          <!-- Timer Card Background 2 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-timerbg2">Timer Background 2</label>
+                              <span class="color-hex-badge" id="val-timerbg2">#1C52B8</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-timerbg2" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-timerbg2-alpha">100%</b></span>
+                                <input type="range" id="slider-timerbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
 
-
-                      <!-- Page Background 1 -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-pagebg1">Page Background 1</label>
-                          <span class="color-hex-badge" id="val-pagebg1">#08001F</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-pagebg1" class="color-picker-input" />
-                        </div>
-                      </div>
-
-                      <!-- Page Background 2 -->
-                      <div class="color-control-card">
-                        <div class="color-label-row">
-                          <label for="ctrl-pagebg2">Page Background 2</label>
-                          <span class="color-hex-badge" id="val-pagebg2">#30197D</span>
-                        </div>
-                        <div class="color-input-row">
-                          <input type="color" id="ctrl-pagebg2" class="color-picker-input" />
+                          <!-- Timer Gauge Visual -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-timerVisual">Gauge Visual Ring</label>
+                              <span class="color-hex-badge" id="val-timerVisual">#F8E3AF</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-timerVisual" class="color-picker-input" />
+                            </div>
+                          </div>
                         </div>
                       </div>
 

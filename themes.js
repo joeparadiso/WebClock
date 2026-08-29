@@ -715,17 +715,23 @@
     if (theme.clockbg1) document.documentElement.style.setProperty("--clock-bg1", theme.clockbg1);
     if (theme.clockbg2) document.documentElement.style.setProperty("--clock-bg2", theme.clockbg2);
 
+    const todobg1 = theme.todobg1 || theme.clockbg1;
+    if (todobg1) document.documentElement.style.setProperty("--todo-bg1", todobg1);
+
+    const todobg2 = theme.todobg2 || theme.clockbg2;
+    if (todobg2) document.documentElement.style.setProperty("--todo-bg2", todobg2);
+
+    const todoItemBg = theme.todoItemBg || "rgba(0, 0, 0, 0.25)";
+    if (todoItemBg) document.documentElement.style.setProperty("--todo-item-bg", todoItemBg);
+
     const timerbg1 = theme.timerbg1 || theme.clockbg1;
     if (timerbg1) document.documentElement.style.setProperty("--timer-bg1", timerbg1);
 
     const timerbg2 = theme.timerbg2 || theme.clockbg2;
     if (timerbg2) document.documentElement.style.setProperty("--timer-bg2", timerbg2);
 
-    if (theme.pagebg1) document.documentElement.style.setProperty("--page-bg1", theme.pagebg1);
-    if (theme.pagebg2) document.documentElement.style.setProperty("--page-bg2", theme.pagebg2);
     if (theme.navbar) document.documentElement.style.setProperty("--navbar-bg", theme.navbar);
     if (theme.text) document.documentElement.style.setProperty("--text-color", theme.text);
-    if (theme.input) document.documentElement.style.setProperty("--input-box-color", theme.input);
 
     const timerVisual = theme.timerVisual || theme.shadow;
     if (timerVisual) document.documentElement.style.setProperty("--timer-visual-color", timerVisual);
@@ -829,13 +835,13 @@
         shadow: themeData.shadow,
         clockbg1: themeData.clockbg1,
         clockbg2: themeData.clockbg2,
+        todobg1: themeData.todobg1 || themeData.clockbg1,
+        todobg2: themeData.todobg2 || themeData.clockbg2,
+        todoItemBg: themeData.todoItemBg || "rgba(0, 0, 0, 0.25)",
         timerbg1: themeData.timerbg1 || themeData.clockbg1,
         timerbg2: themeData.timerbg2 || themeData.clockbg2,
-        pagebg1: themeData.pagebg1,
-        pagebg2: themeData.pagebg2,
         navbar: themeData.navbar,
         text: themeData.text,
-        input: themeData.input,
         timerVisual: themeData.timerVisual || themeData.shadow,
         navbarText: themeData.navbarText || themeData.text,
       },
@@ -906,13 +912,13 @@
         shadow: t.shadow || "#FFFFFF",
         clockbg1: t.clockbg1 || "#000000",
         clockbg2: t.clockbg2 || "#000000",
+        todobg1: t.todobg1 || t.clockbg1 || "#000000",
+        todobg2: t.todobg2 || t.clockbg2 || "#000000",
+        todoItemBg: t.todoItemBg || "rgba(0, 0, 0, 0.25)",
         timerbg1: t.timerbg1 || t.clockbg1 || "#000000",
         timerbg2: t.timerbg2 || t.clockbg2 || "#000000",
-        pagebg1: t.pagebg1 || "#000000",
-        pagebg2: t.pagebg2 || "#000000",
         navbar: t.navbar || "#000000",
         text: t.text || "#FFFFFF",
-        input: t.input || "#FFFFFF",
         timerVisual: t.timerVisual || t.shadow || "#FFFFFF",
         navbarText: t.navbarText || t.text || "#FFFFFF",
       };
