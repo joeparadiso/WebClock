@@ -190,14 +190,116 @@ body {
 
 /* This is the container for the Clock/Weather/Sun elements */
 .clock {
-  border: 1px solid #606060;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   width: 850px;
   max-width: 95vw;
   padding: 2em;
-  border-radius: 10px;
+  border-radius: 16px;
   background: linear-gradient(-75deg, var(--clock-bg1), var(--clock-bg2));
   box-shadow: 15px 15px 40px var(--box-shadow-color);
   color: var(--text-color);
+  touch-action: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.clock-drag-handle {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-size: 1.15rem;
+  color: var(--text-color);
+  opacity: 0.45;
+  cursor: grab;
+  line-height: 1;
+  user-select: none;
+  padding: 4px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+  touch-action: none;
+}
+
+.clock-drag-handle:hover,
+.clock:hover .clock-drag-handle {
+  opacity: 0.85;
+}
+
+.clock-collapse-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 4px 7px;
+  cursor: pointer;
+  line-height: 1;
+  user-select: none;
+  opacity: 0.65;
+  transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock-collapse-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* Focus Mode (Collapsed Clock to Time Only) */
+.clock.collapsed {
+  padding: 38px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock.collapsed #clockSunContainer,
+.clock.collapsed #trainContainer,
+.clock.collapsed #weather-widget {
+  display: none !important;
+}
+
+/* Inner 2px accent frame snugly surrounding the time digits with controls outside */
+.clock.collapsed .clock-display {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 8px 32px 10px;
+  border: 2px solid var(--text-color);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+  cursor: grab;
+  position: relative;
+  z-index: 2;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.clock.collapsed:hover .clock-display {
+  box-shadow: 0 0 20px var(--box-shadow-color);
+}
+
+.clock.is-dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+  opacity: 0.95;
+  transition: none !important;
+  z-index: 820;
+}
+
+.clock.is-dragging .clock-drag-handle,
+.clock.is-dragging #clockSunContainer,
+.clock.is-dragging #Date,
+.clock.is-dragging .clock-display {
+  cursor: grabbing !important;
 }
 
 /* DATE DISPLAY */
@@ -206,12 +308,17 @@ body {
   text-align: center;
   font-family: "Baumans", serif;
   margin-bottom: auto;
+  cursor: grab;
+  user-select: none;
 }
 
 #clockSunContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
 }
 
 #sunriseContainer,
@@ -279,10 +386,19 @@ body {
 }
 
 /*============================================================================================= 
-*     Create Timer Navbar Link & Modal Dialog (ORIGINAL STYLING)
+*     Navbar Action Links (Create Timer & Create To-Do)
 ===============================================================================================*/
 
-.nav-timer-link {
+.nav-actions {
+  margin-left: auto;
+  margin-right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-timer-link,
+.nav-todo-link {
   background: none;
   border: none;
   color: var(--navbar-text-color);
@@ -290,16 +406,16 @@ body {
   font-size: 1.15rem;
   font-weight: 700;
   cursor: pointer;
-  margin-left: auto;
-  margin-right: 28px;
   padding: 4px 8px;
   transition: transform 0.2s ease, opacity 0.2s ease, text-shadow 0.2s ease;
   line-height: 1;
   text-decoration: none;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-.nav-timer-link:hover {
+.nav-timer-link:hover,
+.nav-todo-link:hover {
   transform: scale(1.06);
   text-shadow: 0 0 10px var(--box-shadow-color);
 }
@@ -494,23 +610,350 @@ body {
   transform: translateY(-1px);
 }
 
+/*============================================================================================= 
+*     To-Do List Dashboard Widget (Pop-up on Left Side)
+===============================================================================================*/
+
+.todo-container {
+  position: fixed;
+  top: 75px;
+  left: 24px;
+  width: 415px;
+  max-width: calc(100vw - 20px);
+  z-index: 950;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease;
+}
+
+.todo-container.is-dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+  opacity: 0.92;
+  transition: none !important;
+}
+
+.todo-container.is-resizing {
+  cursor: nwse-resize !important;
+  user-select: none !important;
+  transition: none !important;
+}
+
+.todo-container.todo-popup-active {
+  animation: todoPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes todoPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.88) translateY(-12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.todo-card {
+  position: relative;
+  background: linear-gradient(135deg, var(--clock-bg1), var(--clock-bg2));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px var(--box-shadow-color);
+  border-radius: 16px;
+  color: var(--text-color);
+  padding: 12px 14px 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  text-align: left;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  min-width: 220px;
+}
+
+.todo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px var(--box-shadow-color);
+}
+
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.todo-container.is-dragging .todo-header {
+  cursor: grabbing !important;
+}
+
+.todo-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.todo-drag-handle {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.45;
+  cursor: grab;
+  line-height: 1;
+  user-select: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  padding: 0 2px;
+}
+
+.todo-header:hover .todo-drag-handle {
+  opacity: 0.85;
+}
+
+.todo-title {
+  font-family: "Baumans", serif;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--text-color);
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.todo-count-badge {
+  font-family: "Chivo Mono", monospace, sans-serif;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-color);
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  line-height: 1;
+}
+
+.todo-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.todo-header-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-color);
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-family: "Baumans", serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  min-width: 26px;
+  height: 26px;
+}
+
+.todo-header-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.1);
+  box-shadow: 0 0 8px var(--box-shadow-color);
+}
+
+/* Corner Resize Handle */
+.todo-resize-handle {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  opacity: 0.4;
+  touch-action: none;
+  background-image: radial-gradient(circle, var(--text-color) 1.5px, transparent 1.5px);
+  background-size: 4px 4px;
+  background-position: right bottom;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.todo-resize-handle:hover,
+.todo-container.is-resizing .todo-resize-handle {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.todo-container.collapsed .todo-card {
+  padding: 10px 14px;
+}
+
+.todo-container.collapsed .todo-resize-handle {
+  display: none;
+}
+
+.todo-body {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.todo-container.collapsed .todo-body {
+  display: none;
+}
+
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  max-height: 380px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--box-shadow-color) rgba(0, 0, 0, 0.3);
+}
+
+.todo-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.todo-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.todo-list::-webkit-scrollbar-thumb {
+  background: var(--box-shadow-color);
+  border-radius: 4px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.todo-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Left checkbox */
+.todo-checkbox {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  border: 2px solid var(--text-color);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-top: 2px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.todo-checkbox:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 6px var(--box-shadow-color);
+}
+
+/* Filled color change when complete */
+.todo-checkbox.checked,
+.todo-item.completed .todo-checkbox {
+  background-color: var(--text-color);
+  border-color: var(--text-color);
+}
+
+.todo-checkbox .checkmark {
+  color: var(--clock-bg1);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Middle text input (multi-line auto-wrapping) */
+.todo-text-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--text-color);
+  font-family: "Baumans", Arial, sans-serif;
+  font-size: 1rem;
+  padding: 1px 4px;
+  outline: none;
+  min-width: 0;
+  resize: none;
+  overflow-y: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.35;
+  min-height: 22px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, opacity 0.2s ease, text-decoration 0.2s ease;
+}
+
+.todo-text-input:focus {
+  border-bottom: 1px solid var(--box-shadow-color);
+}
+
+.todo-text-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.4;
+}
+
+/* Strikethrough when item is completed */
+.todo-item.completed .todo-text-input {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+/* Right 'X' remove button */
+.todo-item-remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  opacity: 0.5;
+  line-height: 1;
+  margin-top: 2px;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.todo-item-remove-btn:hover {
+  opacity: 1;
+  transform: scale(1.2);
+  color: #ff5555;
+}
+
 /*============================================================================================
 *     Dynamic Multi-Timer Shelf & Option 3 Hybrid Cards (ORIGINAL STYLING)
 =============================================================================================*/
 
 #timers-shelf {
-  width: 100%;
-  max-width: 850px;
-  margin-top: 48px;
-  margin-bottom: 25px;
+  position: relative;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
 }
 
 #timers-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
+  position: static;
 }
 
 .timer-card {
@@ -528,6 +971,15 @@ body {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   position: relative;
   overflow: hidden;
+  touch-action: none;
+}
+
+.timer-card.is-dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+  opacity: 0.92;
+  transition: none !important;
+  z-index: 880 !important;
 }
 
 .timer-card:hover {
@@ -541,7 +993,30 @@ body {
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 8px;
-  gap: 10px;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.timer-card.is-dragging .timer-card-header {
+  cursor: grabbing !important;
+}
+
+.timer-drag-handle {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.45;
+  cursor: grab;
+  line-height: 1;
+  user-select: none;
+  padding: 0 2px;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.timer-card-header:hover .timer-drag-handle {
+  opacity: 0.85;
 }
 
 .timer-card-title {
@@ -554,6 +1029,8 @@ body {
   text-overflow: ellipsis;
   flex: 1;
   text-align: left;
+  cursor: grab;
+  user-select: none;
 }
 
 .timer-card-actions {
@@ -561,6 +1038,30 @@ body {
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+}
+
+.timer-collapse-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-color);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.8rem;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+}
+
+.timer-collapse-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
 .timer-edit-btn {
@@ -605,6 +1106,22 @@ body {
   background: rgba(255, 71, 87, 0.2);
   border-color: #ff4757;
   color: #ff4757;
+}
+
+/* Collapsed state: Compact title pill with hidden details for privacy */
+.timer-card.collapsed {
+  padding: 10px 14px;
+  gap: 0;
+}
+
+.timer-card.collapsed .timer-card-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.timer-card.collapsed .timer-card-body,
+.timer-card.collapsed .timer-stop-alarm-btn {
+  display: none !important;
 }
 
 .timer-card-body {
@@ -1081,7 +1598,14 @@ body {
   letter-spacing: 0.5px;
 }
 
-.mock-nav-timer-badge {
+.mock-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mock-nav-timer-badge,
+.mock-nav-todo-badge {
   font-size: 0.85rem;
   padding: 3px 8px;
   border-radius: 6px;
@@ -2146,10 +2670,24 @@ body {
 }
 
 @media (max-width: 600px) {
-  .nav-timer-link {
-    font-size: 1rem;
+  .nav-actions {
+    margin-right: 8px;
+    gap: 8px;
+  }
+
+  .nav-timer-link,
+  .nav-todo-link {
+    font-size: 0.95rem;
     font-weight: 700;
-    margin-right: 10px;
+    padding: 2px 4px;
+  }
+
+  .todo-container {
+    top: 55px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-width: calc(100vw - 20px);
   }
 
   .modal-card {

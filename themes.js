@@ -17,10 +17,10 @@
   const defaultColorThemes = {
     "Morning Light": {
       shadow: "#eaa593",
-      clockbg1: "#8eaec1",
-      clockbg2: "#8b7995",
-      timerbg1: "#c7938a",
-      timerbg2: "#7775ae",
+      clockbg1: "rgba(142, 174, 193, 0.5)",
+      clockbg2: "rgba(139, 121, 149, 0.5)",
+      timerbg1: "rgba(199, 147, 138, 0.5)",
+      timerbg2: "rgba(119, 117, 174, 0.5)",
       pagebg1: "#08001f",
       pagebg2: "#30197d",
       navbar: "rgba(138, 122, 148, 0.9)",

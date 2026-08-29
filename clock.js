@@ -156,8 +156,34 @@ document.addEventListener("DOMContentLoaded", function () {
     return `${monthShort} ${targetDate.getDate()}, ${timeStr}`;
   }
 
+  const TIMER_DEFAULT_WIDTH = 415;
+  const TIMER_GAP = 14;
+
+  function calculateDefaultTimerPositions(unmovedTimers) {
+    const clockEl = document.querySelector(".clock");
+    const positions = [];
+    let currentTop = 75;
+    let left = 24;
+
+    if (clockEl) {
+      const clockRect = clockEl.getBoundingClientRect();
+      left = Math.max(10, Math.min(clockRect.right + 24, window.innerWidth - TIMER_DEFAULT_WIDTH - 10));
+      currentTop = clockRect.top;
+    }
+
+    unmovedTimers.forEach(timer => {
+      const isCollapsed = !!timer.collapsed;
+      // Header-only collapsed height is 44px; full card height is ~146px
+      const cardHeight = isCollapsed ? 44 : 146;
+      positions.push({ left, top: currentTop });
+      currentTop += cardHeight + TIMER_GAP;
+    });
+
+    return positions;
+  }
+
   /********************************************************************************
-   * Renders the complete timer shelf in the DOM
+   * Renders the complete timer shelf in the DOM with Drag-to-Move and Collapse support
    ********************************************************************************/
   function renderTimers() {
     if (!timersGrid) return;
@@ -168,6 +194,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const now = Date.now();
+    const unmovedTimers = activeTimers.filter(t => !t.position || typeof t.position.left !== "number");
+    const defaultPositions = calculateDefaultTimerPositions(unmovedTimers);
+    let unmovedIndex = 0;
 
     timersGrid.innerHTML = activeTimers.map(timer => {
       const targetTime = timer.targetTimestamp;
@@ -183,14 +212,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const targetDate = new Date(targetTime);
       const targetText = formatTargetTime(targetDate);
-      const headerTitle = `${escapeHtml(timer.label)}: ${targetText}`;
+      const isCollapsed = !!timer.collapsed;
+      const fullHeaderTitle = `${escapeHtml(timer.label)}: ${targetText}`;
+      const displayTitle = isCollapsed ? escapeHtml(timer.label) : fullHeaderTitle;
       const digitsText = formatDigits(remainingSec, isOverdue);
 
+      const isCustomMoved = timer.position && typeof timer.position.left === "number";
+      let posLeft, posTop;
+      if (isCustomMoved) {
+        posLeft = timer.position.left;
+        posTop = timer.position.top;
+      } else {
+        const defPos = defaultPositions[unmovedIndex] || { left: 24, top: 75 };
+        posLeft = defPos.left;
+        posTop = defPos.top;
+        unmovedIndex++;
+      }
+
+      const posStyle = `style="position: fixed; left: ${posLeft}px; top: ${posTop}px; margin: 0; z-index: 850;"`;
+
       return `
-        <div class="timer-card ${isOverdue ? "overdue" : ""}" data-id="${timer.id}">
-          <div class="timer-card-header">
-            <span class="timer-card-title" title="${headerTitle}">${headerTitle}</span>
+        <div class="timer-card ${isOverdue ? "overdue" : ""} ${isCustomMoved ? "is-moved" : ""} ${isCollapsed ? "collapsed" : ""}" data-id="${timer.id}" ${posStyle}>
+          <div class="timer-card-header" title="Drag to move timer (double-click title to reset position)">
+            <span class="timer-drag-handle" aria-hidden="true" title="Drag to move">⠿</span>
+            <span class="timer-card-title" title="${fullHeaderTitle} (double-click to reset position)">${displayTitle}</span>
             <div class="timer-card-actions">
+              <button type="button" class="timer-collapse-btn" data-id="${timer.id}" aria-expanded="${!isCollapsed}" title="${isCollapsed ? "Expand timer details" : "Collapse timer details"}">
+                ${isCollapsed ? "▶" : "▼"}
+              </button>
               <button type="button" class="timer-edit-btn" data-id="${timer.id}" aria-label="Edit timer" title="Edit timer">✎</button>
               <button type="button" class="timer-delete-btn" data-id="${timer.id}" aria-label="${isOverdue ? "Dismiss timer" : "Delete timer"}" title="${isOverdue ? "Dismiss timer" : "Delete timer"}">
                 ${isOverdue ? "✕ Dismiss" : "✕"}
@@ -220,6 +269,21 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     }).join("");
 
+    // Attach Collapse click handlers
+    const collapseBtns = timersGrid.querySelectorAll(".timer-collapse-btn");
+    collapseBtns.forEach(btn => {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const id = this.getAttribute("data-id");
+        const timer = activeTimers.find(t => t.id === id);
+        if (timer) {
+          timer.collapsed = !timer.collapsed;
+          saveTimers();
+          renderTimers();
+        }
+      });
+    });
+
     // Attach Edit click handlers
     const editBtns = timersGrid.querySelectorAll(".timer-edit-btn");
     editBtns.forEach(btn => {
@@ -248,6 +312,110 @@ document.addEventListener("DOMContentLoaded", function () {
         const id = this.getAttribute("data-id");
         silenceTimerAlarm(id);
       });
+    });
+
+    // Attach Drag to Move handlers for each timer card
+    const timerCards = timersGrid.querySelectorAll(".timer-card");
+    timerCards.forEach(card => {
+      const id = card.getAttribute("data-id");
+      const header = card.querySelector(".timer-card-header");
+
+      if (header) {
+        let lastTimerClickTime = 0;
+
+        header.addEventListener("pointerdown", function (e) {
+          if (e.target.closest("button") || e.target.closest("input")) return;
+
+          let isDragging = false;
+          const startPointer = { x: e.clientX, y: e.clientY };
+          const rect = card.getBoundingClientRect();
+          const startCardPos = { left: rect.left, top: rect.top };
+
+          function onTimerMove(moveEvent) {
+            const dist = Math.hypot(moveEvent.clientX - startPointer.x, moveEvent.clientY - startPointer.y);
+            if (!isDragging && dist > 5) {
+              isDragging = true;
+              card.classList.add("is-dragging");
+              card.style.transition = "none";
+
+              // Convert to position: fixed if not already
+              card.style.position = "fixed";
+              card.style.left = `${startCardPos.left}px`;
+              card.style.top = `${startCardPos.top}px`;
+              card.style.margin = "0";
+              card.style.zIndex = "880";
+            }
+
+            if (isDragging) {
+              const deltaX = moveEvent.clientX - startPointer.x;
+              const deltaY = moveEvent.clientY - startPointer.y;
+
+              const cardRect = card.getBoundingClientRect();
+              const maxLeft = Math.max(10, window.innerWidth - cardRect.width - 10);
+              const maxTop = Math.max(50, window.innerHeight - cardRect.height - 10);
+              const minTop = 48;
+
+              const rawLeft = startCardPos.left + deltaX;
+              const rawTop = startCardPos.top + deltaY;
+
+              const clampedLeft = Math.max(10, Math.min(rawLeft, maxLeft));
+              const clampedTop = Math.max(minTop, Math.min(rawTop, maxTop));
+
+              card.style.left = `${clampedLeft}px`;
+              card.style.top = `${clampedTop}px`;
+            }
+          }
+
+          function onTimerUp() {
+            window.removeEventListener("pointermove", onTimerMove);
+            window.removeEventListener("pointerup", onTimerUp);
+            window.removeEventListener("pointercancel", onTimerUp);
+
+            if (isDragging) {
+              isDragging = false;
+              card.classList.remove("is-dragging");
+              card.style.transition = "";
+
+              const timer = activeTimers.find(t => t.id === id);
+              if (timer) {
+                const cardRect = card.getBoundingClientRect();
+                timer.position = { left: Math.round(cardRect.left), top: Math.round(cardRect.top) };
+                saveTimers();
+              }
+              lastTimerClickTime = 0;
+            } else {
+              const now = Date.now();
+              if (now - lastTimerClickTime < 350) {
+                const timer = activeTimers.find(t => t.id === id);
+                if (timer) {
+                  delete timer.position;
+                  saveTimers();
+                  renderTimers();
+                }
+                lastTimerClickTime = 0;
+              } else {
+                lastTimerClickTime = now;
+              }
+            }
+          }
+
+          window.addEventListener("pointermove", onTimerMove);
+          window.addEventListener("pointerup", onTimerUp);
+          window.addEventListener("pointercancel", onTimerUp);
+        });
+
+        // Native double-click reset
+        header.addEventListener("dblclick", function (e) {
+          if (e.target.closest("button") || e.target.closest("input")) return;
+          e.stopPropagation();
+          const timer = activeTimers.find(t => t.id === id);
+          if (timer) {
+            delete timer.position;
+            saveTimers();
+            renderTimers();
+          }
+        });
+      }
     });
   }
 
@@ -584,9 +752,285 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Load existing timers and render them
+  /********************************************************************************
+   * Main Clock Drag-to-Move & Position Persistence
+   ********************************************************************************/
+  const CLOCK_POS_KEY = "webclock_main_clock_pos";
+  const CLOCK_COLLAPSED_KEY = "webclock_main_clock_collapsed";
+  const mainClockCard = document.querySelector(".clock");
+  const clockHeaderHandle = document.getElementById("clockSunContainer") || mainClockCard;
+  const clockCornerHandle = document.getElementById("clock-drag-handle");
+  const clockCollapseBtn = document.getElementById("clock-collapse-btn");
+  const dateResetHandle = document.getElementById("Date");
+  const clockDisplayEl = document.querySelector(".clock-display");
+  let isClockCollapsed = false;
+
+  function setClockCollapsed(collapsed) {
+    isClockCollapsed = Boolean(collapsed);
+    if (!mainClockCard) return;
+
+    if (isClockCollapsed) {
+      mainClockCard.classList.add("collapsed");
+      if (clockCollapseBtn) {
+        clockCollapseBtn.innerHTML = "▶";
+        clockCollapseBtn.setAttribute("aria-expanded", "false");
+        clockCollapseBtn.setAttribute("title", "Exit Focus Mode (Expand Clock Details)");
+      }
+    } else {
+      mainClockCard.classList.remove("collapsed");
+      if (clockCollapseBtn) {
+        clockCollapseBtn.innerHTML = "▼";
+        clockCollapseBtn.setAttribute("aria-expanded", "true");
+        clockCollapseBtn.setAttribute("title", "Focus Mode (Collapse Clock to Time Only)");
+      }
+    }
+
+    try {
+      localStorage.setItem(CLOCK_COLLAPSED_KEY, JSON.stringify(isClockCollapsed));
+    } catch (_) {}
+
+    updateDefaultWidgetPositions();
+  }
+
+  function loadClockCollapsed() {
+    try {
+      const saved = localStorage.getItem(CLOCK_COLLAPSED_KEY);
+      if (saved !== null) {
+        setClockCollapsed(JSON.parse(saved));
+      } else {
+        setClockCollapsed(false); // default to expanded
+      }
+    } catch (_) {
+      setClockCollapsed(false);
+    }
+  }
+
+  function clampClockPos(left, top) {
+    if (!mainClockCard) return { left, top };
+    const rect = mainClockCard.getBoundingClientRect();
+    const width = rect.width || 850;
+    const height = rect.height || 300;
+    const maxLeft = Math.max(10, window.innerWidth - width - 10);
+    const maxTop = Math.max(50, window.innerHeight - height - 10);
+    const minTop = 48;
+
+    return {
+      left: Math.max(10, Math.min(left, maxLeft)),
+      top: Math.max(minTop, Math.min(top, maxTop))
+    };
+  }
+
+  function loadClockPosition() {
+    if (!mainClockCard) return;
+    try {
+      const saved = localStorage.getItem(CLOCK_POS_KEY);
+      if (saved) {
+        const pos = JSON.parse(saved);
+        if (pos && typeof pos.left === "number" && typeof pos.top === "number") {
+          const clamped = clampClockPos(pos.left, pos.top);
+          mainClockCard.style.position = "fixed";
+          mainClockCard.style.left = `${clamped.left}px`;
+          mainClockCard.style.top = `${clamped.top}px`;
+          mainClockCard.style.margin = "0";
+          mainClockCard.style.zIndex = "800";
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load clock position:", e);
+    }
+  }
+
+  function resetClockPosition() {
+    if (!mainClockCard) return;
+    try {
+      localStorage.removeItem(CLOCK_POS_KEY);
+    } catch (_) {}
+    mainClockCard.classList.remove("is-dragging");
+    mainClockCard.classList.remove("is-moved");
+    mainClockCard.style.position = "";
+    mainClockCard.style.left = "";
+    mainClockCard.style.top = "";
+    mainClockCard.style.margin = "";
+    mainClockCard.style.zIndex = "";
+    mainClockCard.style.transition = "";
+    updateDefaultWidgetPositions();
+  }
+
+  function updateDefaultWidgetPositions() {
+    if (activeTimers && timersGrid) {
+      const unmovedTimers = activeTimers.filter(t => !t.position || typeof t.position.left !== "number");
+      const defaultPositions = calculateDefaultTimerPositions(unmovedTimers);
+      let unmovedIdx = 0;
+      activeTimers.forEach(timer => {
+        if (!timer.position || typeof timer.position.left !== "number") {
+          const card = timersGrid.querySelector(`.timer-card[data-id="${timer.id}"]`);
+          if (card) {
+            const defPos = defaultPositions[unmovedIdx];
+            if (defPos) {
+              card.style.left = `${defPos.left}px`;
+              card.style.top = `${defPos.top}px`;
+            }
+            unmovedIdx++;
+          }
+        }
+      });
+    }
+
+    if (window.WebClockTodo && typeof window.WebClockTodo.updateDefaultPosition === "function") {
+      window.WebClockTodo.updateDefaultPosition();
+    }
+  }
+
+  function initClockDrag() {
+    if (!mainClockCard) return;
+
+    let lastClockClickTime = 0;
+
+    function onClockPointerDown(e) {
+      if (e.target.closest("button") || e.target.closest("input") || e.target.closest("a")) return;
+
+      let isClockDragging = false;
+      const startPointer = { x: e.clientX, y: e.clientY };
+      const rect = mainClockCard.getBoundingClientRect();
+      const startClockPos = { left: rect.left, top: rect.top };
+
+      function onClockPointerMove(moveEvent) {
+        const dist = Math.hypot(moveEvent.clientX - startPointer.x, moveEvent.clientY - startPointer.y);
+        if (!isClockDragging && dist > 5) {
+          isClockDragging = true;
+          mainClockCard.classList.add("is-dragging");
+          mainClockCard.style.transition = "none";
+
+          mainClockCard.style.position = "fixed";
+          mainClockCard.style.left = `${startClockPos.left}px`;
+          mainClockCard.style.top = `${startClockPos.top}px`;
+          mainClockCard.style.margin = "0";
+          mainClockCard.style.zIndex = "820";
+        }
+
+        if (isClockDragging) {
+          const deltaX = moveEvent.clientX - startPointer.x;
+          const deltaY = moveEvent.clientY - startPointer.y;
+
+          const rawLeft = startClockPos.left + deltaX;
+          const rawTop = startClockPos.top + deltaY;
+          const clamped = clampClockPos(rawLeft, rawTop);
+
+          mainClockCard.style.left = `${clamped.left}px`;
+          mainClockCard.style.top = `${clamped.top}px`;
+          updateDefaultWidgetPositions();
+        }
+      }
+
+      function onClockPointerUp() {
+        window.removeEventListener("pointermove", onClockPointerMove);
+        window.removeEventListener("pointerup", onClockPointerUp);
+        window.removeEventListener("pointercancel", onClockPointerUp);
+
+        if (isClockDragging) {
+          isClockDragging = false;
+          mainClockCard.classList.remove("is-dragging");
+          mainClockCard.style.transition = "";
+
+          const rectNow = mainClockCard.getBoundingClientRect();
+          const pos = { left: Math.round(rectNow.left), top: Math.round(rectNow.top) };
+          try {
+            localStorage.setItem(CLOCK_POS_KEY, JSON.stringify(pos));
+          } catch (_) {}
+          updateDefaultWidgetPositions();
+          lastClockClickTime = 0;
+        } else {
+          const now = Date.now();
+          if (now - lastClockClickTime < 350) {
+            resetClockPosition();
+            lastClockClickTime = 0;
+          } else {
+            lastClockClickTime = now;
+          }
+        }
+      }
+
+      window.addEventListener("pointermove", onClockPointerMove);
+      window.addEventListener("pointerup", onClockPointerUp);
+      window.addEventListener("pointercancel", onClockPointerUp);
+    }
+
+    const handles = [clockHeaderHandle, clockCornerHandle, dateResetHandle, clockDisplayEl].filter(Boolean);
+    handles.forEach(h => {
+      h.addEventListener("pointerdown", onClockPointerDown);
+
+      // Native double-click event support
+      h.addEventListener("dblclick", function (e) {
+        if (e.target.closest("button") || e.target.closest("input") || e.target.closest("a")) return;
+        e.stopPropagation();
+        resetClockPosition();
+      });
+    });
+
+    if (clockCollapseBtn) {
+      clockCollapseBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setClockCollapsed(!isClockCollapsed);
+      });
+    }
+  }
+
+  // Handle window resizing to keep moved cards within bounds and sync default positions
+  window.addEventListener("resize", function () {
+    if (mainClockCard && mainClockCard.style.position === "fixed") {
+      const rect = mainClockCard.getBoundingClientRect();
+      const clamped = clampClockPos(rect.left, rect.top);
+      mainClockCard.style.left = `${clamped.left}px`;
+      mainClockCard.style.top = `${clamped.top}px`;
+    }
+
+    if (activeTimers && timersGrid) {
+      const unmovedTimers = activeTimers.filter(t => !t.position || typeof t.position.left !== "number");
+      const defaultPositions = calculateDefaultTimerPositions(unmovedTimers);
+      let unmovedIdx = 0;
+      let changed = false;
+
+      activeTimers.forEach(timer => {
+        const card = timersGrid.querySelector(`.timer-card[data-id="${timer.id}"]`);
+        if (!card) return;
+
+        if (timer.position && typeof timer.position.left === "number") {
+          const rect = card.getBoundingClientRect();
+          const maxLeft = Math.max(10, window.innerWidth - rect.width - 10);
+          const maxTop = Math.max(50, window.innerHeight - rect.height - 10);
+          const clampedL = Math.max(10, Math.min(timer.position.left, maxLeft));
+          const clampedT = Math.max(48, Math.min(timer.position.top, maxTop));
+          if (clampedL !== timer.position.left || clampedT !== timer.position.top) {
+            timer.position.left = clampedL;
+            timer.position.top = clampedT;
+            card.style.left = `${clampedL}px`;
+            card.style.top = `${clampedT}px`;
+            changed = true;
+          }
+        } else {
+          const defPos = defaultPositions[unmovedIdx];
+          if (defPos) {
+            card.style.left = `${defPos.left}px`;
+            card.style.top = `${defPos.top}px`;
+          }
+          unmovedIdx++;
+        }
+      });
+      if (changed) saveTimers();
+    }
+
+    if (window.WebClockTodo && typeof window.WebClockTodo.updateDefaultPosition === "function") {
+      window.WebClockTodo.updateDefaultPosition();
+    }
+  });
+
+  // Load existing timers, clock position, collapsed state, and render
   loadTimers();
   renderTimers();
+  loadClockPosition();
+  loadClockCollapsed();
+  initClockDrag();
+  setTimeout(updateDefaultWidgetPositions, 100);
 
   // Initialize clock immediately on load and tick every 1000ms
   updateClock();

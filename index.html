@@ -25,13 +25,17 @@
     <script type="text/javascript" src="clock.js" defer></script>
     <script type="text/javascript" src="sunTimes.js" defer></script>
     <script type="text/javascript" src="nextTrain.js" defer></script>
+    <script type="text/javascript" src="todo.js" defer></script>
     <link rel="icon" href="favicon.ico" />
   </head>
   <body>
     <!-- Navbar -->
     <nav class="navbar" aria-label="Main Navigation">
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
-      <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
+      <div class="nav-actions">
+        <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
+        <button class="nav-todo-link" id="open-todo-btn" type="button">＋ Create To-Do</button>
+      </div>
       
       <!-- Hamburger Dropdown Menu -->
       <ul class="nav-links">
@@ -58,16 +62,41 @@
     </nav>
 
     <div class="main-content">
+      <!-- To-Do List Dashboard Widget (Draggable & Resizable) -->
+      <aside id="todo-container" class="todo-container collapsed" aria-label="To-Do List" style="display: none;">
+        <div class="todo-card" id="todo-card">
+          <header class="todo-header" id="todo-header" title="Drag to move To-Do list">
+            <div class="todo-header-left">
+              <span class="todo-drag-handle" aria-hidden="true" title="Drag to move">⠿</span>
+              <span class="todo-title">To-Do</span>
+              <span class="todo-count-badge" id="todo-count-badge" style="display: none;">0</span>
+            </div>
+            <div class="todo-header-actions">
+              <button type="button" class="todo-header-btn todo-collapse-btn" id="todo-collapse-btn" aria-expanded="false" title="Expand / Collapse To-Do List">▶</button>
+              <button type="button" class="todo-header-btn todo-add-btn" id="todo-add-btn" title="Add new To-Do item">＋</button>
+              <button type="button" class="todo-header-btn todo-close-btn" id="todo-close-btn" title="Hide To-Do List">✕</button>
+            </div>
+          </header>
+          <div class="todo-body" id="todo-body">
+            <ul class="todo-list" id="todo-list" aria-label="List of To-Do items">
+              <!-- Dynamically rendered via todo.js -->
+            </ul>
+          </div>
+          <div class="todo-resize-handle" id="todo-resize-handle" title="Drag to resize"></div>
+        </div>
+      </aside>
       <!-- Main Content -->
       <div class="container">
         <main class="clock" aria-label="Digital Clock and Information Hub">
+          <span class="clock-drag-handle" id="clock-drag-handle" aria-hidden="true" title="Drag to move clock (double-click Date to reset position)">⠿</span>
+          <button type="button" class="clock-collapse-btn" id="clock-collapse-btn" aria-expanded="true" title="Focus Mode (Collapse / Expand Clock)">▼</button>
           <!-- Sunrise time, Date, Sunset time -->
-          <div id="clockSunContainer">
+          <div id="clockSunContainer" title="Drag to move clock (double-click Date to reset position)">
             <div id="sunriseContainer">
               <div class="sun-block-label">Sunrise</div>
               <div id="sunrise">--:--</div>
             </div>
-            <div id="Date">Loading Date...</div>
+            <div id="Date" title="Drag to move clock (double-click to reset position)">Loading Date...</div>
             <div id="sunsetContainer">
               <div class="sun-block-label">Sunset</div>
               <div id="sunset">--:--</div>
@@ -209,7 +238,10 @@
                     <div class="mock-navbar">
                       <span class="mock-nav-menu">☰</span>
                       <span class="mock-nav-brand">WebClock</span>
-                      <span class="mock-nav-timer-badge">＋ Create Timer</span>
+                      <div class="mock-nav-actions">
+                        <span class="mock-nav-timer-badge">＋ Create Timer</span>
+                        <span class="mock-nav-todo-badge">＋ Create To-Do</span>
+                      </div>
                     </div>
 
                     <!-- Mock Main Clock Card -->

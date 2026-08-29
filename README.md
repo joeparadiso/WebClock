@@ -20,10 +20,11 @@ _The customization menu allowing for theme selection and manual color adjustment
 
 ## ✨ Features
 
-### 🕒 Time & Date
+### 🕒 Time & Date & Focus Mode
 - **Digital Clock:** Large, easy-to-read 12-hour display (HH:MM:SS) using the _Chivo Mono_ font.
-- **Calendar:** Displays current Day of the week, Month, Date, and Year.
-- **Sun Data:** Real-time astronomical data fetching **Sunrise** and **Sunset** times for Dedham, MA (via `sunrisesunset.io`).
+- **Calendar & Astro Data:** Displays current Day of the week, Month, Date, Year, and real-time **Sunrise** / **Sunset** times for Dedham, MA (via `sunrisesunset.io`).
+- **Focus Mode (Collapsible Clock):** Click the collapse button (`▼` / `▶`) in the top-right corner of the clock to collapse it into a distraction-free **Focus Mode** showing only the live time digits. Defaults to expanded with full details, and remembers your preference in `localStorage`.
+- **Drag to Move Anywhere:** Drag the grip handle (`⠿`), top section, or digits to reposition the clock anywhere on your dashboard. Position automatically persists in `localStorage`. Double-click to reset the clock to its default centered layout.
 
 ### 🌦️ Weather Widget
 - **Current Conditions:** Real-time temperature, "feels like" temp, and sky condition description.
@@ -50,11 +51,24 @@ _The customization menu allowing for theme selection and manual color adjustment
 ### ⏳ Dynamic Multi-Timer System
 - **Simultaneous Countdowns:** Run multiple independent meeting or event timers at the same time.
 - **Modern Hybrid Card Design:** Compact cards featuring an SVG circular progress ring indicating elapsed percentage alongside large countdown digits and target timestamps (e.g. *"Sprint Planning: Today, 7:51 PM"*).
+- **Collapsible Timer Cards (Privacy Mode):** Timers default to expanded and feature a dedicated collapse button (`▼` / `▶`) on the header. Collapsing a timer minimizes it into a compact pill showing **only the timer title**, hiding the target date/time, progress ring, countdown digits, and notes for privacy.
 - **Custom Notes & Overdue Count-Up:** Optional note attached to any timer (e.g. *"Bring updated datasheets"*); when a timer finishes, audio alarm (`alarm.mp3`) triggers and digits switch to counting **UP** until dismissed.
 - **Dedicated "Stop Alarm" Button:** When a timer alarm goes off, a prominent glowing button appears in the bottom-right corner of the card allowing you to **silence the alarm sound** while keeping the count-up timer visible.
 - **In-Place Editing:** Edit timer labels, notes, dates, or times directly via the **`✎` Edit** button on each card.
 - **Popup Creation Modal:** Right-aligned "＋ Create Timer" navbar link opens a modal with custom label, note, date/time pickers, and quick `+15m / +30m / +45m / +1h` presets.
-- **Dynamic Shelf & Persistence:** Automatic reflowing shelf; timers persist in `localStorage` across page reloads.
+- **Default Right-Side Stack & Drag-to-Move:** New timers default to the right side of the main clock card (the first timer aligns with the top of the clock, and subsequent timers stack below with a clean gap, dynamically adjusting height if collapsed). You can also click and drag any timer card to freely position it anywhere on the dashboard. Double-click the header to reset it back to the right-side stack.
+- **Dynamic Persistence:** Custom coordinates, collapse states, and timer data persist in `localStorage` across page reloads.
+
+### 📝 Collapsible, Movable & Resizable Dashboard To-Do List
+- **Top Navbar Launcher:** Dedicated "＋ Create To-Do" link in the top navbar (next to "＋ Create Timer") opens the to-do widget.
+- **Symmetrical 415px Width & Left-Side Dynamic Sync:** The To-Do list matches the `415px` width of the timer cards for balanced visual symmetry across the dashboard. It dynamically syncs to the left of the main clock card (aligned with the top). Click and drag the header (with grip handle `⠿`) to place it anywhere on your screen. Double-click the header to reset to its default left-side position.
+- **Multi-Line Text Wrapping:** Longer task descriptions automatically wrap across multiple lines and expand the item height dynamically without overflowing or clipping.
+- **Customizable Size:** Drag the bottom-right corner resize handle to expand or shrink the widget's width and scrollable height to your preference. Dimensions are saved in `localStorage`.
+- **Privacy Collapse Mode:** Collapsible header lets you minimize the list to leave only the "To-Do" header visible. The widget defaults to collapsed for privacy.
+- **Interactive Checkboxes:** Click the box on the left of any item to complete it; the checkbox changes color to match the text and the task receives a clean strikethrough.
+- **Dynamic Rows & Enter Shortcut:** Click the **`＋`** button on the header or press `Enter` while typing to instantly create and focus a new empty task row.
+- **Item Removal:** Click the **`✕`** button on the right of any task to delete it.
+- **Theme-Aware & Persistent:** Automatically syncs with all theme colors and stores tasks, position, dimensions, and visibility state in `localStorage`.
 
 ---
 
@@ -85,7 +99,14 @@ Because this is a static web project, no server installation or build step is re
 5. Click **`✎`** on any timer card to edit its details, date, or time in place.
 6. When the timer finishes, it alerts you with audio and switches to count-up mode. Click **"🔔 Stop Alarm"** in the bottom-right corner to silence the sound, or click **"✕ Dismiss"** to remove the timer.
 
----
+### 4. Using the To-Do List
+
+1. Click the **"＋ Create To-Do"** link in the top navbar (to the right of "+ Create Timer").
+2. The To-Do list card will appear on the left side of the dashboard.
+3. Click the **`▶` / `▼`** button in the To-Do header to expand or collapse the list (defaults to collapsed for privacy).
+4. Click the **`＋`** button in the header (or press `Enter` while typing a task) to create a new empty row.
+5. Click the checkbox on the left to toggle completion (filled checkbox and strikethrough text).
+6. Click the **`✕`** button on the right of any task to delete it.
 
 ## ⚙️ Configuration
 
@@ -110,6 +131,7 @@ The project is currently configured for **Dedham, MA**. To customize the locatio
 ├── index.html          # Semantic HTML layout, Theme Studio modal, and timer markup
 ├── styles.css          # Core styling, responsive layout geometry, and CSS custom properties
 ├── clock.js            # Digital clock, date formatting, and dynamic Multi-Timer engine
+├── todo.js             # Collapsible, draggable, and resizable To-Do list widget engine
 ├── themes.js           # Theme engine definitions, dropdown synchronization, and persistence
 ├── themeStudio.js      # Full-Screen Theme Studio visual customizer and live test controller
 ├── weather.js          # OpenWeatherMap API integration and weather widget rendering
