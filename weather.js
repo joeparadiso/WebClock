@@ -42,32 +42,32 @@
       const period = getPeriodOfDay();
 
       if (tempEl && data.main && typeof data.main.temp !== "undefined") {
-        tempEl.innerHTML = `Temperature:<br>${Math.round(data.main.temp)}°F`;
+        tempEl.innerHTML = `<span class="weather-label">Temperature:</span><br>${Math.round(data.main.temp)}°F`;
       }
 
       if (feelsEl && data.main && typeof data.main.feels_like !== "undefined") {
-        feelsEl.innerHTML = `Feels Like:<br>${Math.round(data.main.feels_like)}°F`;
+        feelsEl.innerHTML = `<span class="weather-label">Feels Like:</span><br>${Math.round(data.main.feels_like)}°F`;
       }
 
       if (highLowEl && data.main) {
         const high = Math.round(data.main.temp_max);
         const low = Math.round(data.main.temp_min);
-        highLowEl.innerHTML = `${period}&nbsp;Temps:<br>${high}°F&nbsp;/&nbsp;${low}°F`;
+        highLowEl.innerHTML = `<span class="weather-label">${period}&nbsp;Temps:</span><br>${high}°F&nbsp;/&nbsp;${low}°F`;
       }
 
       if (skyEl && data.weather && data.weather[0]) {
         const description = data.weather[0].description;
         const capitalizedDesc = description.charAt(0).toUpperCase() + description.slice(1);
-        skyEl.innerHTML = `Conditions:<br>${capitalizedDesc}`;
+        skyEl.innerHTML = `<span class="weather-label">Conditions:</span><br>${capitalizedDesc}`;
       }
 
       if (windEl && data.wind && typeof data.wind.speed !== "undefined") {
         // With units=imperial, speed is already returned in mph
-        windEl.innerHTML = `Wind:<br>${Math.round(data.wind.speed)}&nbsp;mph`;
+        windEl.innerHTML = `<span class="weather-label">Wind:</span><br>${Math.round(data.wind.speed)}&nbsp;mph`;
       }
     } catch (error) {
       console.error("Error fetching weather data:", error);
-      if (tempEl) tempEl.innerHTML = "Weather:<br>Unavailable";
+      if (tempEl) tempEl.innerHTML = `<span class="weather-label">Weather:</span><br>Unavailable`;
     }
   }
 

@@ -332,12 +332,27 @@ body {
 /* This is the actual clock (which is an UL) */
 .clock-display {
   list-style: none;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
+  align-items: center;
   font-size: 130px;
   gap: 10px;
   font-family: "Chivo Mono", serif;
   line-height: 1;
+  margin: 18px auto 24px;
+  padding: 8px 36px 12px;
+  border: 1px solid var(--text-color);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
+  cursor: grab;
+  position: relative;
+  z-index: 2;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.clock-display:hover {
+  box-shadow: 0 0 20px var(--box-shadow-color);
 }
 
 .clock-display li {
@@ -356,13 +371,14 @@ body {
 #arrivalContainer {
   font-family: "Baumans", serif;
   font-weight: 100;
-  font-size: 1.2em;
+  font-size: 1.5em;
 }
 
 #departureTimeTxt,
 #trainRoute,
 #arrivalTimeTxt {
-  opacity: 0.85;
+  font-weight: bold;
+  opacity: 0.95;
 }
 
 /* Weather Widget */
@@ -374,6 +390,10 @@ body {
   font-weight: 100;
   font-size: 1.5em;
   color: var(--text-color);
+}
+
+.weather-label {
+  font-weight: bold;
 }
 
 #weather-info {
@@ -1672,14 +1692,18 @@ body {
 }
 
 .mock-clock-digits {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   font-family: "Chivo Mono", serif;
   font-size: 4.8rem;
   line-height: 1;
   gap: 8px;
-  margin: 12px 0;
+  margin: 14px auto 18px;
+  padding: 6px 28px 8px;
+  border: 1px solid var(--mock-text-color);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.12);
 }
 
 .mock-point {
@@ -1691,7 +1715,7 @@ body {
   justify-content: space-evenly;
   margin-bottom: 14px;
   font-family: "Baumans", serif;
-  font-size: 1.1em;
+  font-size: 1.25em;
 }
 
 .mock-train-block {
@@ -1702,7 +1726,8 @@ body {
 
 .mock-train-label {
   font-size: 0.78rem;
-  opacity: 0.85;
+  font-weight: bold;
+  opacity: 0.95;
 }
 
 .mock-train-val {

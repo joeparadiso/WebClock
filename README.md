@@ -21,13 +21,13 @@ _The customization menu allowing for theme selection and manual color adjustment
 ## ✨ Features
 
 ### 🕒 Time & Date & Focus Mode
-- **Digital Clock:** Large, easy-to-read 12-hour display (HH:MM:SS) using the _Chivo Mono_ font.
+- **Digital Clock:** Large, easy-to-read 12-hour display (HH:MM:SS) using the _Chivo Mono_ font, framed by a 1px theme-colored inner accent border with dedicated spacing above and below.
 - **Calendar & Astro Data:** Displays current Day of the week, Month, Date, Year, and real-time **Sunrise** / **Sunset** times for Dedham, MA (via `sunrisesunset.io`).
-- **Focus Mode (Collapsible Clock):** Click the collapse button (`▼` / `▶`) in the top-right corner of the clock to collapse it into a distraction-free **Focus Mode** showing only the live time digits. Defaults to expanded with full details, and remembers your preference in `localStorage`.
+- **Focus Mode (Collapsible Clock):** Click the collapse button (`▼` / `▶`) in the top-right corner of the clock to collapse it into a distraction-free **Focus Mode** showing only the live time digits. In Focus Mode, an active theme box-shadow glow permanently illuminates the inner accent frame.
 - **Drag to Move Anywhere:** Drag the grip handle (`⠿`), top section, or digits to reposition the clock anywhere on your dashboard. Position automatically persists in `localStorage`. Double-click to reset the clock to its default centered layout.
 
 ### 🌦️ Weather Widget
-- **Current Conditions:** Real-time temperature, "feels like" temp, and sky condition description.
+- **Current Conditions:** Real-time temperature, "feels like" temp, and sky condition description with bold component labels.
 - **Forecast:** Period-based high/low temperature display (Morning, Afternoon, Evening, Night).
 - **Wind:** Real-time wind speed in MPH.
 - _Powered by OpenWeatherMap API_.
@@ -35,7 +35,7 @@ _The customization menu allowing for theme selection and manual color adjustment
 ### 🚆 MBTA Commuter Rail Tracker
 - **Route:** Monitors the **Dedham Corporate Center** to **South Station** inbound line.
 - **Real-Time Data:** Fetches live real-time predictions; seamlessly falls back to scheduled times if live data is unavailable.
-- **Info:** Displays next Departure Time, official Train Number with Route Name (e.g. `5768 (Franklin/Foxboro)`), and estimated Arrival Time at South Station.
+- **Info:** Displays next Departure Time, official Train Number with Route Name (e.g. `5768 (Franklin/Foxboro)`), and estimated Arrival Time at South Station, styled with bold headers and typography sized to match the weather widget (1.5em).
 - _Powered by MBTA V3 API_.
 
 ### 🎨 Theme Studio & Visual Designer
