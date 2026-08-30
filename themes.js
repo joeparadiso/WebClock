@@ -1054,8 +1054,26 @@ const manualGroupB = ${JSON.stringify(groupBOutput, null, 2)};
     const navLinks = document.querySelector(".nav-links");
 
     if (menuToggle && navLinks) {
-      menuToggle.addEventListener("click", function () {
-        navLinks.classList.toggle("nav-active");
+      menuToggle.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const isOpen = navLinks.classList.toggle("nav-active");
+        menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+
+      // Close dropdown when clicking anywhere outside
+      document.addEventListener("click", function (e) {
+        if (navLinks.classList.contains("nav-active") && !navLinks.contains(e.target) && e.target !== menuToggle) {
+          navLinks.classList.remove("nav-active");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+
+      // Close dropdown when pressing Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && navLinks.classList.contains("nav-active")) {
+          navLinks.classList.remove("nav-active");
+          menuToggle.setAttribute("aria-expanded", "false");
+        }
       });
     }
 
