@@ -490,8 +490,10 @@ body {
 /* Weather Widget */
 #weather-widget {
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: center;
+  width: 100%;
+  max-width: 790px;
+  margin: 0 auto;
   font-family: "Baumans", serif;
   font-weight: 100;
   font-size: 1.5em;
@@ -505,7 +507,15 @@ body {
 #weather-info {
   display: flex;
   flex-direction: row;
-  gap: 15px;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  text-align: center;
+}
+
+#weather-info > div {
+  text-align: center;
+  white-space: nowrap;
 }
 
 /*============================================================================================= 
@@ -1907,6 +1917,7 @@ body {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  width: 100%;
   gap: 12px;
   font-family: "Baumans", serif;
   font-size: 1.25em;
@@ -3149,6 +3160,7 @@ body {
   }
 
   #weather-info {
+    display: flex;
     flex-direction: column;
     gap: 8px;
   }
