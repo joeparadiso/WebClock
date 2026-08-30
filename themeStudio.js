@@ -224,6 +224,9 @@ document.addEventListener("DOMContentLoaded", function () {
    ********************************************************************************/
   function openStudio(initialThemeKey = null, preserveDraft = false) {
     if (!studioModal) return;
+    if (isLivePreviewing && !preserveDraft) return;
+
+    setNavbarDropdownDisabled(false);
 
     try {
       populateTemplateDropdown();
@@ -289,6 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         e.stopPropagation();
       }
+      if (isLivePreviewing || openStudioBtn.disabled) return;
       const navLinks = document.querySelector(".nav-links");
       if (navLinks) navLinks.classList.remove("nav-active");
       openStudio();
@@ -739,6 +743,56 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function setNavbarDropdownDisabled(disabled) {
+    const navLinks = document.querySelector(".nav-links");
+    const themeSelector = document.getElementById("themeSelector");
+    const themeSelector2 = document.getElementById("themeSelector2");
+
+    if (navLinks) {
+      if (disabled) {
+        navLinks.classList.add("live-test-disabled");
+        navLinks.classList.remove("nav-active");
+      } else {
+        navLinks.classList.remove("live-test-disabled");
+      }
+    }
+
+    if (themeSelector) {
+      themeSelector.disabled = disabled;
+      if (disabled) {
+        themeSelector.setAttribute("aria-disabled", "true");
+        themeSelector.setAttribute("title", "Theme selection is disabled while Live Test mode is active.");
+      } else {
+        themeSelector.removeAttribute("aria-disabled");
+        themeSelector.removeAttribute("title");
+      }
+    }
+
+    if (themeSelector2) {
+      themeSelector2.disabled = disabled;
+      if (disabled) {
+        themeSelector2.setAttribute("aria-disabled", "true");
+        themeSelector2.setAttribute("title", "Theme selection is disabled while Live Test mode is active.");
+      } else {
+        themeSelector2.removeAttribute("aria-disabled");
+        themeSelector2.removeAttribute("title");
+      }
+    }
+
+    if (openStudioBtn) {
+      openStudioBtn.disabled = disabled;
+      if (disabled) {
+        openStudioBtn.classList.add("disabled");
+        openStudioBtn.setAttribute("aria-disabled", "true");
+        openStudioBtn.setAttribute("title", "Theme Studio is currently active in Live Test mode. Use the floating toolbar at the bottom.");
+      } else {
+        openStudioBtn.classList.remove("disabled");
+        openStudioBtn.removeAttribute("aria-disabled");
+        openStudioBtn.removeAttribute("title");
+      }
+    }
+  }
+
   function startLivePreview() {
     isLivePreviewing = true;
     applyDraftToLiveDOM();
@@ -761,6 +815,9 @@ document.addEventListener("DOMContentLoaded", function () {
       liveTestBar.classList.add("active");
     }
 
+    // 4. Disable all options in top navbar dropdown while Live Test is active
+    setNavbarDropdownDisabled(true);
+
     showToast("👁️ Live Test active: Now viewing your full dashboard live!", "info");
   }
 
@@ -771,6 +828,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (liveTestBar) {
       liveTestBar.classList.remove("active");
     }
+
+    // Re-enable all options in top navbar dropdown
+    setNavbarDropdownDisabled(false);
 
     // Reapply saved active theme
     const activeKey = localStorage.getItem("webclock_theme_key") || "default";
@@ -791,6 +851,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (btnLiveReopen) {
     btnLiveReopen.addEventListener("click", () => {
       if (liveTestBar) liveTestBar.classList.remove("active");
+      isLivePreviewing = false;
+      setNavbarDropdownDisabled(false);
       openStudio(null, true);
     });
   }
@@ -806,6 +868,7 @@ document.addEventListener("DOMContentLoaded", function () {
     btnLiveSave.addEventListener("click", () => {
       if (liveTestBar) liveTestBar.classList.remove("active");
       isLivePreviewing = false;
+      setNavbarDropdownDisabled(false);
       handleSaveTheme();
     });
   }

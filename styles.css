@@ -145,6 +145,25 @@ body {
   cursor: pointer;
 }
 
+/* Disabled state for dropdown options during Live Test mode */
+.nav-links.live-test-disabled select,
+.nav-links select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  background: rgba(40, 40, 40, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.nav-links.live-test-disabled label,
+.nav-links li.disabled label {
+  opacity: 0.45;
+}
+
+.nav-links.live-test-disabled .nav-menu-header {
+  opacity: 0.5;
+}
+
 /* Open Theme Studio Button in Hamburger Menu */
 .nav-studio-item {
   margin-top: 14px !important;
@@ -176,6 +195,17 @@ body {
   background: linear-gradient(135deg, rgba(85, 108, 228, 0.95), rgba(220, 100, 212, 0.95));
   transform: translateY(-1px);
   border-color: #ffffff;
+}
+
+.nav-studio-btn:disabled,
+.nav-studio-btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  background: rgba(80, 80, 80, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /*============================================================================
