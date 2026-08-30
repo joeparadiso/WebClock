@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     { key: "todobg1", ctrlId: "ctrl-todobg1", badgeId: "val-todobg1", hasAlpha: true, sliderId: "slider-todobg1", alphaBadgeId: "val-todobg1-alpha" },
     { key: "todobg2", ctrlId: "ctrl-todobg2", badgeId: "val-todobg2", hasAlpha: true, sliderId: "slider-todobg2", alphaBadgeId: "val-todobg2-alpha" },
     { key: "todoItemBg", ctrlId: "ctrl-todoItemBg", badgeId: "val-todoItemBg", hasAlpha: true, sliderId: "slider-todoItemBg", alphaBadgeId: "val-todoItemBg-alpha" },
+    { key: "trainPillBg", ctrlId: "ctrl-trainPillBg", badgeId: "val-trainPillBg", hasAlpha: true, sliderId: "slider-trainPillBg", alphaBadgeId: "val-trainPillBg-alpha" },
     { key: "timerbg1", ctrlId: "ctrl-timerbg1", badgeId: "val-timerbg1", hasAlpha: true, sliderId: "slider-timerbg1", alphaBadgeId: "val-timerbg1-alpha" },
     { key: "timerbg2", ctrlId: "ctrl-timerbg2", badgeId: "val-timerbg2", hasAlpha: true, sliderId: "slider-timerbg2", alphaBadgeId: "val-timerbg2-alpha" },
   ];
@@ -103,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
       todobg1: "rgba(45, 64, 103, 0.8)",
       todobg2: "rgba(13, 11, 65, 0.8)",
       todoItemBg: "rgba(0, 0, 0, 0.25)",
+      trainPillBg: "rgba(0, 0, 0, 0.25)",
       timerbg1: "rgba(45, 64, 103, 0.8)",
       timerbg2: "rgba(13, 11, 65, 0.8)",
       navbar: "rgba(0, 0, 0, 0.85)",
@@ -455,6 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
     mockContainer.style.setProperty("--mock-todo-bg1", currentDraft.colors.todobg1 || currentDraft.colors.clockbg1 || "#2D4067");
     mockContainer.style.setProperty("--mock-todo-bg2", currentDraft.colors.todobg2 || currentDraft.colors.clockbg2 || "#0D0B41");
     mockContainer.style.setProperty("--mock-todo-item-bg", currentDraft.colors.todoItemBg || "rgba(0, 0, 0, 0.25)");
+    mockContainer.style.setProperty("--mock-train-pill-bg", currentDraft.colors.trainPillBg || "rgba(0, 0, 0, 0.25)");
     mockContainer.style.setProperty("--mock-timer-bg1", currentDraft.colors.timerbg1 || currentDraft.colors.clockbg1 || "#08001F");
     mockContainer.style.setProperty("--mock-timer-bg2", currentDraft.colors.timerbg2 || currentDraft.colors.clockbg2 || "#1C52B8");
 
@@ -657,6 +660,7 @@ document.addEventListener("DOMContentLoaded", function () {
       todobg1: theme.todobg1 || theme.clockbg1 || "#000000",
       todobg2: theme.todobg2 || theme.clockbg2 || "#000000",
       todoItemBg: theme.todoItemBg || "rgba(0, 0, 0, 0.25)",
+      trainPillBg: theme.trainPillBg || "rgba(0, 0, 0, 0.25)",
       timerbg1: theme.timerbg1 || theme.clockbg1 || "#000000",
       timerbg2: theme.timerbg2 || theme.clockbg2 || "#000000",
       pagebg1: theme.pagebg1 || "#000000",
@@ -710,6 +714,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const todoItemBg = c.todoItemBg || "rgba(0, 0, 0, 0.25)";
     if (todoItemBg) document.documentElement.style.setProperty("--todo-item-bg", todoItemBg);
+
+    const trainPillBg = c.trainPillBg || "rgba(0, 0, 0, 0.25)";
+    if (trainPillBg) document.documentElement.style.setProperty("--train-pill-bg", trainPillBg);
 
     if (c.timerbg1) document.documentElement.style.setProperty("--timer-bg1", c.timerbg1);
     if (c.timerbg2) document.documentElement.style.setProperty("--timer-bg2", c.timerbg2);
@@ -868,6 +875,7 @@ document.addEventListener("DOMContentLoaded", function () {
     snippet += `    todobg1: "${c.todobg1 || c.clockbg1 || '#000000'}",\n`;
     snippet += `    todobg2: "${c.todobg2 || c.clockbg2 || '#000000'}",\n`;
     snippet += `    todoItemBg: "${c.todoItemBg || 'rgba(0, 0, 0, 0.25)'}",\n`;
+    snippet += `    trainPillBg: "${c.trainPillBg || 'rgba(0, 0, 0, 0.25)'}",\n`;
     snippet += `    timerbg1: "${c.timerbg1 || c.clockbg1 || '#000000'}",\n`;
     snippet += `    timerbg2: "${c.timerbg2 || c.clockbg2 || '#000000'}",\n`;
     snippet += `    navbar: "${c.navbar || '#000000'}",\n`;

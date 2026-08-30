@@ -48,7 +48,7 @@ _The customization menu allowing for theme selection and manual color adjustment
 - **Categorized Visual Color Palette:** Logically organized into 5 intuitive color groups with dedicated color pickers and 0–100% opacity range sliders:
   - 🌐 **General & Global Colors:** Text Color and Box Shadow & Glow.
   - 🧭 **Navigation Bar:** Navbar Background (with transparency) and Navbar Text Color.
-  - 🕒 **Main Clock Card:** Dual-tone Clock Background 1 & 2 gradients with opacity controls.
+  - 🕒 **Main Clock Card:** Dual-tone Clock Background 1 & 2 gradients with opacity controls and Train Pill & Badge Shading & Opacity.
   - 📝 **To-Do List Card:** Independent Two-Tone Card Background 1 & 2 gradients and Item Shading & Opacity.
   - ⏳ **Countdown Timer Cards:** Two-tone Timer Card Backgrounds and circular Timer Gauge Visual fill ring.
 - **Independent Scrollable Panes & Auto-Scroll:** Each section accordion body contains an internal scrollbar alongside a full-height scrollable controls column with automatic smooth scrolling when opening sections.

@@ -12,6 +12,10 @@
   --box-shadow-color: #ffec04;
   --clock-bg1: #08001f;
   --clock-bg2: #1c52b8;
+  --todo-bg1: #08001f;
+  --todo-bg2: #1c52b8;
+  --todo-item-bg: rgba(0, 0, 0, 0.25);
+  --train-pill-bg: rgba(0, 0, 0, 0.25);
   --timer-bg1: #08001f;
   --timer-bg2: #1c52b8;
   --navbar-bg: #000000e6;
@@ -406,19 +410,16 @@ body {
   text-transform: uppercase;
   padding: 4px 6px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--train-pill-bg, rgba(0, 0, 0, 0.25));
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--text-color);
   white-space: nowrap;
   line-height: 1.2;
 }
 
-.inbound-badge {
-  background: rgba(255, 255, 255, 0.12);
-}
-
+.inbound-badge,
 .outbound-badge {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--train-pill-bg, rgba(0, 0, 0, 0.25));
 }
 
 .transit-station {
@@ -460,7 +461,7 @@ body {
   gap: 6px;
   padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--train-pill-bg, rgba(0, 0, 0, 0.25));
   border: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.95rem;
   white-space: nowrap;
@@ -1698,6 +1699,8 @@ body {
   --mock-navbar-bg: #000000e6;
   --mock-navbar-text-color: #DCC48F;
   --mock-timer-visual-color: #F8E3AF;
+  --mock-todo-item-bg: rgba(0, 0, 0, 0.25);
+  --mock-train-pill-bg: rgba(0, 0, 0, 0.25);
 
   padding: 28px 36px;
   min-height: 600px;
@@ -1850,7 +1853,7 @@ body {
   padding: 2px 4px;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--mock-train-pill-bg, rgba(0, 0, 0, 0.22));
 }
 
 .mock-transit-station {
@@ -1885,7 +1888,7 @@ body {
   gap: 4px;
   padding: 2px 8px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.22);
+  background: var(--mock-train-pill-bg, rgba(0, 0, 0, 0.22));
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.78rem;
   justify-self: end;
