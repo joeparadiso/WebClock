@@ -403,10 +403,11 @@
       shadow: "rgb(192,136,114)",
       clockbg1: "rgba(247,215,183,.5)",
       clockbg2: "rgba(154,100,88,.8)",
+      clockInnerBg: "rgba(240, 190, 173, 0.18)",
       todobg1: "rgba(247,215,183,.5)",
       todobg2: "rgba(154,100,88,.8)",
       todoItemBg: "rgba(128, 108, 120, 0.25)",
-      trainPillBg: "rgba(128, 108, 120, 0.5)",
+      trainPillBg: "rgba(255, 229, 245, 0.2)",
       timerbg1: "rgba(247,215,183,.5)",
       timerbg2: "rgba(154,100,88,.8)",
       navbar: "rgba(128,108,120, 0.45)",
@@ -789,6 +790,9 @@
     if (theme.clockbg1) document.documentElement.style.setProperty("--clock-bg1", theme.clockbg1);
     if (theme.clockbg2) document.documentElement.style.setProperty("--clock-bg2", theme.clockbg2);
 
+    const clockInnerBg = theme.clockInnerBg || "rgba(0, 0, 0, 0.14)";
+    if (clockInnerBg) document.documentElement.style.setProperty("--clock-inner-bg", clockInnerBg);
+
     const todobg1 = theme.todobg1 || theme.clockbg1;
     if (todobg1) document.documentElement.style.setProperty("--todo-bg1", todobg1);
 
@@ -947,6 +951,7 @@
         shadow: themeData.shadow,
         clockbg1: themeData.clockbg1,
         clockbg2: themeData.clockbg2,
+        clockInnerBg: themeData.clockInnerBg || "rgba(0, 0, 0, 0.14)",
         todobg1: themeData.todobg1 || themeData.clockbg1,
         todobg2: themeData.todobg2 || themeData.clockbg2,
         todoItemBg: themeData.todoItemBg || "rgba(0, 0, 0, 0.25)",
@@ -1032,6 +1037,7 @@
         shadow: t.shadow || "#FFFFFF",
         clockbg1: t.clockbg1 || "#000000",
         clockbg2: t.clockbg2 || "#000000",
+        clockInnerBg: t.clockInnerBg || "rgba(0, 0, 0, 0.14)",
         todobg1: t.todobg1 || t.clockbg1 || "#000000",
         todobg2: t.todobg2 || t.clockbg2 || "#000000",
         todoItemBg: t.todoItemBg || "rgba(0, 0, 0, 0.25)",

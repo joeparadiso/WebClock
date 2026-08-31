@@ -12,6 +12,7 @@
   --box-shadow-color: #ffec04;
   --clock-bg1: #08001f;
   --clock-bg2: #1c52b8;
+  --clock-inner-bg: rgba(0, 0, 0, 0.14);
   --todo-bg1: #08001f;
   --todo-bg2: #1c52b8;
   --todo-item-bg: rgba(0, 0, 0, 0.25);
@@ -316,7 +317,7 @@ body {
   padding: 8px 32px 10px;
   border: 2px solid var(--text-color);
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.12);
+  background: var(--clock-inner-bg, rgba(0, 0, 0, 0.12));
   box-shadow: 0 0 20px var(--box-shadow-color);
   cursor: grab;
   position: relative;
@@ -387,7 +388,7 @@ body {
   padding: 8px 36px 12px;
   border: 1px solid var(--text-color);
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.12);
+  background: var(--clock-inner-bg, rgba(0, 0, 0, 0.12));
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.2);
   cursor: grab;
   position: relative;
@@ -407,11 +408,13 @@ body {
  *     MBTA TRANSIT TRACKER WIDGET (STREAMLINED OPTION 3 ROWS)
  =============================================================================*/
 
+/* TRANSIT COMMUTER RAIL COMPONENT */
 .transit-widget {
+  margin-top: 10px;
+  margin-bottom: 22px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin: 0 auto 24px;
   width: 100%;
   max-width: 790px;
 }
@@ -423,7 +426,7 @@ body {
   gap: 14px;
   padding: 8px 20px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.16);
+  background: var(--clock-inner-bg, rgba(0, 0, 0, 0.16));
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   font-family: "Baumans", serif;
@@ -1750,6 +1753,7 @@ body {
   --mock-timer-visual-color: #F8E3AF;
   --mock-todo-item-bg: rgba(0, 0, 0, 0.25);
   --mock-train-pill-bg: rgba(0, 0, 0, 0.25);
+  --mock-clock-inner-bg: rgba(0, 0, 0, 0.14);
 
   padding: 28px 36px;
   min-height: 600px;
@@ -1860,7 +1864,7 @@ body {
   padding: 6px 28px 8px;
   border: 1px solid var(--mock-text-color);
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.12);
+  background: var(--mock-clock-inner-bg, rgba(0, 0, 0, 0.12));
 }
 
 .mock-point {
@@ -1883,7 +1887,7 @@ body {
   gap: 8px;
   padding: 5px 12px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.16);
+  background: var(--mock-clock-inner-bg, rgba(0, 0, 0, 0.16));
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-family: "Baumans", serif;
   font-size: 0.92rem;

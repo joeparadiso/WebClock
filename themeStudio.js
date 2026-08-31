@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
     { key: "navbar", ctrlId: "ctrl-navbar", badgeId: "val-navbar", hasAlpha: true, sliderId: "slider-navbar", alphaBadgeId: "val-navbar-alpha" },
     { key: "clockbg1", ctrlId: "ctrl-clockbg1", badgeId: "val-clockbg1", hasAlpha: true, sliderId: "slider-clockbg1", alphaBadgeId: "val-clockbg1-alpha" },
     { key: "clockbg2", ctrlId: "ctrl-clockbg2", badgeId: "val-clockbg2", hasAlpha: true, sliderId: "slider-clockbg2", alphaBadgeId: "val-clockbg2-alpha" },
+    { key: "clockInnerBg", ctrlId: "ctrl-clockInnerBg", badgeId: "val-clockInnerBg", hasAlpha: true, sliderId: "slider-clockInnerBg", alphaBadgeId: "val-clockInnerBg-alpha" },
     { key: "todobg1", ctrlId: "ctrl-todobg1", badgeId: "val-todobg1", hasAlpha: true, sliderId: "slider-todobg1", alphaBadgeId: "val-todobg1-alpha" },
     { key: "todobg2", ctrlId: "ctrl-todobg2", badgeId: "val-todobg2", hasAlpha: true, sliderId: "slider-todobg2", alphaBadgeId: "val-todobg2-alpha" },
     { key: "todoItemBg", ctrlId: "ctrl-todoItemBg", badgeId: "val-todoItemBg", hasAlpha: true, sliderId: "slider-todoItemBg", alphaBadgeId: "val-todoItemBg-alpha" },
@@ -101,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: "#F8E3AF",
       clockbg1: "rgba(45, 64, 103, 0.8)",
       clockbg2: "rgba(13, 11, 65, 0.8)",
+      clockInnerBg: "rgba(0, 0, 0, 0.14)",
       todobg1: "rgba(45, 64, 103, 0.8)",
       todobg2: "rgba(13, 11, 65, 0.8)",
       todoItemBg: "rgba(0, 0, 0, 0.25)",
@@ -458,6 +460,7 @@ document.addEventListener("DOMContentLoaded", function () {
     mockContainer.style.setProperty("--mock-navbar-bg", currentDraft.colors.navbar || "#000000e6");
     mockContainer.style.setProperty("--mock-clock-bg1", currentDraft.colors.clockbg1 || "#2D4067");
     mockContainer.style.setProperty("--mock-clock-bg2", currentDraft.colors.clockbg2 || "#0D0B41");
+    mockContainer.style.setProperty("--mock-clock-inner-bg", currentDraft.colors.clockInnerBg || "rgba(0, 0, 0, 0.14)");
     mockContainer.style.setProperty("--mock-todo-bg1", currentDraft.colors.todobg1 || currentDraft.colors.clockbg1 || "#2D4067");
     mockContainer.style.setProperty("--mock-todo-bg2", currentDraft.colors.todobg2 || currentDraft.colors.clockbg2 || "#0D0B41");
     mockContainer.style.setProperty("--mock-todo-item-bg", currentDraft.colors.todoItemBg || "rgba(0, 0, 0, 0.25)");
@@ -661,6 +664,7 @@ document.addEventListener("DOMContentLoaded", function () {
       shadow: theme.shadow || "#FFFFFF",
       clockbg1: theme.clockbg1 || "#000000",
       clockbg2: theme.clockbg2 || "#000000",
+      clockInnerBg: theme.clockInnerBg || "rgba(0, 0, 0, 0.14)",
       todobg1: theme.todobg1 || theme.clockbg1 || "#000000",
       todobg2: theme.todobg2 || theme.clockbg2 || "#000000",
       todoItemBg: theme.todoItemBg || "rgba(0, 0, 0, 0.25)",
@@ -709,6 +713,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (c.shadow) document.documentElement.style.setProperty("--box-shadow-color", c.shadow);
     if (c.clockbg1) document.documentElement.style.setProperty("--clock-bg1", c.clockbg1);
     if (c.clockbg2) document.documentElement.style.setProperty("--clock-bg2", c.clockbg2);
+
+    const clockInnerBg = c.clockInnerBg || "rgba(0, 0, 0, 0.14)";
+    if (clockInnerBg) document.documentElement.style.setProperty("--clock-inner-bg", clockInnerBg);
 
     const todobg1 = c.todobg1 || c.clockbg1;
     if (todobg1) document.documentElement.style.setProperty("--todo-bg1", todobg1);
@@ -935,6 +942,7 @@ document.addEventListener("DOMContentLoaded", function () {
     snippet += `    shadow: "${c.shadow || '#FFFFFF'}",\n`;
     snippet += `    clockbg1: "${c.clockbg1 || '#000000'}",\n`;
     snippet += `    clockbg2: "${c.clockbg2 || '#000000'}",\n`;
+    snippet += `    clockInnerBg: "${c.clockInnerBg || 'rgba(0, 0, 0, 0.14)'}",\n`;
     snippet += `    todobg1: "${c.todobg1 || c.clockbg1 || '#000000'}",\n`;
     snippet += `    todobg2: "${c.todobg2 || c.clockbg2 || '#000000'}",\n`;
     snippet += `    todoItemBg: "${c.todoItemBg || 'rgba(0, 0, 0, 0.25)'}",\n`;
