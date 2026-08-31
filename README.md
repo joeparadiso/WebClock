@@ -68,7 +68,7 @@ _The customization menu allowing for theme selection and manual color adjustment
 - **Dynamic Persistence:** Custom coordinates, collapse states, and timer data persist in `localStorage` across page reloads.
 
 ### 📝 Collapsible, Movable & Resizable Dashboard To-Do List
-- **Top Navbar Launcher:** Dedicated "＋ Create To-Do" link in the top navbar (next to "＋ Create Timer") opens the to-do widget.
+- **Top Navbar Launcher:** Dedicated "＋ Create To-Do" link in the top navbar (to the left of "＋ Create Timer") opens the to-do widget.
 - **Symmetrical 415px Width & Left-Side Dynamic Sync:** The To-Do list matches the `415px` width of the timer cards for balanced visual symmetry across the dashboard. It dynamically syncs to the left of the main clock card (aligned with the top). Click and drag the header (with grip handle `⠿`) to place it anywhere on your screen. Double-click the header to reset to its default left-side position.
 - **Multi-Line Text Wrapping:** Longer task descriptions automatically wrap across multiple lines and expand the item height dynamically without overflowing or clipping.
 - **Customizable Size:** Drag the bottom-right corner resize handle to expand or shrink the widget's width and scrollable height to your preference. Dimensions are saved in `localStorage`.
@@ -109,7 +109,7 @@ Because this is a static web project, no server installation or build step is re
 
 ### 4. Using the To-Do List
 
-1. Click the **"＋ Create To-Do"** link in the top navbar (to the right of "+ Create Timer").
+1. Click the **"＋ Create To-Do"** link in the top navbar (to the left of "+ Create Timer").
 2. The To-Do list card will appear on the left side of the dashboard.
 3. Click the **`▶` / `▼`** button in the To-Do header to expand or collapse the list (defaults to collapsed for privacy).
 4. Click the **`＋`** button in the header (or press `Enter` while typing a task) to create a new empty row.

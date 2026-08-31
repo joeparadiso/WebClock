@@ -33,8 +33,8 @@
     <nav class="navbar" aria-label="Main Navigation">
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
       <div class="nav-actions">
-        <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
         <button class="nav-todo-link" id="open-todo-btn" type="button">＋ Create To-Do</button>
+        <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
       </div>
       
       <!-- Hamburger Dropdown Menu -->
@@ -53,7 +53,7 @@
           </select>
         </li>
         <li class="nav-studio-item">
-          <button id="open-theme-studio-btn" class="nav-studio-btn" type="button">
+          <button id="open-theme-studio-btn" class="nav-studio-btn" type="button" onclick="if(window.ThemeStudio && !this.disabled) window.ThemeStudio.openStudio();">
             <span class="btn-icon">🎨</span>
             <span class="btn-text">Open Theme Studio</span>
           </button>
@@ -263,8 +263,8 @@
                       <span class="mock-nav-menu">☰</span>
                       <span class="mock-nav-brand">WebClock</span>
                       <div class="mock-nav-actions">
-                        <span class="mock-nav-timer-badge">＋ Create Timer</span>
                         <span class="mock-nav-todo-badge">＋ Create To-Do</span>
+                        <span class="mock-nav-timer-badge">＋ Create Timer</span>
                       </div>
                     </div>
 

@@ -145,6 +145,15 @@ body {
   cursor: pointer;
 }
 
+.nav-links select option.theme-dropdown-separator,
+.nav-links select option[disabled]:not([value=""]) {
+  color: #9cb4dc;
+  background: #141824;
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+}
+
 /* Disabled state for dropdown options during Live Test mode */
 .nav-links.live-test-disabled select,
 .nav-links select:disabled {

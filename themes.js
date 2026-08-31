@@ -136,7 +136,7 @@
       clockbg2: "rgba(228,194,136,0.8)",
       todobg1: "rgba(129,144,147,0.8)",
       todobg2: "rgba(228,194,136,0.8)",
-      todoItemBg: "rgba(0, 0, 0, 0.25)",
+      todoItemBg: "rgba(254, 245, 225, 0.2)",
       trainPillBg: "rgba(228, 194, 136, 0.25)",
       timerbg1: "rgba(129,144,147,0.8)",
       timerbg2: "rgba(228,194,136,0.8)",
@@ -522,26 +522,29 @@
     },
   };
 
-  // Manual list of themes assigned to Group B (Field Themes)
+  // Manual list of themes assigned to Group B (Field Themes) with section separator headers
   const defaultManualGroupB = [
+    "-- Summer Themes --",
     "Morning Field",
     "Mid Morning Field",
     "Mid Day Field",
-    "Mid Morning Frosty Field",
-    "Morning Frosty Field",
-    "Partly Sunny Frosty Field",
-    "Winter Evening Field",
-    "Winter Night Field",
-    "Autumnal Field",
-    "Sunny Autumnal Field",
-    "Misty Autumnal Field",
-    "Scattered Clouds Fall Field",
-    "Afternoon Pumpkin Field",
     "Rainy Field",
     "Post Rain Field",
     "Cloudy Field",
     "Overcast Field",
     "Stormy Field",
+    "-- Autumn Themes --",
+    "Autumnal Field",
+    "Sunny Autumnal Field",
+    "Misty Autumnal Field",
+    "Scattered Clouds Fall Field",
+    "Afternoon Pumpkin Field",
+    "-- Winter Themes --",
+    "Mid Morning Frosty Field",
+    "Morning Frosty Field",
+    "Partly Sunny Frosty Field",
+    "Winter Evening Field",
+    "Winter Night Field",
   ];
 
   // List of pre-bundled images in the images/ directory
@@ -747,7 +750,7 @@
 
   function getGroupB() {
     const master = getMasterThemes();
-    const groupBKeys = Object.keys(master).filter(k => master[k].group === "groupB");
+    const groupBKeys = Object.keys(master).filter(k => master[k].group === "groupB" && !k.startsWith("--"));
     return groupBKeys.sort((a, b) => {
       const idxA = defaultManualGroupB.indexOf(a);
       const idxB = defaultManualGroupB.indexOf(b);
@@ -863,13 +866,23 @@
 
     if (themeSelector) {
       themeSelector.innerHTML = '<option value="" disabled selected hidden>-- Select General Theme --</option>';
-      groupA.forEach(key => {
-        const option = document.createElement("option");
-        option.value = key;
-        option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-        themeSelector.appendChild(option);
+      const validGroupA = getGroupA();
+      validGroupA.forEach(key => {
+        if (key.startsWith("--")) {
+          const sepOption = document.createElement("option");
+          sepOption.disabled = true;
+          sepOption.value = "";
+          sepOption.className = "theme-dropdown-separator";
+          sepOption.textContent = `── ${key.replace(/^-+\s*|\s*-+$/g, "")} ──`;
+          themeSelector.appendChild(sepOption);
+        } else {
+          const option = document.createElement("option");
+          option.value = key;
+          option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+          themeSelector.appendChild(option);
+        }
       });
-      if (groupA.includes(current)) {
+      if (validGroupA.includes(current)) {
         themeSelector.value = current;
       } else {
         themeSelector.value = "";
@@ -878,13 +891,38 @@
 
     if (themeSelector2) {
       themeSelector2.innerHTML = '<option value="" disabled selected hidden>-- Select Field Theme --</option>';
-      groupB.forEach(key => {
-        const option = document.createElement("option");
-        option.value = key;
-        option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-        themeSelector2.appendChild(option);
+      const master = getMasterThemes();
+      const validGroupB = getGroupB();
+      const rendered = new Set();
+
+      defaultManualGroupB.forEach(item => {
+        if (item.startsWith("--")) {
+          const sepOption = document.createElement("option");
+          sepOption.disabled = true;
+          sepOption.value = "";
+          sepOption.className = "theme-dropdown-separator";
+          sepOption.textContent = `── ${item.replace(/^-+\s*|\s*-+$/g, "")} ──`;
+          themeSelector2.appendChild(sepOption);
+        } else if (master[item] && master[item].group === "groupB" && !rendered.has(item)) {
+          const option = document.createElement("option");
+          option.value = item;
+          option.textContent = item.charAt(0).toUpperCase() + item.slice(1);
+          themeSelector2.appendChild(option);
+          rendered.add(item);
+        }
       });
-      if (groupB.includes(current)) {
+
+      validGroupB.forEach(key => {
+        if (!rendered.has(key)) {
+          const option = document.createElement("option");
+          option.value = key;
+          option.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+          themeSelector2.appendChild(option);
+          rendered.add(key);
+        }
+      });
+
+      if (validGroupB.includes(current)) {
         themeSelector2.value = current;
       } else {
         themeSelector2.value = "";
@@ -934,42 +972,49 @@
     return true;
   }
 
-  function deleteTheme(key) {
+  function deleteCustomTheme(key) {
     if (!key) return false;
     const customThemes = getCustomThemesStore();
-    if (customThemes[key]) {
+    const isCustom = !!customThemes[key];
+
+    if (isCustom) {
       delete customThemes[key];
       setCustomThemesStore(customThemes);
-    }
-
-    // Mark as deleted in deleted list (even if built-in)
-    const deletedThemes = getDeletedThemesList();
-    if (!deletedThemes.includes(key)) {
-      deletedThemes.push(key);
-      setDeletedThemesList(deletedThemes);
+    } else {
+      // It's a built-in theme -> soft delete
+      const deletedThemes = getDeletedThemesList();
+      if (!deletedThemes.includes(key)) {
+        deletedThemes.push(key);
+        setDeletedThemesList(deletedThemes);
+      }
     }
 
     repopulateDropdowns();
 
-    // If deleted theme was active, switch to first available theme
-    const current = localStorage.getItem(STORAGE_CURRENT_THEME);
-    if (current === key) {
-      const master = getMasterThemes();
-      const firstAvailable = Object.keys(master)[0] || "default";
-      applyThemeByKey(firstAvailable, true);
+    // If active theme was deleted, fallback to default or first available
+    const activeKey = localStorage.getItem(STORAGE_CURRENT_THEME);
+    if (activeKey === key) {
+      const remaining = getGroupB();
+      const fallbackKey = remaining.length > 0 ? remaining[0] : (getGroupA()[0] || "default");
+      applyThemeByKey(fallbackKey, true);
     }
-
     return true;
   }
 
-  function resetToDefaults() {
+  function resetAllThemes() {
     try {
       localStorage.removeItem(STORAGE_CUSTOM_THEMES);
       localStorage.removeItem(STORAGE_DELETED_THEMES);
-    } catch (e) { }
-
-    repopulateDropdowns();
-    applyThemeByKey("default", true);
+      localStorage.removeItem(STORAGE_CURRENT_THEME);
+      repopulateDropdowns();
+      const groupB = getGroupB();
+      const firstTheme = groupB.length > 0 ? groupB[0] : (getGroupA()[0] || "default");
+      applyThemeByKey(firstTheme, true);
+      return true;
+    } catch (e) {
+      console.error("Error resetting themes:", e);
+      return false;
+    }
   }
 
   /********************************************************************************
@@ -1010,17 +1055,13 @@
       }
     });
 
-    const codeSnippet = `/* =========================================================
- * Generated Theme Definitions for themes.js
- * ========================================================= */
-
+    return `// Exported Theme Configurations:
 const colorThemes = ${JSON.stringify(colorOutput, null, 2)};
 
-const bgThemes = ${JSON.stringify(bgOutput, null, 2)};
+const backgroundThemes = ${JSON.stringify(bgOutput, null, 2)};
 
 const manualGroupB = ${JSON.stringify(groupBOutput, null, 2)};
 `;
-    return codeSnippet;
   }
 
   /********************************************************************************
@@ -1032,18 +1073,22 @@ const manualGroupB = ${JSON.stringify(groupBOutput, null, 2)};
     getManualGroupB: () => [...defaultManualGroupB],
     getBundledImages: () => [...BUNDLED_IMAGES],
     getMasterThemes,
+    getCustomThemes: getCustomThemesStore,
+    saveTheme,
+    deleteTheme: deleteCustomTheme,
+    resetToDefaults: resetAllThemes,
+    resetAllThemes,
     getGroupA,
     getGroupB,
     applyThemeByKey,
-    saveTheme,
-    deleteTheme,
-    resetToDefaults,
+    applyTheme: applyThemeByKey,
     repopulateDropdowns,
     colorToHex,
     parseColor,
     formatColor,
     generateThemesJsCode,
   };
+  window.ThemeManager = window.ThemeEngine;
 
   /********************************************************************************
    * DOM Initialization
@@ -1086,13 +1131,17 @@ const manualGroupB = ${JSON.stringify(groupBOutput, null, 2)};
 
     if (themeSelector) {
       themeSelector.addEventListener("change", function () {
-        applyThemeByKey(this.value);
+        if (this.value && !this.value.startsWith("--")) {
+          applyThemeByKey(this.value);
+        }
       });
     }
 
     if (themeSelector2) {
       themeSelector2.addEventListener("change", function () {
-        applyThemeByKey(this.value);
+        if (this.value && !this.value.startsWith("--")) {
+          applyThemeByKey(this.value);
+        }
       });
     }
 
