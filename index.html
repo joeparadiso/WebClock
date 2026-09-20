@@ -24,7 +24,7 @@
     <script type="text/javascript" src="weather.js?v=3.3" defer></script>
     <script type="text/javascript" src="clock.js?v=3.3" defer></script>
     <script type="text/javascript" src="sunTimes.js?v=3.3" defer></script>
-    <script type="text/javascript" src="nextTrain.js?v=3.3" defer></script>
+    <script type="text/javascript" src="nextTrain.js?v=3.4" defer></script>
     <script type="text/javascript" src="todo.js?v=3.3" defer></script>
     <link rel="icon" href="favicon.ico" />
   </head>
@@ -120,7 +120,7 @@
               </div>
               <span class="transit-arrow" aria-hidden="true">→</span>
               <div class="transit-station arrival-station">
-                <span class="station-name">South Station</span>
+                <span class="station-name" id="inbound-destination-name">South Station</span>
                 <span class="station-time" id="arrival-time">Loading...</span>
               </div>
               <div class="transit-train-pill">
@@ -129,7 +129,7 @@
               </div>
             </div>
 
-            <!-- Outbound Row: Dedham to Forge Park/495 -->
+            <!-- Outbound Row: Dedham to Forge Park/495 or Foxboro -->
             <div class="transit-row" id="transitOutboundRow">
               <div class="transit-badge outbound-badge">OUTBOUND</div>
               <div class="transit-station departure-station">
@@ -138,7 +138,7 @@
               </div>
               <span class="transit-arrow" aria-hidden="true">→</span>
               <div class="transit-station arrival-station">
-                <span class="station-name">Forge Park/495</span>
+                <span class="station-name" id="outbound-destination-name">Forge Park/495</span>
                 <span class="station-time" id="outbound-arrival-time">Loading...</span>
               </div>
               <div class="transit-train-pill">

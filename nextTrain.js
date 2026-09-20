@@ -2,7 +2,7 @@
 // MBTA Next Inbound & Outbound Train Display
 // DETAILS:
 //  Fetches and displays the next inbound train (Dedham Corporate Center -> South Station)
-//  and next outbound train (Dedham Corporate Center -> Forge Park/495) using the
+//  and next outbound train (Dedham Corporate Center -> Forge Park/495 or Foxboro) using the
 //  MBTA v3 API. Updates automatically every 60 seconds.
 // =============================================================================
 
@@ -12,6 +12,8 @@
   const DEDHAM_STOP_ID = "place-FB-0118";
   const SOUTH_STATION_STOP_ID = "place-sstat";
   const FORGE_PARK_STOP_ID = "place-FB-0303";
+  const FOXBORO_STOP_ID = "place-FS-0049";
+  const FRANKLIN_STOP_ID = "place-FB-0275";
   const INBOUND_DIRECTION_ID = 1;
   const OUTBOUND_DIRECTION_ID = 0;
 
@@ -37,6 +39,14 @@
       return str.slice(0, -2) + ":" + str.slice(-2);
     }
     return str;
+  }
+
+  // Formats a Date object into local YYYY-MM-DD for MBTA API query filtering
+  function formatLocalDate(dt) {
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, "0");
+    const day = String(dt.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
   // Extracts train number from trip attributes or falls back to parsing the trip ID
@@ -112,7 +122,7 @@
   }
 
   // Queries arrival time for a specific trip at a destination station
-  async function getArrivalTimeAtStation(tripId, stopId) {
+  async function getArrivalTimeAtStation(tripId, stopId, depTime) {
     try {
       // 1. Try real-time predictions for this trip at destination station
       const pred = await fetchJson(`${BASE_URL}/predictions`, {
@@ -123,30 +133,77 @@
 
       if (pred.data && pred.data.length) {
         for (const item of pred.data) {
-          if (item.attributes && item.attributes.arrival_time) {
-            return new Date(normalizeIsoTime(item.attributes.arrival_time));
+          if (item.attributes) {
+            const arr = item.attributes.arrival_time || item.attributes.departure_time;
+            if (arr) {
+              return new Date(normalizeIsoTime(arr));
+            }
           }
         }
       }
 
       // 2. Fallback to schedule for this trip at destination station
-      const sched = await fetchJson(`${BASE_URL}/schedules`, {
+      const schedParams = {
         "filter[trip]": tripId,
         "filter[stop]": stopId,
         "api_key": API_KEY,
-      });
+      };
+      if (depTime instanceof Date && !isNaN(depTime.getTime())) {
+        schedParams["filter[date]"] = formatLocalDate(depTime);
+      }
+
+      const sched = await fetchJson(`${BASE_URL}/schedules`, schedParams);
 
       if (sched.data && sched.data.length) {
         for (const item of sched.data) {
-          if (item.attributes && item.attributes.arrival_time) {
-            return new Date(normalizeIsoTime(item.attributes.arrival_time));
+          if (item.attributes) {
+            const arr = item.attributes.arrival_time || item.attributes.departure_time;
+            if (arr) {
+              return new Date(normalizeIsoTime(arr));
+            }
           }
         }
       }
     } catch (e) {
-      console.warn("Could not fetch arrival time for trip:", tripId, e);
+      console.warn("Could not fetch arrival time for trip:", tripId, "at stop:", stopId, e);
     }
     return null;
+  }
+
+  // Resolves the destination station name and stop ID for an outbound trip
+  async function resolveOutboundDestination(tripObj, tripId, item) {
+    let headsign = tripObj?.attributes?.headsign || item?.attributes?.stop_headsign || "";
+
+    // If headsign is missing from included trip data, fetch the trip details directly
+    if (!headsign && tripId) {
+      try {
+        const tripResp = await fetchJson(`${BASE_URL}/trips/${tripId}`, {
+          "api_key": API_KEY,
+        });
+        if (tripResp?.data?.attributes?.headsign) {
+          headsign = tripResp.data.attributes.headsign;
+          if (tripObj && tripObj.attributes) {
+            tripObj.attributes.headsign = headsign;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch trip headsign for trip:", tripId, e);
+      }
+    }
+
+    const lowerHeadsign = (headsign || "").toLowerCase();
+    if (lowerHeadsign.includes("foxboro")) {
+      return { stopId: FOXBORO_STOP_ID, name: "Foxboro" };
+    }
+    if (lowerHeadsign.includes("forge park")) {
+      return { stopId: FORGE_PARK_STOP_ID, name: "Forge Park/495" };
+    }
+    if (lowerHeadsign.includes("franklin")) {
+      return { stopId: FRANKLIN_STOP_ID, name: "Franklin" };
+    }
+
+    // Default outbound destination fallback
+    return { stopId: FORGE_PARK_STOP_ID, name: "Forge Park/495" };
   }
 
   // Processes and displays train info for a specific direction and destination
@@ -154,11 +211,11 @@
     predictionsData,
     schedulesData,
     directionId,
-    destStopId,
+    destConfig,
     elements,
     directionLabel
   ) {
-    const { departureElem, routeElem, arrivalElem } = elements;
+    const { departureElem, routeElem, arrivalElem, stationElem } = elements;
 
     try {
       // Step 1: Filter predictions for Dedham in this direction
@@ -195,7 +252,7 @@
         (dataSource.included || []).filter(x => x.type === "route").map(r => [r.id, r])
       );
 
-      // Step 4: Find the first future train that serves the destination station
+      // Step 4: Find the first future train and determine its destination & arrival time
       let selectedTrain = null;
       let selectedDepTime = null;
       let selectedTripObj = null;
@@ -203,6 +260,7 @@
       let selectedTripId = null;
       let selectedRouteId = null;
       let selectedArrTime = null;
+      let selectedDestName = destConfig.name || destConfig.defaultName;
 
       for (const entry of future) {
         const item = entry.item;
@@ -222,22 +280,59 @@
           routeId = item.attributes.route_id;
         }
 
+        const tripObj = tripId ? tripsMap.get(tripId) : null;
+        const routeObj = routeId ? routesMap.get(routeId) : null;
+
+        let destStopId = null;
+        let destName = null;
+
+        if (destConfig.isDynamic) {
+          const resolved = await resolveOutboundDestination(tripObj, tripId, item);
+          destStopId = resolved.stopId;
+          destName = resolved.name;
+        } else {
+          destStopId = destConfig.stopId;
+          destName = destConfig.name;
+        }
+
         let arrTime = null;
         if (tripId && destStopId) {
-          arrTime = await getArrivalTimeAtStation(tripId, destStopId);
-          // If destination stop was specified and this trip does not stop there, try next train
-          if (!arrTime && future.length > 1) {
-            continue;
+          arrTime = await getArrivalTimeAtStation(tripId, destStopId, depTime);
+        }
+
+        // If dynamic outbound train didn't find arrival time at the resolved stop,
+        // cross-check the alternate terminal (Foxboro <-> Forge Park/495)
+        if (destConfig.isDynamic && !arrTime && tripId) {
+          if (destStopId === FORGE_PARK_STOP_ID) {
+            const altArr = await getArrivalTimeAtStation(tripId, FOXBORO_STOP_ID, depTime);
+            if (altArr) {
+              arrTime = altArr;
+              destStopId = FOXBORO_STOP_ID;
+              destName = "Foxboro";
+            }
+          } else if (destStopId === FOXBORO_STOP_ID) {
+            const altArr = await getArrivalTimeAtStation(tripId, FORGE_PARK_STOP_ID, depTime);
+            if (altArr) {
+              arrTime = altArr;
+              destStopId = FORGE_PARK_STOP_ID;
+              destName = "Forge Park/495";
+            }
           }
+        }
+
+        // For static inbound trains: if arrival at destination wasn't found and multiple future trains exist, try next
+        if (!destConfig.isDynamic && !arrTime && future.length > 1) {
+          continue;
         }
 
         selectedTrain = item;
         selectedDepTime = depTime;
         selectedTripId = tripId;
         selectedRouteId = routeId;
-        selectedTripObj = tripId ? tripsMap.get(tripId) : null;
-        selectedRouteObj = routeId ? routesMap.get(routeId) : null;
+        selectedTripObj = tripObj;
+        selectedRouteObj = routeObj;
         selectedArrTime = arrTime;
+        selectedDestName = destName;
         break;
       }
 
@@ -249,6 +344,9 @@
         selectedRouteId = selectedTrain.relationships?.route?.data?.id || selectedTrain.attributes?.route_id;
         selectedTripObj = selectedTripId ? tripsMap.get(selectedTripId) : null;
         selectedRouteObj = selectedRouteId ? routesMap.get(selectedRouteId) : null;
+        if (!selectedDestName) {
+          selectedDestName = destConfig.name || destConfig.defaultName;
+        }
       }
 
       // Extract real train number (e.g. "5768")
@@ -267,6 +365,10 @@
       // Update DOM
       const depStr = formatTime(selectedDepTime);
       if (departureElem) departureElem.textContent = depStr;
+
+      if (stationElem && selectedDestName) {
+        stationElem.textContent = selectedDestName;
+      }
 
       if (arrivalElem) {
         if (selectedArrTime) {
@@ -291,19 +393,21 @@
       departureElem: document.getElementById("departure-time"),
       arrivalElem: document.getElementById("arrival-time"),
       routeElem: document.getElementById("train-route"),
+      stationElem: document.getElementById("inbound-destination-name"),
     };
 
     const outboundElements = {
       departureElem: document.getElementById("outbound-departure-time"),
       arrivalElem: document.getElementById("outbound-arrival-time"),
       routeElem: document.getElementById("outbound-train-route"),
+      stationElem: document.getElementById("outbound-destination-name"),
     };
 
     if (firstLoad) {
-      Object.values(inboundElements).forEach(el => {
+      [inboundElements.departureElem, inboundElements.arrivalElem, inboundElements.routeElem].forEach(el => {
         if (el) el.textContent = "Loading...";
       });
-      Object.values(outboundElements).forEach(el => {
+      [outboundElements.departureElem, outboundElements.arrivalElem, outboundElements.routeElem].forEach(el => {
         if (el) el.textContent = "Loading...";
       });
     }
@@ -339,7 +443,7 @@
           predictions,
           schedules,
           INBOUND_DIRECTION_ID,
-          SOUTH_STATION_STOP_ID,
+          { isDynamic: false, stopId: SOUTH_STATION_STOP_ID, name: "South Station" },
           inboundElements,
           "inbound"
         ),
@@ -347,7 +451,7 @@
           predictions,
           schedules,
           OUTBOUND_DIRECTION_ID,
-          FORGE_PARK_STOP_ID,
+          { isDynamic: true, defaultStopId: FORGE_PARK_STOP_ID, defaultName: "Forge Park/495" },
           outboundElements,
           "outbound"
         ),
