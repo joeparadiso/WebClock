@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const createTimerForm = document.getElementById("create-timer-form");
   const timerLabelInput = document.getElementById("timer-label");
   const timerNoteInput = document.getElementById("timer-note");
+  const timerStartDateInput = document.getElementById("timer-start-date");
+  const timerStartTimeInput = document.getElementById("timer-start-time");
+  const timerStartNowBtn = document.getElementById("timer-start-now-btn");
   const timerDateInput = document.getElementById("timer-date");
   const timerTimeInput = document.getElementById("timer-time");
   const presetButtons = document.querySelectorAll(".preset-btn");
@@ -200,7 +203,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     timersGrid.innerHTML = activeTimers.map(timer => {
       const targetTime = timer.targetTimestamp;
-      const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - timer.createdAt);
+      const startTime = timer.startTimestamp || timer.createdAt || targetTime;
+      const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - startTime);
       const remainingMs = targetTime - now;
       const isOverdue = remainingMs <= 0;
       const remainingSec = Math.floor(remainingMs / 1000);
@@ -210,11 +214,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const percent = Math.round(fraction * 100);
       const strokeOffset = CIRCUMFERENCE * (1 - fraction);
 
+      const startDate = new Date(startTime);
+      const startText = formatTargetTime(startDate);
       const targetDate = new Date(targetTime);
       const targetText = formatTargetTime(targetDate);
       const isCollapsed = !!timer.collapsed;
       const fullHeaderTitle = `${escapeHtml(timer.label)}: ${targetText}`;
       const displayTitle = isCollapsed ? escapeHtml(timer.label) : fullHeaderTitle;
+      const tooltipTitle = `${escapeHtml(timer.label)} (Started: ${startText} • Target: ${targetText})`;
       const digitsText = formatDigits(remainingSec, isOverdue);
 
       const isCustomMoved = timer.position && typeof timer.position.left === "number";
@@ -235,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="timer-card ${isOverdue ? "overdue" : ""} ${isCustomMoved ? "is-moved" : ""} ${isCollapsed ? "collapsed" : ""}" data-id="${timer.id}" ${posStyle}>
           <div class="timer-card-header" title="Drag to move timer (double-click title to reset position)">
             <span class="timer-drag-handle" aria-hidden="true" title="Drag to move">⠿</span>
-            <span class="timer-card-title" title="${fullHeaderTitle} (double-click to reset position)">${displayTitle}</span>
+            <span class="timer-card-title" title="${tooltipTitle} (double-click to reset position)">${displayTitle}</span>
             <div class="timer-card-actions">
               <button type="button" class="timer-collapse-btn" data-id="${timer.id}" aria-expanded="${!isCollapsed}" title="${isCollapsed ? "Expand timer details" : "Collapse timer details"}">
                 ${isCollapsed ? "▶" : "▼"}
@@ -432,7 +439,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!card) return;
 
       const targetTime = timer.targetTimestamp;
-      const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - timer.createdAt);
+      const startTime = timer.startTimestamp || timer.createdAt || targetTime;
+      const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - startTime);
       const remainingMs = targetTime - now;
       const isOverdue = remainingMs <= 0;
       const remainingSec = Math.floor(remainingMs / 1000);
@@ -503,15 +511,17 @@ document.addEventListener("DOMContentLoaded", function () {
   /********************************************************************************
    * Adds a new timer to the system
    ********************************************************************************/
-  function addTimer(label, targetDate, note) {
+  function addTimer(label, targetDate, note, startDate) {
     const now = Date.now();
+    const startTimestamp = startDate ? startDate.getTime() : now;
     const targetTimestamp = targetDate.getTime();
-    const duration = Math.max(1000, targetTimestamp - now);
+    const duration = Math.max(1000, targetTimestamp - startTimestamp);
 
     const newTimer = {
       id: "timer_" + now + "_" + Math.random().toString(36).substr(2, 4),
       label: label.trim() || "Countdown Timer",
       note: note ? note.trim() : "",
+      startTimestamp: startTimestamp,
       targetTimestamp: targetTimestamp,
       createdAt: now,
       initialDurationMs: duration,
@@ -527,21 +537,24 @@ document.addEventListener("DOMContentLoaded", function () {
   /********************************************************************************
    * Updates an existing timer in the system
    ********************************************************************************/
-  function updateTimer(id, label, targetDate, note) {
+  function updateTimer(id, label, targetDate, note, startDate) {
     const timer = activeTimers.find(t => t.id === id);
     if (!timer) return;
 
     const newTarget = targetDate.getTime();
-    const now = Date.now();
+    const newStart = startDate ? startDate.getTime() : (timer.startTimestamp || timer.createdAt || Date.now());
 
     timer.label = label.trim() || "Countdown Timer";
     timer.note = note ? note.trim() : "";
 
-    if (newTarget !== timer.targetTimestamp) {
+    if (newTarget !== timer.targetTimestamp || newStart !== timer.startTimestamp) {
+      timer.startTimestamp = newStart;
       timer.targetTimestamp = newTarget;
-      timer.initialDurationMs = Math.max(1000, newTarget - now);
-      timer.alarmTriggered = false;
-      timer.alarmSilenced = false;
+      timer.initialDurationMs = Math.max(1000, newTarget - newStart);
+      if (newTarget > Date.now()) {
+        timer.alarmTriggered = false;
+        timer.alarmSilenced = false;
+      }
     }
 
     saveTimers();
@@ -616,14 +629,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (modalTitle) modalTitle.textContent = "Create Countdown Timer";
     if (submitTimerBtn) submitTimerBtn.textContent = "Start Timer";
 
-    // Default Date input to today (YYYY-MM-DD)
+    // Default Start Date to today (YYYY-MM-DD)
     const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    if (timerDateInput) timerDateInput.value = `${year}-${month}-${day}`;
+    const startYear = today.getFullYear();
+    const startMonth = String(today.getMonth() + 1).padStart(2, "0");
+    const startDay = String(today.getDate()).padStart(2, "0");
+    const startHours = String(today.getHours()).padStart(2, "0");
+    const startMins = String(today.getMinutes()).padStart(2, "0");
 
-    // Default Time input to now + 15 minutes rounded to next minute
+    if (timerStartDateInput) timerStartDateInput.value = `${startYear}-${startMonth}-${startDay}`;
+    if (timerStartTimeInput) timerStartTimeInput.value = `${startHours}:${startMins}`;
+
+    // Default End Date to today (YYYY-MM-DD)
+    if (timerDateInput) timerDateInput.value = `${startYear}-${startMonth}-${startDay}`;
+
+    // Default End Time to now + 15 minutes rounded to next minute
     const defaultTime = new Date(today.getTime() + 15 * 60 * 1000);
     const defHours = String(defaultTime.getHours()).padStart(2, "0");
     const defMinutes = String(defaultTime.getMinutes()).padStart(2, "0");
@@ -651,6 +671,19 @@ document.addEventListener("DOMContentLoaded", function () {
     if (timerLabelInput) timerLabelInput.value = timer.label || "";
     if (timerNoteInput) timerNoteInput.value = timer.note || "";
 
+    // Start Date & Time
+    const startTimeVal = timer.startTimestamp || timer.createdAt || Date.now();
+    const startDate = new Date(startTimeVal);
+    const startYear = startDate.getFullYear();
+    const startMonth = String(startDate.getMonth() + 1).padStart(2, "0");
+    const startDay = String(startDate.getDate()).padStart(2, "0");
+    const startHours = String(startDate.getHours()).padStart(2, "0");
+    const startMins = String(startDate.getMinutes()).padStart(2, "0");
+
+    if (timerStartDateInput) timerStartDateInput.value = `${startYear}-${startMonth}-${startDay}`;
+    if (timerStartTimeInput) timerStartTimeInput.value = `${startHours}:${startMins}`;
+
+    // End Date & Time
     const targetDate = new Date(timer.targetTimestamp);
     const year = targetDate.getFullYear();
     const month = String(targetDate.getMonth() + 1).padStart(2, "0");
@@ -681,6 +714,21 @@ document.addEventListener("DOMContentLoaded", function () {
   if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
   if (cancelModalBtn) cancelModalBtn.addEventListener("click", closeModal);
 
+  // Set Start Time to Now button
+  if (timerStartNowBtn) {
+    timerStartNowBtn.addEventListener("click", function () {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hours = String(now.getHours()).padStart(2, "0");
+      const mins = String(now.getMinutes()).padStart(2, "0");
+
+      if (timerStartDateInput) timerStartDateInput.value = `${year}-${month}-${day}`;
+      if (timerStartTimeInput) timerStartTimeInput.value = `${hours}:${mins}`;
+    });
+  }
+
   // Close modal when clicking on backdrop outside card
   if (modalOverlay) {
     modalOverlay.addEventListener("click", function (e) {
@@ -701,7 +749,17 @@ document.addEventListener("DOMContentLoaded", function () {
   presetButtons.forEach(btn => {
     btn.addEventListener("click", function () {
       const minutesToAdd = parseInt(this.getAttribute("data-minutes"), 10) || 15;
-      const target = new Date(Date.now() + minutesToAdd * 60 * 1000);
+      let baseTime = Date.now();
+      const startDateVal = timerStartDateInput ? timerStartDateInput.value : "";
+      const startTimeVal = timerStartTimeInput ? timerStartTimeInput.value : "";
+      if (startDateVal && startTimeVal) {
+        const parsedStart = new Date(`${startDateVal}T${startTimeVal}:00`).getTime();
+        if (!isNaN(parsedStart) && parsedStart > baseTime) {
+          baseTime = parsedStart;
+        }
+      }
+
+      const target = new Date(baseTime + minutesToAdd * 60 * 1000);
 
       const year = target.getFullYear();
       const month = String(target.getMonth() + 1).padStart(2, "0");
@@ -721,19 +779,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const label = timerLabelInput ? timerLabelInput.value : "";
       const note = timerNoteInput ? timerNoteInput.value : "";
+      const startDateVal = timerStartDateInput ? timerStartDateInput.value : "";
+      const startTimeVal = timerStartTimeInput ? timerStartTimeInput.value : "";
       const dateVal = timerDateInput ? timerDateInput.value : "";
       const timeVal = timerTimeInput ? timerTimeInput.value : "";
 
-      if (!dateVal || !timeVal) {
-        alert("Please enter both a date and time for the timer.");
+      if (!startDateVal || !startTimeVal) {
+        alert("Please enter both a start date and start time for the timer.");
         return;
       }
 
+      if (!dateVal || !timeVal) {
+        alert("Please enter both an end date and time for the timer.");
+        return;
+      }
+
+      const startDate = new Date(`${startDateVal}T${startTimeVal}:00`);
       const targetDate = new Date(`${dateVal}T${timeVal}:00`);
       const now = new Date();
 
+      if (isNaN(startDate.getTime())) {
+        alert("Invalid start date or time entered. Please try again.");
+        return;
+      }
+
       if (isNaN(targetDate.getTime())) {
-        alert("Invalid date or time entered. Please try again.");
+        alert("Invalid end date or time entered. Please try again.");
+        return;
+      }
+
+      if (targetDate <= startDate) {
+        alert("The end time must be after the start time.");
         return;
       }
 
@@ -743,9 +819,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (editingTimerId) {
-        updateTimer(editingTimerId, label, targetDate, note);
+        updateTimer(editingTimerId, label, targetDate, note, startDate);
       } else {
-        addTimer(label, targetDate, note);
+        addTimer(label, targetDate, note, startDate);
       }
 
       closeModal();

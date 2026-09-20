@@ -184,11 +184,24 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="timer-date">Date</label>
+              <label for="timer-start-date">Start Date</label>
+              <input type="date" id="timer-start-date" required />
+            </div>
+            <div class="form-group">
+              <label for="timer-start-time" class="label-with-action">
+                <span>Start Time</span>
+                <button type="button" class="btn-input-action" id="timer-start-now-btn" title="Set start time to current time">Now</button>
+              </label>
+              <input type="time" id="timer-start-time" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="timer-date">End Date</label>
               <input type="date" id="timer-date" required />
             </div>
             <div class="form-group">
-              <label for="timer-time">Time</label>
+              <label for="timer-time">End Time</label>
               <input type="time" id="timer-time" required />
             </div>
           </div>

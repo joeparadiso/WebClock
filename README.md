@@ -62,8 +62,8 @@ _The customization menu allowing for theme selection and manual color adjustment
 - **Collapsible Timer Cards (Privacy Mode):** Timers default to expanded and feature a dedicated collapse button (`▼` / `▶`) on the header. Collapsing a timer minimizes it into a compact pill showing **only the timer title**, hiding the target date/time, progress ring, countdown digits, and notes for privacy.
 - **Custom Notes & Overdue Count-Up:** Optional note attached to any timer (e.g. *"Bring updated datasheets"*); when a timer finishes, audio alarm (`alarm.mp3`) triggers and digits switch to counting **UP** until dismissed.
 - **Dedicated "Stop Alarm" Button:** When a timer alarm goes off, a prominent glowing button appears in the bottom-right corner of the card allowing you to **silence the alarm sound** while keeping the count-up timer visible.
-- **In-Place Editing:** Edit timer labels, notes, dates, or times directly via the **`✎` Edit** button on each card.
-- **Popup Creation Modal:** Right-aligned "＋ Create Timer" navbar link opens a modal with custom label, note, date/time pickers, and quick `+15m / +30m / +45m / +1h` presets.
+- **In-Place Editing:** Edit timer labels, notes, start dates/times, or end dates/times directly via the **`✎` Edit** button on each card.
+- **Popup Creation Modal:** Right-aligned "＋ Create Timer" navbar link opens a modal with custom label, note, configurable Start Date & Time (defaulting to the current time, with a quick "Now" shortcut to easily track events started in the past), End Date & Time pickers, and quick `+15m / +30m / +45m / +1h` presets.
 - **Default Right-Side Stack & Drag-to-Move:** New timers default to the right side of the main clock card (the first timer aligns with the top of the clock, and subsequent timers stack below with a clean gap, dynamically adjusting height if collapsed). You can also click and drag any timer card to freely position it anywhere on the dashboard. Double-click the header to reset it back to the right-side stack.
 - **Dynamic Persistence:** Custom coordinates, collapse states, and timer data persist in `localStorage` across page reloads.
 
@@ -102,10 +102,11 @@ Because this is a static web project, no server installation or build step is re
 
 1. Click the **"＋ Create Timer"** link on the right side of the navbar.
 2. Enter a **Timer Label / Meeting Name** and optional **Note** (e.g. *"Bring updated datasheets"*).
-3. Select the target Date (defaults to today) and Time, or use the **Quick Add** buttons (*+15m, +30m, +45m, +1h*).
-4. Click **Start Timer**. A new modern card will appear on the dashboard shelf.
-5. Click **`✎`** on any timer card to edit its details, date, or time in place.
-6. When the timer finishes, it alerts you with audio and switches to count-up mode. Click **"🔔 Stop Alarm"** in the bottom-right corner to silence the sound, or click **"✕ Dismiss"** to remove the timer.
+3. Set the **Start Date & Time** (defaults to the current time, or adjust to an earlier time if you started previously; click **"Now"** to quickly reset to current time).
+4. Select the target **End Date & Time**, or use the **Quick Add** buttons (*+15m, +30m, +45m, +1h*).
+5. Click **Start Timer**. A new modern card will appear on the dashboard shelf with progress calculated from your specified start time.
+6. Click **`✎`** on any timer card to edit its details, start date/time, or end date/time in place.
+7. When the timer finishes, it alerts you with audio and switches to count-up mode. Click **"🔔 Stop Alarm"** in the bottom-right corner to silence the sound, or click **"✕ Dismiss"** to remove the timer.
 
 ### 4. Using the To-Do List
 

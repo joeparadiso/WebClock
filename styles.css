@@ -625,6 +625,8 @@ body {
   border-radius: 16px;
   width: 100%;
   max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
   padding: 24px 28px;
   color: var(--text-color);
   text-align: left;
@@ -681,6 +683,31 @@ body {
   font-weight: bold;
   color: var(--text-color);
   margin-bottom: 6px;
+}
+
+.label-with-action {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-input-action {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--text-color);
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-family: "Baumans", serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+.btn-input-action:hover {
+  background: var(--clock-bg2);
+  border-color: var(--box-shadow-color);
+  color: #fff;
 }
 
 .form-group input {
