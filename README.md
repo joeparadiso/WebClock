@@ -34,10 +34,17 @@ _The customization menu allowing for theme selection and manual color adjustment
 
 ### 🚆 MBTA Commuter Rail Tracker
 - **Routes & Directions:**
-  - **Inbound:** Monitors **Dedham Corporate Center** to **South Station**.
-  - **Outbound:** Monitors **Dedham Corporate Center** to **Forge Park/495** or **Foxboro** (dynamically reflects the train's terminating station and arrival time).
+  - **Inbound:** Monitors **Dedham Corporate Center** to **South Station** (dynamically resolves **Readville** for late-night short-turn trains and calculates accurate arrival times).
+  - **Outbound:** Monitors **Dedham Corporate Center** to **Forge Park/495** or **Foxboro** (dynamically resolves the train's terminating station and computes precise arrival times, seamlessly handling midnight GTFS service-date rollovers).
 - **Real-Time Data:** Fetches live real-time predictions; seamlessly falls back to scheduled times if live data is unavailable.
 - **Streamlined Layout:** Displays next Departure Time, official Train Number with Route Name (e.g. `5768 (Franklin/Foxboro)`), and estimated Arrival Time at each respective destination inside glassmorphic, grid-aligned horizontal pill rows with dedicated direction badges and custom commuter rail icons.
+- **Interactive Live Map Modal:** Clicking either the Inbound or Outbound row on the main clock card opens an expansive interactive schematic modal featuring:
+  - **24-Station Dual-Branch Schematic Track:** Visualizes all 24 stations across the Franklin/Foxboro and Fairmount lines, including the Southwest Corridor (Ruggles, Forest Hills, Hyde Park), the Fairmount Line bypass route (Newmarket, Uphams Corner, Four Corners/Geneva, Talbot Ave, Morton St, Blue Hill Ave, Fairmount), Dedham Corporate Center (home station), the Endicott/Islington corridor, and the Walpole fork to Forge Park/495 and Foxboro.
+  - **Real-Time Kinematic Animation:** Smooth 60 FPS movement engine continuously advancing trains along the track using Bezier curve interpolation, recalibrating every 10 seconds with fresh MBTA GPS vehicle updates.
+  - **Comprehensive Multi-Route & Terminus Tracking:** Monitors both Franklin and Fairmount Line traffic, supporting short-turn runs terminating at Readville Yard with route badges.
+  - **Enlarged High-Visibility Active Train Cards:** Displays train numbers, direction badges, formatted destinations, and real-time movement status (speed, stopped at station, or transit progress) inside prominent, responsive cards.
+  - **Station Inspection Popovers:** Clicking any station node displays live MBTA arrival/departure predictions merged with scheduled timetables, complete with real-time indicators (`● LIVE`).
+  - **Off-Peak Handling:** Clean status banner with upcoming scheduled departures from Dedham when no trains are actively in transit.
 - _Powered by MBTA V3 API_.
 
 ### 🎨 Theme Studio & Visual Designer
@@ -129,7 +136,7 @@ The project is currently configured for **Dedham, MA**. To customize the locatio
   - Update `const LATITUDE` and `const LONGITUDE`.
 - **MBTA Stops & Direction:**
   - Open `nextTrain.js`
-  - Update `DEDHAM_STOP_ID` (origin), `SOUTH_STATION_STOP_ID` (inbound destination), `FORGE_PARK_STOP_ID`, and `FOXBORO_STOP_ID` (outbound destinations).
+  - Update `DEDHAM_STOP_ID` (origin), `SOUTH_STATION_STOP_ID` (inbound destination), `READVILLE_STOP_ID`, `FORGE_PARK_STOP_ID`, and `FOXBORO_STOP_ID` (outbound destinations).
 
 ---
 
@@ -146,6 +153,7 @@ The project is currently configured for **Dedham, MA**. To customize the locatio
 ├── weather.js          # OpenWeatherMap API integration and weather widget rendering
 ├── sunTimes.js         # SunriseSunset.io API integration and astronomical formatting
 ├── nextTrain.js        # MBTA v3 API integration for real-time commuter rail tracking
+├── trainTracker.js     # Real-time Franklin/Foxboro & Fairmount schematic map & kinematic animation engine
 ├── alarm.mp3           # Audio sound for timer completion
 └── images/             # Background images for scenic and seasonal themes
 ```

@@ -18,13 +18,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Baumans&family=Chivo+Mono:wght@100..900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=3.3" />
+    <link rel="stylesheet" href="styles.css?v=3.4" />
     <script type="text/javascript" src="themes.js?v=3.3" defer></script>
     <script type="text/javascript" src="themeStudio.js?v=3.3" defer></script>
     <script type="text/javascript" src="weather.js?v=3.3" defer></script>
     <script type="text/javascript" src="clock.js?v=3.3" defer></script>
     <script type="text/javascript" src="sunTimes.js?v=3.3" defer></script>
     <script type="text/javascript" src="nextTrain.js?v=3.4" defer></script>
+    <script type="text/javascript" src="trainTracker.js?v=1.0" defer></script>
     <script type="text/javascript" src="todo.js?v=3.3" defer></script>
     <link rel="icon" href="favicon.ico" />
   </head>
@@ -112,7 +113,7 @@
           <!-- MBTA Commuter Rail Transit Tracker (Option 3 Streamlined Rows) -->
           <div id="transitWidget" class="transit-widget" aria-label="MBTA Commuter Rail Transit Times">
             <!-- Inbound Row: Dedham to South Station -->
-            <div class="transit-row" id="transitInboundRow">
+            <div class="transit-row" id="transitInboundRow" role="button" tabindex="0" title="Click to view live Franklin/Foxboro train map" aria-label="Inbound train details. Click to view live Franklin/Foxboro train map">
               <div class="transit-badge inbound-badge">INBOUND</div>
               <div class="transit-station departure-station">
                 <span class="station-name">Dedham</span>
@@ -130,7 +131,7 @@
             </div>
 
             <!-- Outbound Row: Dedham to Forge Park/495 or Foxboro -->
-            <div class="transit-row" id="transitOutboundRow">
+            <div class="transit-row" id="transitOutboundRow" role="button" tabindex="0" title="Click to view live Franklin/Foxboro train map" aria-label="Outbound train details. Click to view live Franklin/Foxboro train map">
               <div class="transit-badge outbound-badge">OUTBOUND</div>
               <div class="transit-station departure-station">
                 <span class="station-name">Dedham</span>
@@ -217,6 +218,306 @@
             <button type="submit" class="btn-submit" id="submit-timer-btn">Start Timer</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         Franklin / Foxboro Live Train Tracker Modal Overlay
+    ========================================================================= -->
+    <div id="train-tracker-modal-overlay" class="modal-overlay train-tracker-modal-overlay" aria-hidden="true">
+      <div class="modal-card train-tracker-modal-card" role="dialog" aria-modal="true" aria-labelledby="train-tracker-title">
+        <div class="modal-header train-tracker-header">
+          <div class="train-tracker-header-title">
+            <h2 id="train-tracker-title">Franklin / Foxboro Line Live Tracker</h2>
+            <div class="live-pulse-badge" id="tracker-live-badge" title="Real-time MBTA vehicle tracking active">
+              <span class="live-dot" aria-hidden="true"></span>
+              <span class="live-text">LIVE</span>
+              <span class="live-countdown" id="tracker-refresh-counter" title="Seconds until next GPS update">10s</span>
+            </div>
+          </div>
+          <div class="train-tracker-header-actions">
+            <button type="button" class="tracker-help-btn" id="train-tracker-help-btn" aria-label="Open Tracker Guide" title="How to use this tracker">?</button>
+            <button type="button" class="modal-close-btn" id="close-train-tracker-modal" aria-label="Close modal">✕</button>
+          </div>
+        </div>
+
+        <div class="train-tracker-body">
+          <!-- Off-Peak Status Banner -->
+          <div id="tracker-status-banner" class="tracker-status-banner" style="display: none;"></div>
+
+          <!-- SVG Track Map Container -->
+          <div class="track-map-wrapper">
+            <div class="track-map-container" id="track-map-container">
+              <svg id="schematic-track-svg" viewBox="-30 20 1420 340" preserveAspectRatio="xMidYMid meet" aria-label="Franklin and Foxboro line schematic track diagram">
+                <defs>
+                  <!-- Glowing track filter -->
+                  <filter id="track-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Track Bed Background Layer -->
+                <g class="track-bed-layer">
+                  <!-- Southwest Corridor Bed -->
+                  <path d="M 50 200 C 85 200, 95 120, 130 120 L 340 120 C 410 120, 445 200, 480 200" class="track-bed" />
+                  <!-- Fairmount Route Bed -->
+                  <path d="M 50 200 C 80 200, 90 280, 115 280 L 415 280 C 440 280, 455 200, 480 200" class="track-bed bypass-bed" />
+                  <!-- Main Trunk Bed -->
+                  <path d="M 480 200 L 1000 200" class="track-bed" />
+                  <!-- Forge Park Branch Bed -->
+                  <path d="M 1000 200 C 1040 200, 1055 110, 1095 110 L 1290 110" class="track-bed" />
+                  <!-- Foxboro Branch Bed -->
+                  <path d="M 1000 200 C 1050 200, 1080 290, 1150 290 L 1230 290" class="track-bed" />
+                </g>
+
+                <!-- Main Glowing Rails Layer -->
+                <g class="track-rails-layer">
+                  <!-- Southwest Corridor (Back Bay, Ruggles, Forest Hills, Hyde Park) -->
+                  <path id="track-sw-corridor" d="M 50 200 C 85 200, 95 120, 130 120 L 340 120 C 410 120, 445 200, 480 200" class="track-line sw-corridor-line" filter="url(#track-glow)" />
+                  <!-- Fairmount Route (Newmarket, Uphams, Four Corners, Talbot, Morton, Blue Hill, Fairmount) -->
+                  <g id="fairmount-route-layer" class="fairmount-route-layer">
+                    <path id="track-path-fairmount" d="M 50 200 C 80 200, 90 280, 115 280 L 415 280 C 440 280, 455 200, 480 200" class="track-line bypass-line" filter="url(#track-glow)" />
+                    <text x="265" y="260" text-anchor="middle" class="bypass-track-label">FAIRMOUNT ROUTE</text>
+                  </g>
+                  <!-- Main Trunk: Readville to Walpole -->
+                  <path id="track-trunk" d="M 480 200 L 1000 200" class="track-line trunk-line" filter="url(#track-glow)" />
+                  <!-- Forge Park Branch: Walpole to Forge Park/495 -->
+                  <path id="track-branch-forge-park" d="M 1000 200 C 1040 200, 1055 110, 1095 110 L 1290 110" class="track-line branch-forge-park" filter="url(#track-glow)" />
+                  <!-- Foxboro Branch: Walpole to Foxboro -->
+                  <path id="track-branch-foxboro" d="M 1000 200 C 1050 200, 1080 290, 1150 290 L 1230 290" class="track-line branch-foxboro" filter="url(#track-glow)" />
+                </g>
+
+                <!-- Station Nodes & Labels Layer (All 24 Stations) -->
+                <g class="stations-layer">
+                  <!-- 0. South Station (Origin Terminal) -->
+                  <g class="station-node-group terminal-node-group" id="station-node-place-sstat" transform="translate(50, 200)">
+                    <circle r="7" class="station-circle terminal-node" />
+                    <circle r="3" class="station-inner-dot" />
+                    <text x="-12" y="-2" class="station-svg-label terminal-label" text-anchor="end">
+                      <tspan x="-12" dy="0">South</tspan>
+                      <tspan x="-12" dy="13">Station</tspan>
+                    </text>
+                  </g>
+
+                  <!-- Southwest Corridor (Upper Fork, y = 120) -->
+                  <!-- 1. Back Bay -->
+                  <g class="station-node-group" id="station-node-place-bbsta" transform="translate(130, 120)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Back Bay</text>
+                  </g>
+
+                  <!-- 2. Ruggles -->
+                  <g class="station-node-group" id="station-node-place-rugg" transform="translate(200, 120)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Ruggles</text>
+                  </g>
+
+                  <!-- 3. Forest Hills -->
+                  <g class="station-node-group" id="station-node-place-forhl" transform="translate(270, 120)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Forest Hills</text>
+                  </g>
+
+                  <!-- 4. Hyde Park -->
+                  <g class="station-node-group" id="station-node-place-NEC-2203" transform="translate(340, 120)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Hyde Park</text>
+                  </g>
+
+                  <!-- Fairmount Route (Lower Fork, y = 280) -->
+                  <!-- 5. Newmarket -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2265" transform="translate(115, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Newmarket</text>
+                  </g>
+
+                  <!-- 6. Uphams Corner -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2258" transform="translate(165, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Uphams Corner</text>
+                  </g>
+
+                  <!-- 7. Four Corners/Geneva -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2249" transform="translate(215, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Four Corners</text>
+                  </g>
+
+                  <!-- 8. Talbot Avenue -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2240" transform="translate(265, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Talbot Ave</text>
+                  </g>
+
+                  <!-- 9. Morton Street -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2230" transform="translate(315, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Morton St</text>
+                  </g>
+
+                  <!-- 10. Blue Hill Avenue -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2222" transform="translate(365, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Blue Hill Ave</text>
+                  </g>
+
+                  <!-- 11. Fairmount -->
+                  <g class="station-node-group bypass-node-group" id="station-node-place-DB-2205" transform="translate(415, 280)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Fairmount</text>
+                  </g>
+
+                  <!-- Convergence Junction (y = 200) -->
+                  <!-- 12. Readville -->
+                  <g class="station-node-group junction-node-group" id="station-node-place-DB-0095" transform="translate(480, 200)">
+                    <circle r="7" class="station-circle junction-node" />
+                    <circle r="3" class="station-inner-dot" />
+                    <text x="0" y="0" class="station-svg-label junction-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Readville</text>
+                  </g>
+
+                  <!-- Mainline Trunk (y = 200) -->
+                  <!-- 13. Endicott -->
+                  <g class="station-node-group" id="station-node-place-FB-0109" transform="translate(550, 200)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Endicott</text>
+                  </g>
+
+                  <!-- 14. Dedham Corporate Center -->
+                  <g class="station-node-group" id="station-node-place-FB-0118" transform="translate(630, 200)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Dedham Corp</text>
+                  </g>
+
+                  <!-- 15. Islington -->
+                  <g class="station-node-group" id="station-node-place-FB-0125" transform="translate(710, 200)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Islington</text>
+                  </g>
+
+                  <!-- 16. Norwood Depot -->
+                  <g class="station-node-group" id="station-node-place-FB-0143" transform="translate(780, 200)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Norwood Dep</text>
+                  </g>
+
+                  <!-- 17. Norwood Central -->
+                  <g class="station-node-group" id="station-node-place-FB-0148" transform="translate(850, 200)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Norwood Ctr</text>
+                  </g>
+
+                  <!-- 18. Windsor Gardens -->
+                  <g class="station-node-group" id="station-node-place-FB-0166" transform="translate(920, 200)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Windsor Gdns</text>
+                  </g>
+
+                  <!-- 19. Walpole (Branch Junction) -->
+                  <g class="station-node-group junction-node-group" id="station-node-place-FB-0191" transform="translate(1000, 200)">
+                    <circle r="7" class="station-circle junction-node" />
+                    <circle r="3" class="station-inner-dot" />
+                    <text x="0" y="0" class="station-svg-label junction-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Walpole</text>
+                  </g>
+
+                  <!-- Upper Branch: Forge Park / Franklin (y = 110) -->
+                  <!-- 20. Norfolk -->
+                  <g class="station-node-group" id="station-node-place-FB-0230" transform="translate(1095, 110)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Norfolk</text>
+                  </g>
+
+                  <!-- 21. Franklin/Dean College -->
+                  <g class="station-node-group" id="station-node-place-FB-0275" transform="translate(1190, 110)">
+                    <circle r="5" class="station-circle" />
+                    <text x="0" y="0" class="station-svg-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Franklin</text>
+                  </g>
+
+                  <!-- 22. Forge Park/495 (Terminal) -->
+                  <g class="station-node-group terminal-node-group" id="station-node-place-FB-0303" transform="translate(1290, 110)">
+                    <circle r="7" class="station-circle terminal-node" />
+                    <circle r="3" class="station-inner-dot" />
+                    <text x="0" y="0" class="station-svg-label terminal-label" transform="translate(6, -8) rotate(-40)" text-anchor="start">Forge Park/495</text>
+                  </g>
+
+                  <!-- Lower Branch: Foxboro (Terminal, y = 290) -->
+                  <!-- 23. Foxboro -->
+                  <g class="station-node-group terminal-node-group" id="station-node-place-FS-0049" transform="translate(1230, 290)">
+                    <circle r="7" class="station-circle terminal-node" />
+                    <circle r="3" class="station-inner-dot" />
+                    <text x="0" y="0" class="station-svg-label terminal-label" transform="translate(6, 12) rotate(40)" text-anchor="start">Foxboro</text>
+                  </g>
+                </g>
+
+                <!-- Trains Layer (Dynamically updated by trainTracker.js) -->
+                <g id="trains-svg-layer"></g>
+              </svg>
+
+              <!-- Floating Badges Layer (HTML absolute overlay above SVG) -->
+              <div id="floating-badges-container" class="floating-badges-container" aria-hidden="true"></div>
+
+              <!-- Station Details Popover Panel -->
+              <div id="station-detail-popover" class="station-popover" style="display: none;" role="region" aria-label="Station schedule details"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Active Train Cards Shelf -->
+          <div class="active-trains-section">
+            <div class="active-trains-header">
+              <div class="active-trains-header-left">
+                <span class="active-trains-title">Active Trains on Route</span>
+                <span class="active-trains-count" id="active-trains-count">0 Active Trains</span>
+              </div>
+              <div class="active-trains-legend">
+                <span class="legend-item"><span class="legend-dot in-dot"></span> Inbound (to South Station)</span>
+                <span class="legend-item"><span class="legend-dot out-dot"></span> Outbound</span>
+              </div>
+            </div>
+            <div class="active-trains-grid" id="active-trains-grid"></div>
+          </div>
+        </div>
+
+        <!-- Help / Guide Dialog Component -->
+        <div id="tracker-help-dialog" class="tracker-help-dialog" style="display: none;" role="dialog" aria-labelledby="tracker-help-title" aria-modal="true">
+          <div class="tracker-help-card">
+            <div class="tracker-help-header">
+              <div class="tracker-help-title-group">
+                <span class="tracker-help-badge-icon">?</span>
+                <h3 id="tracker-help-title" class="tracker-help-title">Live Train Tracker Guide</h3>
+              </div>
+              <button type="button" class="tracker-help-close-btn" id="close-tracker-help-btn" aria-label="Close guide">✕</button>
+            </div>
+            <div class="tracker-help-content">
+              <div class="help-section">
+                <h4>🚆 Real-Time Tracking &amp; Kinematics</h4>
+                <p>This interactive map visualizes the MBTA Franklin/Foxboro Commuter Rail Line in real time across all 24 stations. Vehicle positions, speeds, and upcoming station ETAs refresh every 10 seconds directly from the official MBTA V3 API. A 60 FPS kinematic engine smoothly glides active trains along the track between updates.</p>
+              </div>
+              <div class="help-section">
+                <h4>🔄 Dynamic Fairmount Route</h4>
+                <p>During off-peak, weekend, and late-night hours, certain trains are scheduled via the <strong>Fairmount Line branch</strong> (stopping at Newmarket, Uphams Corner, Four Corners/Geneva, Talbot Ave, Morton St, Blue Hill Ave, and Fairmount) rather than the Southwest Corridor (Back Bay, Ruggles, Forest Hills, Hyde Park). The map displays all 24 stations and dynamically highlights the Fairmount Route whenever trains are actively running on it!</p>
+              </div>
+              <div class="help-section">
+                <h4>🔀 Route Junctions &amp; Termini</h4>
+                <p>Trains depart Boston's <strong>South Station</strong> along either the Southwest Corridor or the Fairmount Line, converging at <strong>Readville</strong> (which also serves as a terminus for Fairmount Line and late-night short-turn service) before continuing through Endicott, Dedham Corporate Center, Islington, and Norwood to <strong>Walpole</strong>. At Walpole, the line forks into the upper branch to <strong>Forge Park/495</strong> (via Norfolk &amp; Franklin) and the lower branch to <strong>Foxboro</strong>.</p>
+              </div>
+              <div class="help-section">
+                <h4>🎨 Direction &amp; Color Coding</h4>
+                <ul class="help-legend-list">
+                  <li><span class="legend-color-chip chip-inbound"></span> <strong>Cyan / INBOUND:</strong> Trains traveling inbound toward Boston South Station.</li>
+                  <li><span class="legend-color-chip chip-outbound"></span> <strong>Amber / OUTBOUND:</strong> Trains traveling outbound toward Forge Park/495, Foxboro, or Readville.</li>
+                </ul>
+              </div>
+              <div class="help-section">
+                <h4>🖱️ Interactive Controls</h4>
+                <p>• <strong>Click any station circle:</strong> Open a popover with upcoming scheduled and predicted departures in both directions.<br>
+                • <strong>Click or hover any train marker or bottom card:</strong> Synchronizes selection, reveals the floating tooltip, and displays real-time speed, boarding countdowns, and upcoming stops.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

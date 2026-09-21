@@ -14,6 +14,7 @@
   const FORGE_PARK_STOP_ID = "place-FB-0303";
   const FOXBORO_STOP_ID = "place-FS-0049";
   const FRANKLIN_STOP_ID = "place-FB-0275";
+  const READVILLE_STOP_ID = "place-DB-0095";
   const INBOUND_DIRECTION_ID = 1;
   const OUTBOUND_DIRECTION_ID = 0;
 
@@ -143,16 +144,14 @@
       }
 
       // 2. Fallback to schedule for this trip at destination station
-      const schedParams = {
+      // Note: filter[trip] and filter[stop] uniquely identifies the trip stop time.
+      // We do NOT pass filter[date] because trips past midnight belong to the GTFS service
+      // day of the operating day (yesterday), which causes date-filtered queries to return 0.
+      const sched = await fetchJson(`${BASE_URL}/schedules`, {
         "filter[trip]": tripId,
         "filter[stop]": stopId,
         "api_key": API_KEY,
-      };
-      if (depTime instanceof Date && !isNaN(depTime.getTime())) {
-        schedParams["filter[date]"] = formatLocalDate(depTime);
-      }
-
-      const sched = await fetchJson(`${BASE_URL}/schedules`, schedParams);
+      });
 
       if (sched.data && sched.data.length) {
         for (const item of sched.data) {
@@ -201,9 +200,45 @@
     if (lowerHeadsign.includes("franklin")) {
       return { stopId: FRANKLIN_STOP_ID, name: "Franklin" };
     }
+    if (lowerHeadsign.includes("readville")) {
+      return { stopId: READVILLE_STOP_ID, name: "Readville" };
+    }
 
     // Default outbound destination fallback
     return { stopId: FORGE_PARK_STOP_ID, name: "Forge Park/495" };
+  }
+
+  // Resolves the destination station name and stop ID for an inbound trip
+  async function resolveInboundDestination(tripObj, tripId, item) {
+    let headsign = tripObj?.attributes?.headsign || item?.attributes?.stop_headsign || "";
+
+    // If headsign is missing from included trip data, fetch the trip details directly
+    if (!headsign && tripId) {
+      try {
+        const tripResp = await fetchJson(`${BASE_URL}/trips/${tripId}`, {
+          "api_key": API_KEY,
+        });
+        if (tripResp?.data?.attributes?.headsign) {
+          headsign = tripResp.data.attributes.headsign;
+          if (tripObj && tripObj.attributes) {
+            tripObj.attributes.headsign = headsign;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch trip headsign for trip:", tripId, e);
+      }
+    }
+
+    const lowerHeadsign = (headsign || "").toLowerCase();
+    if (lowerHeadsign.includes("readville")) {
+      return { stopId: READVILLE_STOP_ID, name: "Readville" };
+    }
+    if (lowerHeadsign.includes("south station") || lowerHeadsign.includes("boston")) {
+      return { stopId: SOUTH_STATION_STOP_ID, name: "South Station" };
+    }
+
+    // Default inbound destination fallback
+    return { stopId: SOUTH_STATION_STOP_ID, name: "South Station" };
   }
 
   // Processes and displays train info for a specific direction and destination
@@ -287,7 +322,9 @@
         let destName = null;
 
         if (destConfig.isDynamic) {
-          const resolved = await resolveOutboundDestination(tripObj, tripId, item);
+          const resolved = directionId === INBOUND_DIRECTION_ID
+            ? await resolveInboundDestination(tripObj, tripId, item)
+            : await resolveOutboundDestination(tripObj, tripId, item);
           destStopId = resolved.stopId;
           destName = resolved.name;
         } else {
@@ -443,7 +480,7 @@
           predictions,
           schedules,
           INBOUND_DIRECTION_ID,
-          { isDynamic: false, stopId: SOUTH_STATION_STOP_ID, name: "South Station" },
+          { isDynamic: true, defaultStopId: SOUTH_STATION_STOP_ID, defaultName: "South Station" },
           inboundElements,
           "inbound"
         ),
