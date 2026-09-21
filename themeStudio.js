@@ -90,6 +90,11 @@ document.addEventListener("DOMContentLoaded", function () {
     { key: "trainPillBg", ctrlId: "ctrl-trainPillBg", badgeId: "val-trainPillBg", hasAlpha: true, sliderId: "slider-trainPillBg", alphaBadgeId: "val-trainPillBg-alpha" },
     { key: "timerbg1", ctrlId: "ctrl-timerbg1", badgeId: "val-timerbg1", hasAlpha: true, sliderId: "slider-timerbg1", alphaBadgeId: "val-timerbg1-alpha" },
     { key: "timerbg2", ctrlId: "ctrl-timerbg2", badgeId: "val-timerbg2", hasAlpha: true, sliderId: "slider-timerbg2", alphaBadgeId: "val-timerbg2-alpha" },
+    { key: "trackerbg1", ctrlId: "ctrl-trackerbg1", badgeId: "val-trackerbg1", hasAlpha: true, sliderId: "slider-trackerbg1", alphaBadgeId: "val-trackerbg1-alpha" },
+    { key: "trackerbg2", ctrlId: "ctrl-trackerbg2", badgeId: "val-trackerbg2", hasAlpha: true, sliderId: "slider-trackerbg2", alphaBadgeId: "val-trackerbg2-alpha" },
+    { key: "trackerText", ctrlId: "ctrl-trackerText", badgeId: "val-trackerText", hasAlpha: false },
+    { key: "trackerMapBg", ctrlId: "ctrl-trackerMapBg", badgeId: "val-trackerMapBg", hasAlpha: true, sliderId: "slider-trackerMapBg", alphaBadgeId: "val-trackerMapBg-alpha" },
+    { key: "trackerCardBg", ctrlId: "ctrl-trackerCardBg", badgeId: "val-trackerCardBg", hasAlpha: true, sliderId: "slider-trackerCardBg", alphaBadgeId: "val-trackerCardBg-alpha" },
   ];
 
   // Studio Draft State
@@ -113,6 +118,11 @@ document.addEventListener("DOMContentLoaded", function () {
       text: "#DCC48F",
       timerVisual: "#F8E3AF",
       navbarText: "#DCC48F",
+      trackerbg1: "rgba(45, 64, 103, 1)",
+      trackerbg2: "rgba(13, 11, 65, 1)",
+      trackerText: "#DCC48F",
+      trackerMapBg: "rgba(0, 0, 0, 0.35)",
+      trackerCardBg: "rgba(0, 0, 0, 0.42)",
     },
   };
 
@@ -467,6 +477,11 @@ document.addEventListener("DOMContentLoaded", function () {
     mockContainer.style.setProperty("--mock-train-pill-bg", currentDraft.colors.trainPillBg || "rgba(0, 0, 0, 0.25)");
     mockContainer.style.setProperty("--mock-timer-bg1", currentDraft.colors.timerbg1 || currentDraft.colors.clockbg1 || "#08001F");
     mockContainer.style.setProperty("--mock-timer-bg2", currentDraft.colors.timerbg2 || currentDraft.colors.clockbg2 || "#1C52B8");
+    mockContainer.style.setProperty("--mock-tracker-bg1", currentDraft.colors.trackerbg1 || currentDraft.colors.clockbg1 || "#2D4067");
+    mockContainer.style.setProperty("--mock-tracker-bg2", currentDraft.colors.trackerbg2 || currentDraft.colors.clockbg2 || "#0D0B41");
+    mockContainer.style.setProperty("--mock-tracker-card-bg", currentDraft.colors.trackerCardBg || "rgba(0, 0, 0, 0.42)");
+    mockContainer.style.setProperty("--mock-tracker-map-bg", currentDraft.colors.trackerMapBg || "rgba(0, 0, 0, 0.35)");
+    mockContainer.style.setProperty("--mock-tracker-text", currentDraft.colors.trackerText || currentDraft.colors.text || "#DCC48F");
 
     // Background Image
     if (currentDraft.backgroundImage && currentDraft.backgroundImage !== "none") {
@@ -678,6 +693,11 @@ document.addEventListener("DOMContentLoaded", function () {
       input: theme.input || "#FFFFFF",
       timerVisual: theme.timerVisual || theme.shadow || "#FFFFFF",
       navbarText: theme.navbarText || theme.text || "#FFFFFF",
+      trackerbg1: theme.trackerbg1 || theme.clockbg1 || "#000000",
+      trackerbg2: theme.trackerbg2 || theme.clockbg2 || "#000000",
+      trackerCardBg: theme.trackerCardBg || "rgba(0, 0, 0, 0.42)",
+      trackerMapBg: theme.trackerMapBg || "rgba(0, 0, 0, 0.35)",
+      trackerText: theme.trackerText || theme.text || "#FFFFFF",
     };
 
     syncControlsFromDraft();
@@ -739,6 +759,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const navbarText = c.navbarText || c.text;
     if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
+
+    const trackerbg1 = c.trackerbg1 || c.clockbg1;
+    if (trackerbg1) document.documentElement.style.setProperty("--tracker-bg1", trackerbg1);
+
+    const trackerbg2 = c.trackerbg2 || c.clockbg2;
+    if (trackerbg2) document.documentElement.style.setProperty("--tracker-bg2", trackerbg2);
+
+    const trackerCardBg = c.trackerCardBg || "rgba(0, 0, 0, 0.42)";
+    if (trackerCardBg) document.documentElement.style.setProperty("--tracker-card-bg", trackerCardBg);
+
+    const trackerMapBg = c.trackerMapBg || "rgba(0, 0, 0, 0.35)";
+    if (trackerMapBg) document.documentElement.style.setProperty("--tracker-map-bg", trackerMapBg);
+
+    const trackerText = c.trackerText || c.text;
+    if (trackerText) document.documentElement.style.setProperty("--tracker-text", trackerText);
 
     if (currentDraft.backgroundImage && currentDraft.backgroundImage !== "none") {
       document.body.style.background = currentDraft.backgroundImage;
@@ -953,6 +988,11 @@ document.addEventListener("DOMContentLoaded", function () {
     snippet += `    text: "${c.text || '#FFFFFF'}",\n`;
     snippet += `    timerVisual: "${timerVisual}",\n`;
     snippet += `    navbarText: "${navbarText}",\n`;
+    if (c.trackerbg1) snippet += `    trackerbg1: "${c.trackerbg1}",\n`;
+    if (c.trackerbg2) snippet += `    trackerbg2: "${c.trackerbg2}",\n`;
+    if (c.trackerCardBg) snippet += `    trackerCardBg: "${c.trackerCardBg}",\n`;
+    if (c.trackerMapBg) snippet += `    trackerMapBg: "${c.trackerMapBg}",\n`;
+    if (c.trackerText) snippet += `    trackerText: "${c.trackerText}",\n`;
     snippet += `  },\n\n`;
 
     if (currentDraft.bgMode === "image") {

@@ -700,6 +700,51 @@
                       </div>
                     </div>
 
+                    <!-- Mock Live Train Tracker Card (Franklin / Foxboro Line) -->
+                    <div class="mock-tracker-card">
+                      <div class="mock-tracker-header">
+                        <div class="mock-tracker-title-group">
+                          <span class="mock-tracker-icon">🚆</span>
+                          <span class="mock-tracker-title">Franklin / Foxboro Live Tracker</span>
+                          <span class="mock-tracker-live-badge">● LIVE</span>
+                        </div>
+                        <span class="mock-tracker-close">✕</span>
+                      </div>
+                      <div class="mock-tracker-map">
+                        <svg class="mock-tracker-svg" viewBox="0 0 500 45">
+                          <path d="M 25 24 L 475 24" stroke="rgba(255,255,255,0.15)" stroke-width="6" stroke-linecap="round" fill="none" />
+                          <path d="M 25 24 L 475 24" stroke="#a82fa2" stroke-width="3" stroke-linecap="round" fill="none" />
+                          <!-- Stations -->
+                          <circle cx="45" cy="24" r="4" fill="var(--mock-clock-bg1)" stroke="#00e5ff" stroke-width="2" />
+                          <text x="45" y="14" fill="var(--mock-tracker-text, var(--mock-text-color))" font-size="7.5" text-anchor="middle" font-family="Chivo Mono">Forge Park</text>
+                          <circle cx="165" cy="24" r="4" fill="var(--mock-clock-bg1)" stroke="#ffb300" stroke-width="2" />
+                          <text x="165" y="14" fill="var(--mock-tracker-text, var(--mock-text-color))" font-size="7.5" text-anchor="middle" font-family="Chivo Mono">Walpole</text>
+                          <circle cx="270" cy="24" r="4" fill="var(--mock-clock-bg1)" stroke="var(--mock-box-shadow-color)" stroke-width="2.5" />
+                          <text x="270" y="14" fill="var(--mock-tracker-text, var(--mock-text-color))" font-size="7.5" text-anchor="middle" font-family="Chivo Mono" font-weight="bold">Dedham Corp</text>
+                          <circle cx="375" cy="24" r="4" fill="var(--mock-clock-bg1)" stroke="#ffb300" stroke-width="2" />
+                          <text x="375" y="14" fill="var(--mock-tracker-text, var(--mock-text-color))" font-size="7.5" text-anchor="middle" font-family="Chivo Mono">Readville</text>
+                          <circle cx="455" cy="24" r="4" fill="var(--mock-clock-bg1)" stroke="#00e5ff" stroke-width="2" />
+                          <text x="455" y="14" fill="var(--mock-tracker-text, var(--mock-text-color))" font-size="7.5" text-anchor="middle" font-family="Chivo Mono">South Sta</text>
+                          <!-- Mini train marker -->
+                          <circle cx="320" cy="24" r="5" fill="#ffb300" stroke="#ffffff" stroke-width="1.5" />
+                        </svg>
+                      </div>
+                      <div class="mock-tracker-train-row">
+                        <div class="mock-tracker-train-card">
+                          <div class="mock-tracker-card-top">
+                            <div class="mock-tracker-card-left">
+                              <span class="mock-train-badge out-badge">OUTBOUND</span>
+                              <span class="mock-train-num">Train 5793</span>
+                            </div>
+                            <span class="mock-train-speed">38 mph</span>
+                          </div>
+                          <div class="mock-tracker-card-dest">
+                            Forge Park/495 • Next: <span style="color: #00e676; font-weight: bold;">Norwood Central</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -1028,6 +1073,86 @@
                             </div>
                             <div class="color-input-row">
                               <input type="color" id="ctrl-timerVisual" class="color-picker-input" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Group 6: Live Train Tracker Modal -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">🚆</span>
+                          <span class="palette-group-title">Live Train Tracker Modal</span>
+                        </div>
+                        <div class="palette-grid">
+                          <!-- Modal Background 1 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-trackerbg1">Modal Background 1</label>
+                              <span class="color-hex-badge" id="val-trackerbg1">#2D4067</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-trackerbg1" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-trackerbg1-alpha">100%</b></span>
+                                <input type="range" id="slider-trackerbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Modal Background 2 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-trackerbg2">Modal Background 2</label>
+                              <span class="color-hex-badge" id="val-trackerbg2">#0D0B41</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-trackerbg2" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-trackerbg2-alpha">100%</b></span>
+                                <input type="range" id="slider-trackerbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Tracker Text Color -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-trackerText">Tracker Text Color</label>
+                              <span class="color-hex-badge" id="val-trackerText">#DCC48F</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-trackerText" class="color-picker-input" />
+                            </div>
+                          </div>
+
+                          <!-- Train Map Visual Shading -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-trackerMapBg">Train Map Shading</label>
+                              <span class="color-hex-badge" id="val-trackerMapBg">#000000</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-trackerMapBg" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-trackerMapBg-alpha">35%</b></span>
+                                <input type="range" id="slider-trackerMapBg" min="0" max="1" step="0.05" value="0.35" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Active Train Card Shading -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-trackerCardBg">Active Train Card Shading</label>
+                              <span class="color-hex-badge" id="val-trackerCardBg">#000000</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-trackerCardBg" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-trackerCardBg-alpha">42%</b></span>
+                                <input type="range" id="slider-trackerCardBg" min="0" max="1" step="0.05" value="0.42" class="alpha-slider" />
+                              </div>
                             </div>
                           </div>
                         </div>

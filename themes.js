@@ -134,6 +134,7 @@
       shadow: "rgb(37,47,57)",
       clockbg1: "rgba(129,144,147,0.8)",
       clockbg2: "rgba(228,194,136,0.8)",
+      clockInnerBg: "rgba(0, 0, 0, 0.14)",
       todobg1: "rgba(129,144,147,0.8)",
       todobg2: "rgba(228,194,136,0.8)",
       todoItemBg: "rgba(254, 245, 225, 0.2)",
@@ -144,6 +145,11 @@
       text: "rgb(98,23,04)",
       timerVisual: "#f3d482",
       navbarText: "#d6ca8a",
+      trackerbg1: "rgba(129,144,147,0.8)",
+      trackerbg2: "rgba(228,194,136,0.8)",
+      trackerCardBg: "rgba(0, 0, 0, 0.1)",
+      trackerMapBg: "rgba(0, 0, 0, 0.1)",
+      trackerText: "rgb(98,23,04)",
     },
     "Mid Morning Field": {
       shadow: "rgb(118,137,142)",
@@ -820,6 +826,21 @@
     const navbarText = theme.navbarText || theme.text;
     if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
 
+    const trackerbg1 = theme.trackerbg1 || theme.clockbg1;
+    if (trackerbg1) document.documentElement.style.setProperty("--tracker-bg1", trackerbg1);
+
+    const trackerbg2 = theme.trackerbg2 || theme.clockbg2;
+    if (trackerbg2) document.documentElement.style.setProperty("--tracker-bg2", trackerbg2);
+
+    const trackerCardBg = theme.trackerCardBg || "rgba(0, 0, 0, 0.42)";
+    if (trackerCardBg) document.documentElement.style.setProperty("--tracker-card-bg", trackerCardBg);
+
+    const trackerMapBg = theme.trackerMapBg || "rgba(0, 0, 0, 0.35)";
+    if (trackerMapBg) document.documentElement.style.setProperty("--tracker-map-bg", trackerMapBg);
+
+    const trackerText = theme.trackerText || theme.text;
+    if (trackerText) document.documentElement.style.setProperty("--tracker-text", trackerText);
+
     if (theme.backgroundImage && theme.backgroundImage !== "none") {
       document.body.style.background = theme.backgroundImage;
       document.body.style.backgroundSize = "cover";
@@ -962,6 +983,11 @@
         text: themeData.text,
         timerVisual: themeData.timerVisual || themeData.shadow,
         navbarText: themeData.navbarText || themeData.text,
+        trackerbg1: themeData.trackerbg1 || themeData.clockbg1,
+        trackerbg2: themeData.trackerbg2 || themeData.clockbg2,
+        trackerCardBg: themeData.trackerCardBg || "rgba(0, 0, 0, 0.42)",
+        trackerMapBg: themeData.trackerMapBg || "rgba(0, 0, 0, 0.35)",
+        trackerText: themeData.trackerText || themeData.text,
       },
       backgroundImage: themeData.backgroundImage || "",
       group: group === "groupB" ? "groupB" : "groupA",
@@ -1049,6 +1075,12 @@
         timerVisual: t.timerVisual || t.shadow || "#FFFFFF",
         navbarText: t.navbarText || t.text || "#FFFFFF",
       };
+
+      if (t.trackerbg1) colorOutput[key].trackerbg1 = t.trackerbg1;
+      if (t.trackerbg2) colorOutput[key].trackerbg2 = t.trackerbg2;
+      if (t.trackerCardBg) colorOutput[key].trackerCardBg = t.trackerCardBg;
+      if (t.trackerMapBg) colorOutput[key].trackerMapBg = t.trackerMapBg;
+      if (t.trackerText) colorOutput[key].trackerText = t.trackerText;
 
       if (t.backgroundImage) {
         bgOutput[key] = {
