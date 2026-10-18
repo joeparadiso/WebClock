@@ -21,7 +21,7 @@
   const POLL_INTERVAL_MS = 10000;
 
   // Station definitions along the Franklin / Foxboro line (All 24 GTFS Stations)
-  // Coordinates mapped to SVG viewBox="-30 20 1420 340"
+  // Coordinates mapped to SVG viewBox="-30 38 1420 308"
   const STATIONS = [
     // 1. South Station (Origin Terminal)
     { id: "place-sstat", name: "South Station", shortName: "South Station", x: 50, y: 200, branch: "trunk", isTerminal: true, order: 0, lat: 42.352271, lon: -71.055242 },
@@ -794,8 +794,8 @@
       const vb = svg.viewBox ? svg.viewBox.baseVal : null;
       const minX = vb ? vb.x : -30;
       const width = vb ? vb.width : 1420;
-      const minY = vb ? vb.y : 20;
-      const height = vb ? vb.height : 340;
+      const minY = vb ? vb.y : 38;
+      const height = vb ? vb.height : 308;
       const scaleX = rect.width / width;
       const scaleY = rect.height / height;
       const pixelX = (rect.left - containerRect.left) + ((svgX - minX) * scaleX);
