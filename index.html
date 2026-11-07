@@ -18,15 +18,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Baumans&family=Chivo+Mono:wght@100..900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=3.4" />
-    <script type="text/javascript" src="themes.js?v=3.3" defer></script>
-    <script type="text/javascript" src="themeStudio.js?v=3.3" defer></script>
+    <link rel="stylesheet" href="styles.css?v=3.5" />
+    <script type="text/javascript" src="themes.js?v=3.4" defer></script>
+    <script type="text/javascript" src="themeStudio.js?v=3.4" defer></script>
     <script type="text/javascript" src="weather.js?v=3.3" defer></script>
     <script type="text/javascript" src="clock.js?v=3.3" defer></script>
     <script type="text/javascript" src="sunTimes.js?v=3.3" defer></script>
     <script type="text/javascript" src="nextTrain.js?v=3.4" defer></script>
     <script type="text/javascript" src="trainTracker.js?v=1.0" defer></script>
-    <script type="text/javascript" src="todo.js?v=3.3" defer></script>
+    <script type="text/javascript" src="todo.js?v=3.4" defer></script>
+    <script type="text/javascript" src="stopwatch.js?v=1.1" defer></script>
     <link rel="icon" href="favicon.ico" />
   </head>
   <body>
@@ -35,7 +36,8 @@
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
       <div class="nav-actions">
         <button class="nav-todo-link" id="open-todo-btn" type="button">＋ Create To-Do</button>
-        <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Timer</button>
+        <button class="nav-stopwatch-link" id="open-stopwatch-btn" type="button">＋ Create Timer</button>
+        <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Alarm</button>
       </div>
       
       <!-- Hamburger Dropdown Menu -->
@@ -161,22 +163,27 @@
         </main>
       </div>
 
-      <!-- Dynamic Multi-Timer Shelf -->
-      <section id="timers-shelf" aria-label="Active Countdown Timers">
+      <!-- Dynamic Stopwatch Timer Shelf -->
+      <section id="stopwatch-shelf" aria-label="Active Stopwatch Timers">
+        <div id="stopwatch-grid"></div>
+      </section>
+
+      <!-- Dynamic Multi-Alarm Shelf -->
+      <section id="timers-shelf" aria-label="Active Countdown Alarms">
         <div id="timers-grid"></div>
       </section>
     </div>
 
-    <!-- Create Timer Modal Overlay -->
+    <!-- Create Alarm Modal Overlay -->
     <div id="timer-modal-overlay" class="modal-overlay" aria-hidden="true">
       <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal-header">
-          <h2 id="modal-title">Create Countdown Timer</h2>
+          <h2 id="modal-title">Create Alarm</h2>
           <button type="button" class="modal-close-btn" id="close-timer-modal" aria-label="Close modal">✕</button>
         </div>
         <form id="create-timer-form">
           <div class="form-group">
-            <label for="timer-label">Timer Label / Meeting Name</label>
+            <label for="timer-label">Alarm Label / Meeting Name</label>
             <input type="text" id="timer-label" placeholder="e.g., Sprint Planning, Client Sync, Lunch" maxlength="40" />
           </div>
           <div class="form-group">
@@ -215,7 +222,7 @@
           </div>
           <div class="modal-actions">
             <button type="button" class="btn-cancel" id="cancel-timer-btn">Cancel</button>
-            <button type="submit" class="btn-submit" id="submit-timer-btn">Start Timer</button>
+            <button type="submit" class="btn-submit" id="submit-timer-btn">Set Alarm</button>
           </div>
         </form>
       </div>
@@ -578,7 +585,8 @@
                       <span class="mock-nav-brand">WebClock</span>
                       <div class="mock-nav-actions">
                         <span class="mock-nav-todo-badge">＋ Create To-Do</span>
-                        <span class="mock-nav-timer-badge">＋ Create Timer</span>
+                        <span class="mock-nav-stopwatch-badge">＋ Create Timer</span>
+                        <span class="mock-nav-timer-badge">＋ Create Alarm</span>
                       </div>
                     </div>
 
@@ -677,7 +685,41 @@
                         </div>
                       </div>
 
-                      <!-- Mock Multi-Timer Card -->
+                      <!-- Mock Stopwatch Timer Card (Variation 1A) -->
+                      <div class="mock-stopwatch-card">
+                        <div class="mock-stopwatch-header">
+                          <div class="mock-todo-left">
+                            <span class="mock-todo-handle">⠿</span>
+                            <span class="mock-todo-title">Timer: Workout</span>
+                          </div>
+                          <div class="mock-todo-actions">
+                            <span class="mock-todo-btn">▼</span>
+                            <span class="mock-todo-btn">✕</span>
+                          </div>
+                        </div>
+                        <div class="mock-stopwatch-body">
+                          <svg class="mock-stopwatch-svg" width="66" height="66" viewBox="0 0 80 80">
+                            <circle cx="40" cy="40" r="34" class="mock-sw-groove-outer"></circle>
+                            <circle cx="40" cy="40" r="26.5" class="mock-sw-groove-middle"></circle>
+                            <circle cx="40" cy="40" r="19.5" class="mock-sw-groove-inner"></circle>
+                            <circle cx="40" cy="40" r="34" class="mock-sw-ring-outer" stroke-dasharray="213.6" stroke-dashoffset="60"></circle>
+                            <circle cx="40" cy="40" r="26.5" class="mock-sw-ring-middle" stroke-dasharray="166.5" stroke-dashoffset="75"></circle>
+                            <circle cx="40" cy="40" r="19.5" class="mock-sw-ring-inner" stroke-dasharray="122.5" stroke-dashoffset="82"></circle>
+                            <circle cx="6.7" cy="46.4" r="3.4" class="mock-sw-comet"></circle>
+                            <circle cx="40" cy="40" r="14" class="mock-sw-core"></circle>
+                          </svg>
+                          <div class="mock-stopwatch-info">
+                            <div class="mock-stopwatch-digits">04:32<span class="mock-sw-ms">.85</span></div>
+                            <span class="mock-stopwatch-lap-pill">LAP 3 • +01:12</span>
+                            <div class="mock-stopwatch-btns">
+                              <span class="mock-sw-btn-active">⏸ Pause</span>
+                              <span class="mock-sw-btn">🏁 Lap</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Mock Multi-Alarm Card -->
                       <div class="mock-timer-card">
                         <div class="mock-timer-top">
                           <div class="mock-timer-meta">
@@ -1028,17 +1070,17 @@
                         </div>
                       </div>
 
-                      <!-- Group 5: Countdown Timer Cards -->
+                      <!-- Group 5: Countdown Alarm Cards -->
                       <div class="palette-group">
                         <div class="palette-group-header">
                           <span class="palette-group-icon">⏳</span>
-                          <span class="palette-group-title">Countdown Timer Cards</span>
+                          <span class="palette-group-title">Countdown Alarm Cards</span>
                         </div>
                         <div class="palette-grid">
-                          <!-- Timer Card Background 1 -->
+                          <!-- Alarm Card Background 1 -->
                           <div class="color-control-card">
                             <div class="color-label-row">
-                              <label for="ctrl-timerbg1">Timer Background 1</label>
+                              <label for="ctrl-timerbg1">Alarm Background 1</label>
                               <span class="color-hex-badge" id="val-timerbg1">#08001F</span>
                             </div>
                             <div class="color-input-row">
@@ -1050,10 +1092,10 @@
                             </div>
                           </div>
 
-                          <!-- Timer Card Background 2 -->
+                          <!-- Alarm Card Background 2 -->
                           <div class="color-control-card">
                             <div class="color-label-row">
-                              <label for="ctrl-timerbg2">Timer Background 2</label>
+                              <label for="ctrl-timerbg2">Alarm Background 2</label>
                               <span class="color-hex-badge" id="val-timerbg2">#1C52B8</span>
                             </div>
                             <div class="color-input-row">
@@ -1065,7 +1107,7 @@
                             </div>
                           </div>
 
-                          <!-- Timer Gauge Visual -->
+                          <!-- Alarm Gauge Visual -->
                           <div class="color-control-card">
                             <div class="color-label-row">
                               <label for="ctrl-timerVisual">Gauge Visual Ring</label>
@@ -1073,6 +1115,78 @@
                             </div>
                             <div class="color-input-row">
                               <input type="color" id="ctrl-timerVisual" class="color-picker-input" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Group 6: Stopwatch Timer Card (Variation 1A) -->
+                      <div class="palette-group">
+                        <div class="palette-group-header">
+                          <span class="palette-group-icon">⏱️</span>
+                          <span class="palette-group-title">Stopwatch Timer Card</span>
+                        </div>
+                        <div class="palette-grid">
+                          <!-- Stopwatch Card Background 1 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-stopwatchbg1">Timer Background 1</label>
+                              <span class="color-hex-badge" id="val-stopwatchbg1">#08001F</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-stopwatchbg1" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-stopwatchbg1-alpha">100%</b></span>
+                                <input type="range" id="slider-stopwatchbg1" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Stopwatch Card Background 2 -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-stopwatchbg2">Timer Background 2</label>
+                              <span class="color-hex-badge" id="val-stopwatchbg2">#1C52B8</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-stopwatchbg2" class="color-picker-input" />
+                              <div class="slider-group">
+                                <span class="slider-label">Opacity: <b id="val-stopwatchbg2-alpha">100%</b></span>
+                                <input type="range" id="slider-stopwatchbg2" min="0" max="1" step="0.05" value="1" class="alpha-slider" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Outer 1m (60s) Comet Ribbon Ring -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-stopwatchOuterRing">Outer 1m (60s) Ring</label>
+                              <span class="color-hex-badge" id="val-stopwatchOuterRing">#FFEC04</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-stopwatchOuterRing" class="color-picker-input" />
+                            </div>
+                          </div>
+
+                          <!-- Middle 10m Ribbon Ring -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-stopwatchMiddleRing">Middle 10m Ring</label>
+                              <span class="color-hex-badge" id="val-stopwatchMiddleRing">#B8C673</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-stopwatchMiddleRing" class="color-picker-input" />
+                            </div>
+                          </div>
+
+                          <!-- Inner 60m Ribbon Ring -->
+                          <div class="color-control-card">
+                            <div class="color-label-row">
+                              <label for="ctrl-stopwatchInnerRing">Inner 60m Ring</label>
+                              <span class="color-hex-badge" id="val-stopwatchInnerRing">#72A0E1</span>
+                            </div>
+                            <div class="color-input-row">
+                              <input type="color" id="ctrl-stopwatchInnerRing" class="color-picker-input" />
                             </div>
                           </div>
                         </div>

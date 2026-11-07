@@ -22,7 +22,7 @@
 
   const DEFAULT_TOP = 75;
   const DEFAULT_LEFT = 24;
-  const DEFAULT_WIDTH = 415;
+  const DEFAULT_WIDTH = 450;
   const MIN_WIDTH = 260;
   const MAX_WIDTH = 800;
   const MIN_LIST_HEIGHT = 80;
@@ -100,6 +100,9 @@
       if (sizeData) {
         const parsedSize = JSON.parse(sizeData);
         if (parsedSize && typeof parsedSize.width === "number") {
+          if (parsedSize.width === 415) {
+            parsedSize.width = DEFAULT_WIDTH;
+          }
           customSize = parsedSize;
         }
       }
@@ -379,6 +382,9 @@
       applySize();
     }
     saveTodos();
+    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+      window.WebClockStopwatch.updateDefaultPositions();
+    }
   }
 
   function toggleCollapsed() {
@@ -401,6 +407,9 @@
       setCollapsed(false);
     }
     saveTodos();
+    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+      window.WebClockStopwatch.updateDefaultPositions();
+    }
   }
 
   function hideContainer() {
@@ -409,6 +418,9 @@
     todoContainer.style.display = "none";
     todoContainer.classList.remove("todo-popup-active");
     saveTodos();
+    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+      window.WebClockStopwatch.updateDefaultPositions();
+    }
   }
 
   /********************************************************************************

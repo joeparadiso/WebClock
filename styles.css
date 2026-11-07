@@ -19,6 +19,10 @@
   --train-pill-bg: rgba(0, 0, 0, 0.25);
   --timer-bg1: #08001f;
   --timer-bg2: #1c52b8;
+  --stopwatch-bg1: #08001f;
+  --stopwatch-bg2: #1c52b8;
+  --stopwatch-outer-ring: #ffec04;
+  --stopwatch-inner-ring: #72a0e1;
   --navbar-bg: #000000e6;
   --navbar-text-color: #72a0e1;
   --timer-visual-color: #ffec04;
@@ -580,6 +584,7 @@ body {
 }
 
 .nav-timer-link,
+.nav-stopwatch-link,
 .nav-todo-link {
   background: none;
   border: none;
@@ -597,6 +602,7 @@ body {
 }
 
 .nav-timer-link:hover,
+.nav-stopwatch-link:hover,
 .nav-todo-link:hover {
   transform: scale(1.06);
   text-shadow: 0 0 10px var(--box-shadow-color);
@@ -827,7 +833,7 @@ body {
   position: fixed;
   top: 75px;
   left: 24px;
-  width: 415px;
+  width: 450px;
   max-width: calc(100vw - 20px);
   z-index: 950;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease;
@@ -1843,8 +1849,9 @@ body {
 }
 
 .mock-nav-timer-badge,
+.mock-nav-stopwatch-badge,
 .mock-nav-todo-badge {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   padding: 3px 8px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.12);
@@ -4487,4 +4494,689 @@ body {
     height: 100%;
   }
 }
+
+/* =========================================================================
+   Variation 1A Circular Stopwatch Timer Card (Liquid-Glass Smooth Ribbon Rings)
+========================================================================= */
+
+#stopwatch-shelf {
+  position: relative;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#stopwatch-grid {
+  position: static;
+}
+
+.stopwatch-card {
+  background: linear-gradient(135deg, var(--stopwatch-bg1, var(--timer-bg1, var(--clock-bg1))), var(--stopwatch-bg2, var(--timer-bg2, var(--clock-bg2))));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 10px 28px var(--box-shadow-color);
+  color: var(--text-color);
+  width: 450px;
+  max-width: calc(100vw - 20px);
+  padding: 14px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  touch-action: none;
+  box-sizing: border-box;
+}
+
+.stopwatch-card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.stopwatch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px var(--box-shadow-color);
+}
+
+.stopwatch-card.is-dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+  opacity: 0.94;
+  transition: none !important;
+  z-index: 890 !important;
+}
+
+.stopwatch-card.sw-pop-in {
+  animation: todoPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Header */
+.stopwatch-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  position: relative;
+  z-index: 2;
+}
+
+.stopwatch-card.is-dragging .stopwatch-card-header {
+  cursor: grabbing !important;
+}
+
+.stopwatch-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.stopwatch-drag-handle {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.45;
+  cursor: grab;
+  line-height: 1;
+  user-select: none;
+  padding: 0 2px;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+.stopwatch-card-header:hover .stopwatch-drag-handle {
+  opacity: 0.85;
+}
+
+.stopwatch-card-title {
+  font-family: "Baumans", serif;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  letter-spacing: 0.4px;
+}
+
+.sw-title-input {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--box-shadow-color);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-family: "Baumans", serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  outline: none;
+  width: 100%;
+  max-width: 240px;
+}
+
+.sw-collapsed-readout {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--stopwatch-outer-ring, var(--timer-visual-color));
+  background: var(--clock-inner-bg, rgba(0, 0, 0, 0.25));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: auto;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.stopwatch-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sw-header-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-color);
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 0.85rem;
+  font-family: "Baumans", serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  min-width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sw-header-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--box-shadow-color);
+  transform: scale(1.08);
+}
+
+.sw-delete-btn:hover {
+  background: rgba(255, 71, 87, 0.22);
+  border-color: #ff4757;
+  color: #ff4757;
+}
+
+/* Collapsed State */
+.stopwatch-card.collapsed {
+  padding: 10px 14px;
+  gap: 0;
+}
+
+.stopwatch-card.collapsed .stopwatch-card-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.stopwatch-card.collapsed .stopwatch-card-body {
+  display: none !important;
+}
+
+/* Body Layout */
+.stopwatch-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Variation 1A Orbital Stage (3 Concentric Circles: 1m, 10m, 60m + Spacious Center Core) */
+.sw-orbital-stage {
+  position: relative;
+  width: 304px;
+  height: 304px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px auto;
+}
+
+.sw-orbital-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.sw-ambient-halo {
+  fill: none;
+  stroke: var(--text-color);
+  stroke-opacity: 0.1;
+  stroke-width: 1;
+}
+
+/* Recessed Dark-Glass Grooves (No Watch Ticks) */
+.sw-groove-outer {
+  fill: none;
+  stroke: var(--clock-inner-bg, rgba(0, 0, 0, 0.45));
+  stroke-width: 13;
+}
+
+.sw-groove-middle {
+  fill: none;
+  stroke: var(--clock-inner-bg, rgba(0, 0, 0, 0.45));
+  stroke-width: 10.4;
+}
+
+.sw-groove-inner {
+  fill: none;
+  stroke: var(--clock-inner-bg, rgba(0, 0, 0, 0.45));
+  stroke-width: 9;
+}
+
+.sw-groove-rim {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 0.9;
+}
+
+.sw-cardinal-dot {
+  fill: var(--text-color);
+  opacity: 0.45;
+}
+
+/* Smooth Ribbon Progress Rings */
+.sw-ring-outer-fill {
+  fill: none;
+  stroke: var(--stopwatch-outer-ring, var(--timer-visual-color, var(--box-shadow-color)));
+  stroke-width: 8.5;
+  stroke-linecap: round;
+  transition: stroke 0.3s ease;
+}
+
+.sw-ring-middle-fill {
+  fill: none;
+  stroke: var(--stopwatch-middle-ring, color-mix(in srgb, var(--stopwatch-outer-ring, var(--timer-visual-color)) 52%, var(--stopwatch-inner-ring, var(--text-color)) 48%));
+  stroke-width: 6.8;
+  stroke-linecap: round;
+  opacity: 0.95;
+  transition: stroke 0.3s ease;
+}
+
+.sw-ring-inner-fill {
+  fill: none;
+  stroke: var(--stopwatch-inner-ring, var(--text-color));
+  stroke-width: 5.6;
+  stroke-linecap: round;
+  opacity: 0.9;
+  transition: stroke 0.3s ease;
+}
+
+.sw-middle-cap-dot {
+  fill: #ffffff;
+  stroke: var(--stopwatch-middle-ring, var(--box-shadow-color));
+  stroke-width: 2;
+  transition: opacity 0.2s ease;
+}
+
+.sw-inner-cap-dot {
+  fill: #ffffff;
+  stroke: var(--stopwatch-inner-ring, var(--text-color));
+  stroke-width: 1.8;
+  transition: opacity 0.2s ease;
+}
+
+/* Glowing Comet Orb on Outer Ring */
+.sw-comet-aura {
+  fill: var(--stopwatch-outer-ring, var(--timer-visual-color, var(--box-shadow-color)));
+  opacity: 0.35;
+}
+
+.sw-comet-core {
+  fill: #ffffff;
+  stroke: var(--stopwatch-outer-ring, var(--timer-visual-color, var(--box-shadow-color)));
+  stroke-width: 2.5;
+}
+
+/* Frosted Glass Center Disc */
+.sw-frosted-core {
+  fill: var(--clock-inner-bg, rgba(0, 0, 0, 0.35));
+  stroke: var(--text-color);
+  stroke-opacity: 0.24;
+  stroke-width: 1.2;
+}
+
+/* Center Digital Readout Overlay (Constrained within the 184px center core) */
+.sw-center-readout {
+  position: absolute;
+  width: 164px;
+  height: 164px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  pointer-events: none;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.sw-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-color);
+}
+
+.sw-status-pill.running {
+  border-color: var(--stopwatch-outer-ring, var(--timer-visual-color));
+  color: var(--stopwatch-outer-ring, var(--timer-visual-color));
+}
+
+.sw-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.sw-status-pill.running .sw-status-dot {
+  box-shadow: 0 0 6px currentColor;
+  animation: live-pulse-anim 1.5s infinite ease-in-out;
+}
+
+.sw-digits-row {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: "Chivo Mono", monospace;
+  line-height: 1;
+  color: var(--text-color);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.sw-digits-main {
+  font-size: 1.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.sw-digits-main.is-hours {
+  font-size: 1.45rem;
+}
+
+.sw-digits-cs {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--stopwatch-outer-ring, var(--timer-visual-color));
+  margin-left: 1px;
+}
+
+.sw-lap-delta-pill {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.64rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-color);
+  opacity: 0.92;
+  white-space: nowrap;
+}
+
+/* Bottom Controls & Laps */
+.sw-controls-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sw-action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.sw-btn {
+  flex: 1;
+  height: 36px;
+  border-radius: 999px;
+  font-family: "Baumans", serif;
+  font-size: 0.92rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  letter-spacing: 0.3px;
+}
+
+.sw-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.sw-btn-primary {
+  background: var(--stopwatch-outer-ring, var(--timer-visual-color));
+  color: #08001f;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 14px var(--box-shadow-color);
+}
+
+.sw-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 20px var(--box-shadow-color);
+  filter: brightness(1.08);
+}
+
+.sw-btn-secondary {
+  background: var(--clock-inner-bg, rgba(0, 0, 0, 0.28));
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sw-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--box-shadow-color);
+  box-shadow: 0 0 10px var(--box-shadow-color);
+  transform: translateY(-1px);
+}
+
+/* Lap Splits List */
+.sw-laps-box {
+  width: 100%;
+  background: var(--clock-inner-bg, rgba(0, 0, 0, 0.24));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 6px 10px;
+  max-height: 86px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--box-shadow-color) rgba(0, 0, 0, 0.2);
+}
+
+.sw-laps-empty {
+  font-family: "Baumans", serif;
+  font-size: 0.82rem;
+  color: var(--text-color);
+  opacity: 0.55;
+  text-align: center;
+  padding: 4px 0;
+}
+
+.sw-lap-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.78rem;
+  padding: 3px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-color);
+}
+
+.sw-lap-row:last-child {
+  border-bottom: none;
+}
+
+.sw-lap-num {
+  text-align: left;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.sw-lap-split {
+  opacity: 0.85;
+}
+
+.sw-lap-total {
+  font-weight: 700;
+}
+
+.sw-lap-row.fastest-lap {
+  color: var(--stopwatch-outer-ring, var(--timer-visual-color));
+}
+
+.sw-lap-row.slowest-lap {
+  opacity: 0.68;
+}
+
+/* =========================================================================
+   Theme Studio Mock Preview: Mock Stopwatch Card (Variation 1A)
+========================================================================= */
+.mock-stopwatch-card {
+  flex: 1;
+  background: linear-gradient(135deg, var(--mock-stopwatch-bg1, var(--mock-timer-bg1, var(--mock-clock-bg1))), var(--mock-stopwatch-bg2, var(--mock-timer-bg2, var(--mock-clock-bg2))));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px var(--mock-box-shadow-color);
+  padding: 12px 14px;
+  color: var(--mock-text-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mock-stopwatch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+}
+
+.mock-stopwatch-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mock-stopwatch-svg {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.mock-sw-groove-outer {
+  fill: none;
+  stroke: var(--mock-clock-inner-bg, rgba(0, 0, 0, 0.35));
+  stroke-width: 5.5;
+}
+
+.mock-sw-groove-middle {
+  fill: none;
+  stroke: var(--mock-clock-inner-bg, rgba(0, 0, 0, 0.35));
+  stroke-width: 4.5;
+}
+
+.mock-sw-groove-inner {
+  fill: none;
+  stroke: var(--mock-clock-inner-bg, rgba(0, 0, 0, 0.35));
+  stroke-width: 4;
+}
+
+.mock-sw-ring-outer {
+  fill: none;
+  stroke: var(--mock-stopwatch-outer-ring, var(--mock-timer-visual-color));
+  stroke-width: 4;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.mock-sw-ring-middle {
+  fill: none;
+  stroke: var(--mock-stopwatch-middle-ring, color-mix(in srgb, var(--mock-stopwatch-outer-ring, var(--mock-timer-visual-color)) 52%, var(--mock-stopwatch-inner-ring, var(--mock-text-color)) 48%));
+  stroke-width: 3.3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.mock-sw-ring-inner {
+  fill: none;
+  stroke: var(--mock-stopwatch-inner-ring, var(--mock-text-color));
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.mock-sw-comet {
+  fill: #ffffff;
+  stroke: var(--mock-stopwatch-outer-ring, var(--mock-timer-visual-color));
+  stroke-width: 2;
+}
+
+.mock-sw-core {
+  fill: var(--mock-clock-inner-bg, rgba(0, 0, 0, 0.3));
+  stroke: var(--mock-text-color);
+  stroke-opacity: 0.2;
+}
+
+.mock-stopwatch-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mock-stopwatch-digits {
+  font-family: "Chivo Mono", monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mock-sw-ms {
+  font-size: 0.85rem;
+  color: var(--mock-stopwatch-outer-ring, var(--mock-timer-visual-color));
+}
+
+.mock-stopwatch-lap-pill {
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.mock-stopwatch-btns {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.mock-sw-btn-active {
+  font-family: "Baumans", serif;
+  font-size: 0.68rem;
+  font-weight: bold;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: var(--mock-stopwatch-outer-ring, var(--mock-timer-visual-color));
+  color: #08001f;
+}
+
+.mock-sw-btn {
+  font-family: "Baumans", serif;
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
 

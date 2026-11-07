@@ -704,6 +704,21 @@
     return `rgba(${r}, ${g}, ${b}, ${roundedAlpha})`;
   }
 
+  function blendColors(colorA, colorB, weightA = 0.5) {
+    const hexA = parseColor(colorA || "#FFFFFF").hex.replace("#", "");
+    const hexB = parseColor(colorB || "#FFFFFF").hex.replace("#", "");
+    const rA = parseInt(hexA.substring(0, 2), 16) || 255;
+    const gA = parseInt(hexA.substring(2, 4), 16) || 255;
+    const bA = parseInt(hexA.substring(4, 6), 16) || 255;
+    const rB = parseInt(hexB.substring(0, 2), 16) || 255;
+    const gB = parseInt(hexB.substring(2, 4), 16) || 255;
+    const bB = parseInt(hexB.substring(4, 6), 16) || 255;
+    const r = Math.round(rA * weightA + rB * (1 - weightA)).toString(16).padStart(2, "0");
+    const g = Math.round(gA * weightA + gB * (1 - weightA)).toString(16).padStart(2, "0");
+    const b = Math.round(bA * weightA + bB * (1 - weightA)).toString(16).padStart(2, "0");
+    return `#${r}${g}${b}`;
+  }
+
   /********************************************************************************
    * Master Theme Store Builder & Resolver
    ********************************************************************************/
@@ -822,6 +837,21 @@
 
     const timerVisual = theme.timerVisual || theme.shadow;
     if (timerVisual) document.documentElement.style.setProperty("--timer-visual-color", timerVisual);
+
+    const stopwatchbg1 = theme.stopwatchbg1 || timerbg1;
+    if (stopwatchbg1) document.documentElement.style.setProperty("--stopwatch-bg1", stopwatchbg1);
+
+    const stopwatchbg2 = theme.stopwatchbg2 || timerbg2;
+    if (stopwatchbg2) document.documentElement.style.setProperty("--stopwatch-bg2", stopwatchbg2);
+
+    const stopwatchOuterRing = theme.stopwatchOuterRing || timerVisual;
+    if (stopwatchOuterRing) document.documentElement.style.setProperty("--stopwatch-outer-ring", stopwatchOuterRing);
+
+    const stopwatchInnerRing = theme.stopwatchInnerRing || theme.text;
+    if (stopwatchInnerRing) document.documentElement.style.setProperty("--stopwatch-inner-ring", stopwatchInnerRing);
+
+    const stopwatchMiddleRing = theme.stopwatchMiddleRing || blendColors(stopwatchOuterRing, stopwatchInnerRing, 0.5);
+    if (stopwatchMiddleRing) document.documentElement.style.setProperty("--stopwatch-middle-ring", stopwatchMiddleRing);
 
     const navbarText = theme.navbarText || theme.text;
     if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
@@ -979,6 +1009,11 @@
         trainPillBg: themeData.trainPillBg || "rgba(0, 0, 0, 0.25)",
         timerbg1: themeData.timerbg1 || themeData.clockbg1,
         timerbg2: themeData.timerbg2 || themeData.clockbg2,
+        stopwatchbg1: themeData.stopwatchbg1 || themeData.timerbg1 || themeData.clockbg1,
+        stopwatchbg2: themeData.stopwatchbg2 || themeData.timerbg2 || themeData.clockbg2,
+        stopwatchOuterRing: themeData.stopwatchOuterRing || themeData.timerVisual || themeData.shadow,
+        stopwatchMiddleRing: themeData.stopwatchMiddleRing || blendColors(themeData.stopwatchOuterRing || themeData.timerVisual || themeData.shadow, themeData.stopwatchInnerRing || themeData.text, 0.5),
+        stopwatchInnerRing: themeData.stopwatchInnerRing || themeData.text,
         navbar: themeData.navbar,
         text: themeData.text,
         timerVisual: themeData.timerVisual || themeData.shadow,
@@ -1073,6 +1108,11 @@
         navbar: t.navbar || "#000000",
         text: t.text || "#FFFFFF",
         timerVisual: t.timerVisual || t.shadow || "#FFFFFF",
+        stopwatchbg1: t.stopwatchbg1 || t.timerbg1 || t.clockbg1 || "#000000",
+        stopwatchbg2: t.stopwatchbg2 || t.timerbg2 || t.clockbg2 || "#000000",
+        stopwatchOuterRing: t.stopwatchOuterRing || t.timerVisual || t.shadow || "#FFFFFF",
+        stopwatchMiddleRing: t.stopwatchMiddleRing || blendColors(t.stopwatchOuterRing || t.timerVisual || t.shadow || "#FFFFFF", t.stopwatchInnerRing || t.text || "#FFFFFF", 0.5),
+        stopwatchInnerRing: t.stopwatchInnerRing || t.text || "#FFFFFF",
         navbarText: t.navbarText || t.text || "#FFFFFF",
       };
 
@@ -1124,6 +1164,7 @@ const manualGroupB = ${JSON.stringify(groupBOutput, null, 2)};
     colorToHex,
     parseColor,
     formatColor,
+    blendColors,
     generateThemesJsCode,
   };
   window.ThemeManager = window.ThemeEngine;

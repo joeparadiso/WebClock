@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     colorToHex,
     parseColor,
     formatColor,
+    blendColors,
     generateThemesJsCode,
     getBundledImages,
   } = window.ThemeEngine;
@@ -90,6 +91,11 @@ document.addEventListener("DOMContentLoaded", function () {
     { key: "trainPillBg", ctrlId: "ctrl-trainPillBg", badgeId: "val-trainPillBg", hasAlpha: true, sliderId: "slider-trainPillBg", alphaBadgeId: "val-trainPillBg-alpha" },
     { key: "timerbg1", ctrlId: "ctrl-timerbg1", badgeId: "val-timerbg1", hasAlpha: true, sliderId: "slider-timerbg1", alphaBadgeId: "val-timerbg1-alpha" },
     { key: "timerbg2", ctrlId: "ctrl-timerbg2", badgeId: "val-timerbg2", hasAlpha: true, sliderId: "slider-timerbg2", alphaBadgeId: "val-timerbg2-alpha" },
+    { key: "stopwatchbg1", ctrlId: "ctrl-stopwatchbg1", badgeId: "val-stopwatchbg1", hasAlpha: true, sliderId: "slider-stopwatchbg1", alphaBadgeId: "val-stopwatchbg1-alpha" },
+    { key: "stopwatchbg2", ctrlId: "ctrl-stopwatchbg2", badgeId: "val-stopwatchbg2", hasAlpha: true, sliderId: "slider-stopwatchbg2", alphaBadgeId: "val-stopwatchbg2-alpha" },
+    { key: "stopwatchOuterRing", ctrlId: "ctrl-stopwatchOuterRing", badgeId: "val-stopwatchOuterRing", hasAlpha: false },
+    { key: "stopwatchMiddleRing", ctrlId: "ctrl-stopwatchMiddleRing", badgeId: "val-stopwatchMiddleRing", hasAlpha: false },
+    { key: "stopwatchInnerRing", ctrlId: "ctrl-stopwatchInnerRing", badgeId: "val-stopwatchInnerRing", hasAlpha: false },
     { key: "trackerbg1", ctrlId: "ctrl-trackerbg1", badgeId: "val-trackerbg1", hasAlpha: true, sliderId: "slider-trackerbg1", alphaBadgeId: "val-trackerbg1-alpha" },
     { key: "trackerbg2", ctrlId: "ctrl-trackerbg2", badgeId: "val-trackerbg2", hasAlpha: true, sliderId: "slider-trackerbg2", alphaBadgeId: "val-trackerbg2-alpha" },
     { key: "trackerText", ctrlId: "ctrl-trackerText", badgeId: "val-trackerText", hasAlpha: false },
@@ -114,6 +120,11 @@ document.addEventListener("DOMContentLoaded", function () {
       trainPillBg: "rgba(0, 0, 0, 0.25)",
       timerbg1: "rgba(45, 64, 103, 0.8)",
       timerbg2: "rgba(13, 11, 65, 0.8)",
+      stopwatchbg1: "rgba(45, 64, 103, 0.8)",
+      stopwatchbg2: "rgba(13, 11, 65, 0.8)",
+      stopwatchOuterRing: "#F8E3AF",
+      stopwatchMiddleRing: "#EAD49F",
+      stopwatchInnerRing: "#DCC48F",
       navbar: "rgba(0, 0, 0, 0.85)",
       text: "#DCC48F",
       timerVisual: "#F8E3AF",
@@ -477,6 +488,11 @@ document.addEventListener("DOMContentLoaded", function () {
     mockContainer.style.setProperty("--mock-train-pill-bg", currentDraft.colors.trainPillBg || "rgba(0, 0, 0, 0.25)");
     mockContainer.style.setProperty("--mock-timer-bg1", currentDraft.colors.timerbg1 || currentDraft.colors.clockbg1 || "#08001F");
     mockContainer.style.setProperty("--mock-timer-bg2", currentDraft.colors.timerbg2 || currentDraft.colors.clockbg2 || "#1C52B8");
+    mockContainer.style.setProperty("--mock-stopwatch-bg1", currentDraft.colors.stopwatchbg1 || currentDraft.colors.timerbg1 || currentDraft.colors.clockbg1 || "#08001F");
+    mockContainer.style.setProperty("--mock-stopwatch-bg2", currentDraft.colors.stopwatchbg2 || currentDraft.colors.timerbg2 || currentDraft.colors.clockbg2 || "#1C52B8");
+    mockContainer.style.setProperty("--mock-stopwatch-outer-ring", currentDraft.colors.stopwatchOuterRing || currentDraft.colors.timerVisual || currentDraft.colors.shadow || "#F8E3AF");
+    mockContainer.style.setProperty("--mock-stopwatch-middle-ring", currentDraft.colors.stopwatchMiddleRing || currentDraft.colors.stopwatchOuterRing || "#EAD49F");
+    mockContainer.style.setProperty("--mock-stopwatch-inner-ring", currentDraft.colors.stopwatchInnerRing || currentDraft.colors.text || "#DCC48F");
     mockContainer.style.setProperty("--mock-tracker-bg1", currentDraft.colors.trackerbg1 || currentDraft.colors.clockbg1 || "#2D4067");
     mockContainer.style.setProperty("--mock-tracker-bg2", currentDraft.colors.trackerbg2 || currentDraft.colors.clockbg2 || "#0D0B41");
     mockContainer.style.setProperty("--mock-tracker-card-bg", currentDraft.colors.trackerCardBg || "rgba(0, 0, 0, 0.42)");
@@ -686,6 +702,11 @@ document.addEventListener("DOMContentLoaded", function () {
       trainPillBg: theme.trainPillBg || "rgba(0, 0, 0, 0.25)",
       timerbg1: theme.timerbg1 || theme.clockbg1 || "#000000",
       timerbg2: theme.timerbg2 || theme.clockbg2 || "#000000",
+      stopwatchbg1: theme.stopwatchbg1 || theme.timerbg1 || theme.clockbg1 || "#000000",
+      stopwatchbg2: theme.stopwatchbg2 || theme.timerbg2 || theme.clockbg2 || "#000000",
+      stopwatchOuterRing: theme.stopwatchOuterRing || theme.timerVisual || theme.shadow || "#FFFFFF",
+      stopwatchMiddleRing: theme.stopwatchMiddleRing || (typeof blendColors === "function" ? blendColors(theme.stopwatchOuterRing || theme.timerVisual || theme.shadow || "#FFFFFF", theme.stopwatchInnerRing || theme.text || "#FFFFFF", 0.5) : (theme.shadow || "#FFFFFF")),
+      stopwatchInnerRing: theme.stopwatchInnerRing || theme.text || "#FFFFFF",
       pagebg1: theme.pagebg1 || "#000000",
       pagebg2: theme.pagebg2 || "#000000",
       navbar: theme.navbar || "#000000",
@@ -756,6 +777,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const timerVisual = c.timerVisual || c.shadow;
     if (timerVisual) document.documentElement.style.setProperty("--timer-visual-color", timerVisual);
+
+    const stopwatchbg1 = c.stopwatchbg1 || c.timerbg1 || c.clockbg1;
+    if (stopwatchbg1) document.documentElement.style.setProperty("--stopwatch-bg1", stopwatchbg1);
+
+    const stopwatchbg2 = c.stopwatchbg2 || c.timerbg2 || c.clockbg2;
+    if (stopwatchbg2) document.documentElement.style.setProperty("--stopwatch-bg2", stopwatchbg2);
+
+    const stopwatchOuterRing = c.stopwatchOuterRing || timerVisual;
+    if (stopwatchOuterRing) document.documentElement.style.setProperty("--stopwatch-outer-ring", stopwatchOuterRing);
+
+    const stopwatchInnerRing = c.stopwatchInnerRing || c.text;
+    if (stopwatchInnerRing) document.documentElement.style.setProperty("--stopwatch-inner-ring", stopwatchInnerRing);
+
+    const stopwatchMiddleRing = c.stopwatchMiddleRing || (typeof blendColors === "function" ? blendColors(stopwatchOuterRing, stopwatchInnerRing, 0.5) : stopwatchOuterRing);
+    if (stopwatchMiddleRing) document.documentElement.style.setProperty("--stopwatch-middle-ring", stopwatchMiddleRing);
 
     const navbarText = c.navbarText || c.text;
     if (navbarText) document.documentElement.style.setProperty("--navbar-text-color", navbarText);
@@ -984,6 +1020,11 @@ document.addEventListener("DOMContentLoaded", function () {
     snippet += `    trainPillBg: "${c.trainPillBg || 'rgba(0, 0, 0, 0.25)'}",\n`;
     snippet += `    timerbg1: "${c.timerbg1 || c.clockbg1 || '#000000'}",\n`;
     snippet += `    timerbg2: "${c.timerbg2 || c.clockbg2 || '#000000'}",\n`;
+    snippet += `    stopwatchbg1: "${c.stopwatchbg1 || c.timerbg1 || c.clockbg1 || '#000000'}",\n`;
+    snippet += `    stopwatchbg2: "${c.stopwatchbg2 || c.timerbg2 || c.clockbg2 || '#000000'}",\n`;
+    snippet += `    stopwatchOuterRing: "${c.stopwatchOuterRing || timerVisual}",\n`;
+    snippet += `    stopwatchMiddleRing: "${c.stopwatchMiddleRing || (typeof blendColors === 'function' ? blendColors(c.stopwatchOuterRing || timerVisual, c.stopwatchInnerRing || c.text || '#FFFFFF', 0.5) : timerVisual)}",\n`;
+    snippet += `    stopwatchInnerRing: "${c.stopwatchInnerRing || c.text || '#FFFFFF'}",\n`;
     snippet += `    navbar: "${c.navbar || '#000000'}",\n`;
     snippet += `    text: "${c.text || '#FFFFFF'}",\n`;
     snippet += `    timerVisual: "${timerVisual}",\n`;

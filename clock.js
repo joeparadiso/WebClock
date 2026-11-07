@@ -626,8 +626,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!modalOverlay) return;
 
     editingTimerId = null;
-    if (modalTitle) modalTitle.textContent = "Create Countdown Timer";
-    if (submitTimerBtn) submitTimerBtn.textContent = "Start Timer";
+    if (modalTitle) modalTitle.textContent = "Create Alarm";
+    if (submitTimerBtn) submitTimerBtn.textContent = "Set Alarm";
 
     // Default Start Date to today (YYYY-MM-DD)
     const today = new Date();
@@ -665,7 +665,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!timer || !modalOverlay) return;
 
     editingTimerId = timerId;
-    if (modalTitle) modalTitle.textContent = "Edit Countdown Timer";
+    if (modalTitle) modalTitle.textContent = "Edit Alarm";
     if (submitTimerBtn) submitTimerBtn.textContent = "Save Changes";
 
     if (timerLabelInput) timerLabelInput.value = timer.label || "";
@@ -955,6 +955,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (window.WebClockTodo && typeof window.WebClockTodo.updateDefaultPosition === "function") {
       window.WebClockTodo.updateDefaultPosition();
     }
+    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+      window.WebClockStopwatch.updateDefaultPositions();
+    }
   }
 
   function initClockDrag() {
@@ -1097,6 +1100,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (window.WebClockTodo && typeof window.WebClockTodo.updateDefaultPosition === "function") {
       window.WebClockTodo.updateDefaultPosition();
+    }
+    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+      window.WebClockStopwatch.updateDefaultPositions();
     }
   });
 
