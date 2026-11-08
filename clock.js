@@ -159,8 +159,15 @@ document.addEventListener("DOMContentLoaded", function () {
     return `${monthShort} ${targetDate.getDate()}, ${timeStr}`;
   }
 
-  const TIMER_DEFAULT_WIDTH = 415;
-  const TIMER_GAP = 14;
+  const TIMER_DEFAULT_WIDTH = 450;
+  const TIMER_GAP = 20;
+
+  function setAlarmPositionFromLayout(id, left, top) {
+    const timer = activeTimers.find(t => t.id === id);
+    if (!timer) return;
+    timer.position = { left: Math.round(left), top: Math.round(top) };
+    saveTimers();
+  }
 
   function calculateDefaultTimerPositions(unmovedTimers) {
     const clockEl = document.querySelector(".clock");
@@ -170,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (clockEl) {
       const clockRect = clockEl.getBoundingClientRect();
-      left = Math.max(10, Math.min(clockRect.right + 24, window.innerWidth - TIMER_DEFAULT_WIDTH - 10));
+      left = Math.max(16, Math.min(clockRect.right + TIMER_GAP, window.innerWidth - TIMER_DEFAULT_WIDTH - 16));
       currentTop = clockRect.top;
     }
 
@@ -178,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const isCollapsed = !!timer.collapsed;
       // Header-only collapsed height is 44px; full card height is ~146px
       const cardHeight = isCollapsed ? 44 : 146;
-      positions.push({ left, top: currentTop });
+      positions.push({ left: Math.round(left), top: Math.round(currentTop) });
       currentTop += cardHeight + TIMER_GAP;
     });
 
@@ -284,9 +291,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const id = this.getAttribute("data-id");
         const timer = activeTimers.find(t => t.id === id);
         if (timer) {
+          const oldCard = timersGrid.querySelector(`.timer-card[data-id="${id}"]`);
+          const prevRect = oldCard ? oldCard.getBoundingClientRect() : null;
+
           timer.collapsed = !timer.collapsed;
           saveTimers();
           renderTimers();
+
+          const newCard = timersGrid.querySelector(`.timer-card[data-id="${id}"]`);
+          if (newCard && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+            window.WebClockSnapLayout.onCardGeometryChanged(
+              newCard,
+              prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+            );
+          }
         }
       });
     });
@@ -337,6 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const startPointer = { x: e.clientX, y: e.clientY };
           const rect = card.getBoundingClientRect();
           const startCardPos = { left: rect.left, top: rect.top };
+          const dragContext = { slotOrigin: { left: rect.left, top: rect.top } };
 
           function onTimerMove(moveEvent) {
             const dist = Math.hypot(moveEvent.clientX - startPointer.x, moveEvent.clientY - startPointer.y);
@@ -365,11 +384,17 @@ document.addEventListener("DOMContentLoaded", function () {
               const rawLeft = startCardPos.left + deltaX;
               const rawTop = startCardPos.top + deltaY;
 
-              const clampedLeft = Math.max(10, Math.min(rawLeft, maxLeft));
-              const clampedTop = Math.max(minTop, Math.min(rawTop, maxTop));
+              let resolved = {
+                left: Math.max(10, Math.min(rawLeft, maxLeft)),
+                top: Math.max(minTop, Math.min(rawTop, maxTop))
+              };
 
-              card.style.left = `${clampedLeft}px`;
-              card.style.top = `${clampedTop}px`;
+              if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.resolveDragPosition === "function") {
+                resolved = window.WebClockSnapLayout.resolveDragPosition(card, rawLeft, rawTop, dragContext);
+              }
+
+              card.style.left = `${resolved.left}px`;
+              card.style.top = `${resolved.top}px`;
             }
           }
 
@@ -377,6 +402,10 @@ document.addEventListener("DOMContentLoaded", function () {
             window.removeEventListener("pointermove", onTimerMove);
             window.removeEventListener("pointerup", onTimerUp);
             window.removeEventListener("pointercancel", onTimerUp);
+
+            if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.clearSnapGuides === "function") {
+              window.WebClockSnapLayout.clearSnapGuides();
+            }
 
             if (isDragging) {
               isDragging = false;
@@ -517,6 +546,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const targetTimestamp = targetDate.getTime();
     const duration = Math.max(1000, targetTimestamp - startTimestamp);
 
+    let initialPos = null;
+    if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.findAvailableSlot === "function") {
+      initialPos = window.WebClockSnapLayout.findAvailableSlot(null, "right", TIMER_DEFAULT_WIDTH, 146);
+    }
+
     const newTimer = {
       id: "timer_" + now + "_" + Math.random().toString(36).substr(2, 4),
       label: label.trim() || "Countdown Timer",
@@ -528,6 +562,10 @@ document.addEventListener("DOMContentLoaded", function () {
       alarmTriggered: false,
       alarmSilenced: false
     };
+
+    if (initialPos) {
+      newTimer.position = { left: initialPos.left, top: initialPos.top };
+    }
 
     activeTimers.push(newTimer);
     saveTimers();
@@ -599,6 +637,9 @@ document.addEventListener("DOMContentLoaded", function () {
    * Deletes / Dismisses a timer by ID
    ********************************************************************************/
   function deleteTimer(id) {
+    const oldCard = timersGrid ? timersGrid.querySelector(`.timer-card[data-id="${id}"]`) : null;
+    const closedRect = oldCard ? oldCard.getBoundingClientRect() : null;
+
     activeTimers = activeTimers.filter(t => t.id !== id);
     saveTimers();
 
@@ -609,6 +650,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     renderTimers();
+
+    if (closedRect && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardClosed === "function") {
+      window.WebClockSnapLayout.onCardClosed({
+        left: closedRect.left,
+        top: closedRect.top,
+        width: closedRect.width,
+        height: closedRect.height
+      });
+    }
   }
 
   /********************************************************************************
@@ -842,6 +892,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let isClockCollapsed = false;
 
   function setClockCollapsed(collapsed) {
+    const prevRect = mainClockCard ? mainClockCard.getBoundingClientRect() : null;
     isClockCollapsed = Boolean(collapsed);
     if (!mainClockCard) return;
 
@@ -866,6 +917,12 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (_) {}
 
     updateDefaultWidgetPositions();
+    if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      window.WebClockSnapLayout.onCardGeometryChanged(
+        mainClockCard,
+        prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+      );
+    }
   }
 
   function loadClockCollapsed() {
@@ -972,6 +1029,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const startPointer = { x: e.clientX, y: e.clientY };
       const rect = mainClockCard.getBoundingClientRect();
       const startClockPos = { left: rect.left, top: rect.top };
+      const dragContext = { slotOrigin: { left: rect.left, top: rect.top } };
 
       function onClockPointerMove(moveEvent) {
         const dist = Math.hypot(moveEvent.clientX - startPointer.x, moveEvent.clientY - startPointer.y);
@@ -993,10 +1051,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
           const rawLeft = startClockPos.left + deltaX;
           const rawTop = startClockPos.top + deltaY;
-          const clamped = clampClockPos(rawLeft, rawTop);
+          let resolved = clampClockPos(rawLeft, rawTop);
 
-          mainClockCard.style.left = `${clamped.left}px`;
-          mainClockCard.style.top = `${clamped.top}px`;
+          if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.resolveDragPosition === "function") {
+            resolved = window.WebClockSnapLayout.resolveDragPosition(mainClockCard, rawLeft, rawTop, dragContext);
+          }
+
+          mainClockCard.style.left = `${resolved.left}px`;
+          mainClockCard.style.top = `${resolved.top}px`;
           updateDefaultWidgetPositions();
         }
       }
@@ -1005,6 +1067,10 @@ document.addEventListener("DOMContentLoaded", function () {
         window.removeEventListener("pointermove", onClockPointerMove);
         window.removeEventListener("pointerup", onClockPointerUp);
         window.removeEventListener("pointercancel", onClockPointerUp);
+
+        if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.clearSnapGuides === "function") {
+          window.WebClockSnapLayout.clearSnapGuides();
+        }
 
         if (isClockDragging) {
           isClockDragging = false;
@@ -1106,6 +1172,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Expose Alarms API for layout engine synchronization
+  window.WebClockAlarms = {
+    setAlarmPositionFromLayout,
+    getAlarms: () => activeTimers
+  };
+
   // Load existing timers, clock position, collapsed state, and render
   loadTimers();
   renderTimers();
@@ -1118,4 +1190,3 @@ document.addEventListener("DOMContentLoaded", function () {
   updateClock();
   setInterval(updateClock, 1000);
 });
-

@@ -38,7 +38,7 @@
   const CIRC_INNER = 2 * Math.PI * R_INNER;   // ~653.45
 
   const CARD_DEFAULT_WIDTH = 450;
-  const CARD_GAP = 16;
+  const CARD_GAP = 20;
 
   let stopwatches = [];
   let rafId = null;
@@ -125,6 +125,13 @@
   /********************************************************************************
    * Default Positioning (Left/Right of Main Clock)
    ********************************************************************************/
+  function setCardPositionFromLayout(id, left, top) {
+    const sw = stopwatches.find(s => s.id === id);
+    if (!sw) return;
+    sw.position = { left: Math.round(left), top: Math.round(top) };
+    saveStopwatches();
+  }
+
   function calculateDefaultPositions(unmovedList) {
     const clockEl = document.querySelector(".clock");
     const positions = [];
@@ -134,8 +141,8 @@
     if (clockEl) {
       const clockRect = clockEl.getBoundingClientRect();
       // Place on the left side below To-Do if visible, or to the right of the clock
-      const rightCandidate = clockRect.right + 24;
-      const leftCandidate = clockRect.left - CARD_DEFAULT_WIDTH - 24;
+      const rightCandidate = clockRect.right + CARD_GAP;
+      const leftCandidate = clockRect.left - CARD_DEFAULT_WIDTH - CARD_GAP;
 
       if (leftCandidate >= 10) {
         left = leftCandidate;
@@ -155,8 +162,8 @@
     unmovedList.forEach(sw => {
       const hasLaps = Array.isArray(sw.laps) && sw.laps.length > 0;
       const h = sw.collapsed ? 48 : (hasLaps ? 490 : 400);
-      const clampedTop = Math.max(52, Math.min(currentTop, Math.max(52, window.innerHeight - h - 12)));
-      positions.push({ left, top: clampedTop });
+      const clampedTop = Math.max(54, Math.min(currentTop, Math.max(54, window.innerHeight - h - 16)));
+      positions.push({ left: Math.round(left), top: Math.round(clampedTop) });
       currentTop += h + CARD_GAP;
     });
 
@@ -175,10 +182,10 @@
 
       if (sw.position && typeof sw.position.left === "number") {
         const rect = card.getBoundingClientRect();
-        const maxLeft = Math.max(10, window.innerWidth - (rect.width || CARD_DEFAULT_WIDTH) - 10);
-        const maxTop = Math.max(50, window.innerHeight - (rect.height || 60) - 10);
-        sw.position.left = Math.max(10, Math.min(sw.position.left, maxLeft));
-        sw.position.top = Math.max(48, Math.min(sw.position.top, maxTop));
+        const maxLeft = Math.max(16, window.innerWidth - (rect.width || CARD_DEFAULT_WIDTH) - 16);
+        const maxTop = Math.max(54, window.innerHeight - (rect.height || 60) - 16);
+        sw.position.left = Math.max(16, Math.min(sw.position.left, maxLeft));
+        sw.position.top = Math.max(54, Math.min(sw.position.top, maxTop));
         card.style.left = `${sw.position.left}px`;
         card.style.top = `${sw.position.top}px`;
       } else {
@@ -656,9 +663,20 @@
         const id = this.getAttribute("data-id");
         const sw = stopwatches.find(s => s.id === id);
         if (sw) {
+          const oldCard = stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`);
+          const prevRect = oldCard ? oldCard.getBoundingClientRect() : null;
+
           sw.collapsed = !sw.collapsed;
           saveStopwatches();
           renderStopwatches();
+
+          const newCard = stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`);
+          if (newCard && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+            window.WebClockSnapLayout.onCardGeometryChanged(
+              newCard,
+              prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+            );
+          }
         }
       });
     });
@@ -687,6 +705,7 @@
         const startPointer = { x: e.clientX, y: e.clientY };
         const rect = card.getBoundingClientRect();
         const startCardPos = { left: rect.left, top: rect.top };
+        const dragContext = { slotOrigin: { left: rect.left, top: rect.top } };
 
         function onMove(moveEvent) {
           const dist = Math.hypot(moveEvent.clientX - startPointer.x, moveEvent.clientY - startPointer.y);
@@ -704,11 +723,20 @@
             const maxLeft = Math.max(10, window.innerWidth - cardRect.width - 10);
             const maxTop = Math.max(50, window.innerHeight - cardRect.height - 10);
 
-            const clampedLeft = Math.max(10, Math.min(startCardPos.left + deltaX, maxLeft));
-            const clampedTop = Math.max(48, Math.min(startCardPos.top + deltaY, maxTop));
+            const rawLeft = startCardPos.left + deltaX;
+            const rawTop = startCardPos.top + deltaY;
 
-            card.style.left = `${clampedLeft}px`;
-            card.style.top = `${clampedTop}px`;
+            let resolved = {
+              left: Math.max(10, Math.min(rawLeft, maxLeft)),
+              top: Math.max(48, Math.min(rawTop, maxTop))
+            };
+
+            if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.resolveDragPosition === "function") {
+              resolved = window.WebClockSnapLayout.resolveDragPosition(card, rawLeft, rawTop, dragContext);
+            }
+
+            card.style.left = `${resolved.left}px`;
+            card.style.top = `${resolved.top}px`;
           }
         }
 
@@ -716,6 +744,10 @@
           window.removeEventListener("pointermove", onMove);
           window.removeEventListener("pointerup", onUp);
           window.removeEventListener("pointercancel", onUp);
+
+          if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.clearSnapGuides === "function") {
+            window.WebClockSnapLayout.clearSnapGuides();
+          }
 
           if (isDragging) {
             isDragging = false;
@@ -772,6 +804,11 @@
     const index = stopwatches.length + 1;
     const defaultLabel = index === 1 ? "Stopwatch" : `Stopwatch ${index}`;
 
+    let initialPos = null;
+    if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.findAvailableSlot === "function") {
+      initialPos = window.WebClockSnapLayout.findAvailableSlot(null, "left", CARD_DEFAULT_WIDTH, 405);
+    }
+
     const newSw = {
       id: "sw_" + now + "_" + Math.random().toString(36).substr(2, 4),
       label: customLabel || defaultLabel,
@@ -781,6 +818,10 @@
       laps: [],
       collapsed: false
     };
+
+    if (initialPos) {
+      newSw.position = { left: initialPos.left, top: initialPos.top };
+    }
 
     stopwatches.push(newSw);
     saveStopwatches();
@@ -817,6 +858,9 @@
     const sw = stopwatches.find(s => s.id === id);
     if (!sw || !sw.isRunning) return;
 
+    const oldCard = stopwatchGrid ? stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`) : null;
+    const prevRect = oldCard ? oldCard.getBoundingClientRect() : null;
+
     const now = Date.now();
     const totalMs = getElapsedMs(sw, now);
     if (!Array.isArray(sw.laps)) sw.laps = [];
@@ -833,11 +877,22 @@
 
     saveStopwatches();
     renderStopwatches();
+
+    const newCard = stopwatchGrid ? stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`) : null;
+    if (newCard && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      window.WebClockSnapLayout.onCardGeometryChanged(
+        newCard,
+        prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+      );
+    }
   }
 
   function resetStopwatch(id) {
     const sw = stopwatches.find(s => s.id === id);
     if (!sw) return;
+
+    const oldCard = stopwatchGrid ? stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`) : null;
+    const prevRect = oldCard ? oldCard.getBoundingClientRect() : null;
 
     sw.isRunning = false;
     sw.accumulatedMs = 0;
@@ -846,12 +901,32 @@
 
     saveStopwatches();
     renderStopwatches();
+
+    const newCard = stopwatchGrid ? stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`) : null;
+    if (newCard && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      window.WebClockSnapLayout.onCardGeometryChanged(
+        newCard,
+        prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+      );
+    }
   }
 
   function deleteStopwatch(id) {
+    const oldCard = stopwatchGrid ? stopwatchGrid.querySelector(`.stopwatch-card[data-id="${id}"]`) : null;
+    const closedRect = oldCard ? oldCard.getBoundingClientRect() : null;
+
     stopwatches = stopwatches.filter(s => s.id !== id);
     saveStopwatches();
     renderStopwatches();
+
+    if (closedRect && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardClosed === "function") {
+      window.WebClockSnapLayout.onCardClosed({
+        left: closedRect.left,
+        top: closedRect.top,
+        width: closedRect.width,
+        height: closedRect.height
+      });
+    }
   }
 
   /********************************************************************************
@@ -887,6 +962,7 @@
     resetStopwatch,
     deleteStopwatch,
     updateDefaultPositions,
+    setCardPositionFromLayout,
     getStopwatches: () => stopwatches
   };
 })();

@@ -585,7 +585,8 @@ body {
 
 .nav-timer-link,
 .nav-stopwatch-link,
-.nav-todo-link {
+.nav-todo-link,
+.nav-tidy-link {
   background: none;
   border: none;
   color: var(--navbar-text-color);
@@ -603,7 +604,8 @@ body {
 
 .nav-timer-link:hover,
 .nav-stopwatch-link:hover,
-.nav-todo-link:hover {
+.nav-todo-link:hover,
+.nav-tidy-link:hover {
   transform: scale(1.06);
   text-shadow: 0 0 10px var(--box-shadow-color);
 }
@@ -1177,7 +1179,7 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 24px var(--box-shadow-color);
   color: var(--text-color);
-  width: 415px;
+  width: 450px;
   max-width: 95vw;
   padding: 16px 18px;
   display: flex;
@@ -1427,7 +1429,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 285px;
+  max-width: 320px;
   text-align: left;
 }
 
@@ -5180,3 +5182,45 @@ body {
 }
 
 
+/* =========================================================================
+   Dashboard Snap-To Guides, 20px Invisible Buffer Highlights & Smooth Reflow
+========================================================================= */
+.snap-guides-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 990;
+  overflow: hidden;
+}
+
+.snap-guide-line {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 6px var(--box-shadow-color));
+}
+
+.snap-guide-line.vertical {
+  width: 0;
+  border-left: 1.5px dashed var(--box-shadow-color);
+}
+
+.snap-guide-line.horizontal {
+  height: 0;
+  border-top: 1.5px dashed var(--box-shadow-color);
+}
+
+.snap-buffer-pill {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--box-shadow-color) 16%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--text-color) 45%, transparent);
+  box-shadow: inset 0 0 10px color-mix(in srgb, var(--box-shadow-color) 22%, transparent);
+}
+
+.is-layout-animating {
+  transition: left 0.28s cubic-bezier(0.22, 1, 0.36, 1), top 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s ease, box-shadow 0.25s ease !important;
+}

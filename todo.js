@@ -157,11 +157,17 @@
     const todoWidth = (todoContainer && todoContainer.offsetWidth) || customSize.width || DEFAULT_WIDTH;
     if (clockEl) {
       const clockRect = clockEl.getBoundingClientRect();
-      const targetLeft = clockRect.left - todoWidth - 24;
+      const targetLeft = clockRect.left - todoWidth - 20;
       const targetTop = clockRect.top;
       return clampPosition(targetLeft, targetTop);
     }
     return clampPosition(DEFAULT_LEFT, DEFAULT_TOP);
+  }
+
+  function setPositionFromLayout(left, top) {
+    position = { left: Math.round(left), top: Math.round(top) };
+    isCustomPosition = true;
+    saveTodos();
   }
 
   function applyPosition() {
@@ -208,9 +214,12 @@
       todoContainer.classList.remove("is-resizing");
       todoContainer.style.transition = "";
     }
-    applyPosition();
     applySize();
+    applyPosition();
     saveTodos();
+    if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      window.WebClockSnapLayout.onCardGeometryChanged(todoContainer);
+    }
   }
 
   /********************************************************************************
@@ -230,6 +239,7 @@
       const rect = todoContainer.getBoundingClientRect();
       dragOffset.x = e.clientX - rect.left;
       dragOffset.y = e.clientY - rect.top;
+      const dragContext = { slotOrigin: { left: rect.left, top: rect.top } };
 
       function onPointerMove(moveEvent) {
         const dist = Math.hypot(moveEvent.clientX - pointerDownPos.x, moveEvent.clientY - pointerDownPos.y);
@@ -242,11 +252,15 @@
         if (isDragging) {
           const rawLeft = moveEvent.clientX - dragOffset.x;
           const rawTop = moveEvent.clientY - dragOffset.y;
-          const clamped = clampPosition(rawLeft, rawTop);
+          let resolved = clampPosition(rawLeft, rawTop);
 
-          position = clamped;
-          todoContainer.style.left = `${clamped.left}px`;
-          todoContainer.style.top = `${clamped.top}px`;
+          if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.resolveDragPosition === "function") {
+            resolved = window.WebClockSnapLayout.resolveDragPosition(todoContainer, rawLeft, rawTop, dragContext);
+          }
+
+          position = resolved;
+          todoContainer.style.left = `${resolved.left}px`;
+          todoContainer.style.top = `${resolved.top}px`;
         }
       }
 
@@ -254,6 +268,10 @@
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);
         window.removeEventListener("pointercancel", onPointerUp);
+
+        if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.clearSnapGuides === "function") {
+          window.WebClockSnapLayout.clearSnapGuides();
+        }
 
         if (isDragging) {
           isDragging = false;
@@ -299,6 +317,12 @@
       todoContainer.style.transition = "none";
 
       const containerRect = todoContainer.getBoundingClientRect();
+      let prevRect = {
+        left: containerRect.left,
+        top: containerRect.top,
+        width: containerRect.width,
+        height: containerRect.height
+      };
       const listRect = todoList ? todoList.getBoundingClientRect() : { height: 380 };
 
       resizeStart = {
@@ -326,6 +350,12 @@
         if (todoList) {
           todoList.style.maxHeight = `${newListHeight}px`;
         }
+
+        if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+          window.WebClockSnapLayout.onCardGeometryChanged(todoContainer, prevRect);
+          const nowRect = todoContainer.getBoundingClientRect();
+          prevRect = { left: nowRect.left, top: nowRect.top, width: nowRect.width, height: nowRect.height };
+        }
       }
 
       function onResizeUp() {
@@ -338,6 +368,9 @@
           todoContainer.classList.remove("is-resizing");
           todoContainer.style.transition = "";
           saveTodos();
+          if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+            window.WebClockSnapLayout.onCardGeometryChanged(todoContainer, prevRect);
+          }
         }
       }
 
@@ -362,6 +395,10 @@
   }
 
   function setCollapsed(collapsed) {
+    const prevRect = todoContainer && isVisible
+      ? todoContainer.getBoundingClientRect()
+      : null;
+
     isCollapsed = Boolean(collapsed);
     if (!todoContainer) return;
 
@@ -382,7 +419,12 @@
       applySize();
     }
     saveTodos();
-    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+    if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      window.WebClockSnapLayout.onCardGeometryChanged(
+        todoContainer,
+        prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+      );
+    } else if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
       window.WebClockStopwatch.updateDefaultPositions();
     }
   }
@@ -395,8 +437,8 @@
     if (!todoContainer) return;
     isVisible = true;
     todoContainer.style.display = "block";
-    applyPosition();
     applySize();
+    applyPosition();
     
     // Trigger pop-up entrance animation
     todoContainer.classList.remove("todo-popup-active");
@@ -407,18 +449,30 @@
       setCollapsed(false);
     }
     saveTodos();
-    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+    if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      window.WebClockSnapLayout.onCardGeometryChanged(todoContainer);
+    } else if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
       window.WebClockStopwatch.updateDefaultPositions();
     }
   }
 
   function hideContainer() {
     if (!todoContainer) return;
+    const closedRect = isVisible
+      ? todoContainer.getBoundingClientRect()
+      : null;
     isVisible = false;
     todoContainer.style.display = "none";
     todoContainer.classList.remove("todo-popup-active");
     saveTodos();
-    if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
+    if (closedRect && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardClosed === "function") {
+      window.WebClockSnapLayout.onCardClosed({
+        left: closedRect.left,
+        top: closedRect.top,
+        width: closedRect.width,
+        height: closedRect.height
+      });
+    } else if (window.WebClockStopwatch && typeof window.WebClockStopwatch.updateDefaultPositions === "function") {
       window.WebClockStopwatch.updateDefaultPositions();
     }
   }
@@ -496,6 +550,10 @@
   }
 
   function addItem(text = "", completed = false, focus = true) {
+    const prevRect = todoContainer && isVisible
+      ? todoContainer.getBoundingClientRect()
+      : null;
+
     // If collapsed, expand when adding a new item
     if (isCollapsed) {
       setCollapsed(false);
@@ -518,9 +576,22 @@
         setTimeout(() => input.focus(), 30);
       }
     }
+
+    if (todoContainer && isVisible && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+      requestAnimationFrame(() => {
+        window.WebClockSnapLayout.onCardGeometryChanged(
+          todoContainer,
+          prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+        );
+      });
+    }
   }
 
   function removeItem(id) {
+    const prevRect = todoContainer && isVisible
+      ? todoContainer.getBoundingClientRect()
+      : null;
+
     const index = todoItems.findIndex(i => i.id === id);
     if (index !== -1) {
       todoItems.splice(index, 1);
@@ -537,6 +608,12 @@
         setTimeout(() => {
           if (itemEl.parentNode) {
             itemEl.parentNode.removeChild(itemEl);
+          }
+          if (todoContainer && isVisible && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+            window.WebClockSnapLayout.onCardGeometryChanged(
+              todoContainer,
+              prevRect ? { left: prevRect.left, top: prevRect.top, width: prevRect.width, height: prevRect.height } : null
+            );
           }
         }, 200);
       }
@@ -607,18 +684,23 @@
 
     // Set initial container position, size and visibility
     if (todoContainer) {
-      applyPosition();
-      applySize();
-
       if (isVisible) {
         todoContainer.style.display = "block";
       } else {
         todoContainer.style.display = "none";
       }
+      applySize();
+      applyPosition();
       setCollapsed(isCollapsed);
     }
 
     renderList();
+
+    setTimeout(() => {
+      if (isVisible && todoContainer && window.WebClockSnapLayout && typeof window.WebClockSnapLayout.onCardGeometryChanged === "function") {
+        window.WebClockSnapLayout.onCardGeometryChanged(todoContainer);
+      }
+    }, 150);
 
     // Init Drag & Resize interactions
     initDragHandlers();
@@ -679,6 +761,7 @@
     hideContainer,
     resetToDefaultPosition,
     updateDefaultPosition,
+    setPositionFromLayout,
     getItems: () => todoItems
   };
 })();
