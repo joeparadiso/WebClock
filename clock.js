@@ -42,8 +42,21 @@ document.addEventListener("DOMContentLoaded", function () {
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // SVG Gauge Math (r = 28 -> Circumference = 2 * PI * 28 ≈ 175.93)
-  const CIRCUMFERENCE = 175.93;
+  // 3-Ring Orbital SVG Geometry (viewBox 0 0 320 320, center = 160, 160)
+  // 1. Outer Ring (1-Minute / 60s cycle): r = 143
+  // 2. Middle Ring (10-Minute cycle): r = 123
+  // 3. Inner Ring (60-Minute cycle): r = 104
+  // 4. Center Frosted Core: r = 88 (houses the % remaining readout)
+  const ALARM_CENTER = 160;
+  const ALARM_R_OUTER = 143;
+  const ALARM_R_MIDDLE = 123;
+  const ALARM_R_INNER = 104;
+  const ALARM_R_CORE = 88;
+  const ALARM_R_CARDINAL_OUTER = 133;
+  const ALARM_R_CARDINAL_INNER = 113.5;
+  const ALARM_CIRC_OUTER = 2 * Math.PI * ALARM_R_OUTER;   // ~898.50
+  const ALARM_CIRC_MIDDLE = 2 * Math.PI * ALARM_R_MIDDLE; // ~772.83
+  const ALARM_CIRC_INNER = 2 * Math.PI * ALARM_R_INNER;   // ~653.45
   const STORAGE_KEY = "webclock_multi_timers";
 
   // Alarm sound setup
@@ -53,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Active timers state & editing tracking
   let activeTimers = [];
   let editingTimerId = null;
+  let alarmRafId = null;
 
   const modalTitle = document.getElementById("modal-title");
   const submitTimerBtn = document.getElementById("submit-timer-btn");
@@ -183,13 +197,160 @@ document.addEventListener("DOMContentLoaded", function () {
 
     unmovedTimers.forEach(timer => {
       const isCollapsed = !!timer.collapsed;
-      // Header-only collapsed height is 44px; full card height is ~146px
-      const cardHeight = isCollapsed ? 44 : 146;
+      // Header-only collapsed height is 44px; full card height with 148px 3-ring gauge is ~224px
+      const cardHeight = isCollapsed ? 44 : 224;
       positions.push({ left: Math.round(left), top: Math.round(currentTop) });
       currentTop += cardHeight + TIMER_GAP;
     });
 
     return positions;
+  }
+
+  /********************************************************************************
+   * Computes 3-Ring Orbital State (Outer 1m, Middle 10m, Inner 60m + % Core)
+   ********************************************************************************/
+  function computeAlarmRingState(timer, now = Date.now()) {
+    const targetTime = timer.targetTimestamp;
+    const startTime = timer.startTimestamp || timer.createdAt || targetTime;
+    const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - startTime);
+    const remainingMs = targetTime - now;
+    const isOverdue = remainingMs <= 0;
+    const remainingSec = Math.floor(remainingMs / 1000);
+
+    // Overall percentage of time remaining (from 100% down to 0%)
+    const fraction = isOverdue ? 0 : Math.max(0, Math.min(1, remainingMs / initialDuration));
+    const percent = Math.round(fraction * 100);
+
+    // 3 Concentric Rings:
+    //  1. Outer Ring: 1-minute (60,000 ms) cycle
+    //  2. Middle Ring: 10-minute (600,000 ms) cycle
+    //  3. Inner Ring: 60-minute (3,600,000 ms) cycle
+    let outerFraction, middleFraction, innerFraction;
+
+    if (!isOverdue) {
+      const outerMod = remainingMs % 60000;
+      outerFraction = outerMod === 0 ? 1 : outerMod / 60000;
+
+      const middleMod = remainingMs % 600000;
+      middleFraction = middleMod === 0 ? 1 : middleMod / 600000;
+
+      const innerMod = remainingMs % 3600000;
+      innerFraction = innerMod === 0 ? 1 : innerMod / 3600000;
+    } else {
+      const overdueMs = Math.abs(remainingMs);
+      outerFraction = (overdueMs % 60000) / 60000;
+      middleFraction = overdueMs > 0 ? (overdueMs % 600000) / 600000 : 0;
+      innerFraction = overdueMs > 0 ? (overdueMs % 3600000) / 3600000 : 0;
+    }
+
+    const outerOffset = ALARM_CIRC_OUTER * (1 - outerFraction);
+    const outerAngle = outerFraction * 2 * Math.PI - Math.PI / 2;
+    const cometX = (ALARM_CENTER + ALARM_R_OUTER * Math.cos(outerAngle)).toFixed(2);
+    const cometY = (ALARM_CENTER + ALARM_R_OUTER * Math.sin(outerAngle)).toFixed(2);
+
+    const middleOffset = ALARM_CIRC_MIDDLE * (1 - middleFraction);
+    const middleAngle = middleFraction * 2 * Math.PI - Math.PI / 2;
+    const middleCapX = (ALARM_CENTER + ALARM_R_MIDDLE * Math.cos(middleAngle)).toFixed(2);
+    const middleCapY = (ALARM_CENTER + ALARM_R_MIDDLE * Math.sin(middleAngle)).toFixed(2);
+
+    const innerOffset = ALARM_CIRC_INNER * (1 - innerFraction);
+    const innerAngle = innerFraction * 2 * Math.PI - Math.PI / 2;
+    const innerCapX = (ALARM_CENTER + ALARM_R_INNER * Math.cos(innerAngle)).toFixed(2);
+    const innerCapY = (ALARM_CENTER + ALARM_R_INNER * Math.sin(innerAngle)).toFixed(2);
+
+    return {
+      targetTime,
+      startTime,
+      initialDuration,
+      remainingMs,
+      isOverdue,
+      remainingSec,
+      fraction,
+      percent,
+      outerFraction,
+      outerOffset,
+      cometX,
+      cometY,
+      middleFraction,
+      middleOffset,
+      middleCapX,
+      middleCapY,
+      innerFraction,
+      innerOffset,
+      innerCapX,
+      innerCapY
+    };
+  }
+
+  function updateCardRingDOM(card, state) {
+    const outerArc = card.querySelector(".alarm-ring-outer-fill");
+    if (outerArc) outerArc.style.strokeDashoffset = state.outerOffset;
+
+    const middleArc = card.querySelector(".alarm-ring-middle-fill");
+    if (middleArc) middleArc.style.strokeDashoffset = state.middleOffset;
+
+    const innerArc = card.querySelector(".alarm-ring-inner-fill");
+    if (innerArc) innerArc.style.strokeDashoffset = state.innerOffset;
+
+    const cometGroup = card.querySelector(".alarm-comet-group");
+    if (cometGroup) {
+      cometGroup.setAttribute("transform", `translate(${state.cometX}, ${state.cometY})`);
+    }
+
+    const middleCap = card.querySelector(".alarm-middle-cap-dot");
+    if (middleCap) {
+      middleCap.setAttribute("cx", state.middleCapX);
+      middleCap.setAttribute("cy", state.middleCapY);
+    }
+
+    const innerCap = card.querySelector(".alarm-inner-cap-dot");
+    if (innerCap) {
+      innerCap.setAttribute("cx", state.innerCapX);
+      innerCap.setAttribute("cy", state.innerCapY);
+    }
+
+    const percentText = card.querySelector(".gauge-percent-text");
+    if (percentText) {
+      const nextText = state.isOverdue ? "!" : `${state.percent}%`;
+      if (percentText.textContent !== nextText) {
+        percentText.textContent = nextText;
+      }
+    }
+  }
+
+  function updateAlarmRingsFrame() {
+    if (!timersGrid || activeTimers.length === 0) {
+      alarmRafId = null;
+      return;
+    }
+
+    const now = Date.now();
+    let anyExpanded = false;
+
+    activeTimers.forEach(timer => {
+      if (timer.collapsed) return;
+      const card = timersGrid.querySelector(`.timer-card[data-id="${timer.id}"]`);
+      if (!card) return;
+      anyExpanded = true;
+      const state = computeAlarmRingState(timer, now);
+      updateCardRingDOM(card, state);
+    });
+
+    if (anyExpanded) {
+      alarmRafId = requestAnimationFrame(updateAlarmRingsFrame);
+    } else {
+      alarmRafId = null;
+    }
+  }
+
+  function ensureAlarmAnimationLoop() {
+    const anyExpanded = activeTimers.some(t => !t.collapsed);
+    if (anyExpanded && !alarmRafId) {
+      alarmRafId = requestAnimationFrame(updateAlarmRingsFrame);
+    } else if (!anyExpanded && alarmRafId) {
+      cancelAnimationFrame(alarmRafId);
+      alarmRafId = null;
+    }
   }
 
   /********************************************************************************
@@ -200,6 +361,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (activeTimers.length === 0) {
       timersGrid.innerHTML = "";
+      ensureAlarmAnimationLoop();
       return;
     }
 
@@ -209,17 +371,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let unmovedIndex = 0;
 
     timersGrid.innerHTML = activeTimers.map(timer => {
-      const targetTime = timer.targetTimestamp;
-      const startTime = timer.startTimestamp || timer.createdAt || targetTime;
-      const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - startTime);
-      const remainingMs = targetTime - now;
-      const isOverdue = remainingMs <= 0;
-      const remainingSec = Math.floor(remainingMs / 1000);
-
-      // Percentage of time remaining (from 100% down to 0%)
-      const fraction = isOverdue ? 0 : Math.max(0, Math.min(1, remainingMs / initialDuration));
-      const percent = Math.round(fraction * 100);
-      const strokeOffset = CIRCUMFERENCE * (1 - fraction);
+      const state = computeAlarmRingState(timer, now);
+      const {
+        targetTime,
+        startTime,
+        isOverdue,
+        remainingSec,
+        percent
+      } = state;
 
       const startDate = new Date(startTime);
       const startText = formatTargetTime(startDate);
@@ -262,9 +421,96 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
           <div class="timer-card-body">
             <div class="timer-gauge-container">
-              <svg class="progress-ring" viewBox="0 0 70 70">
-                <circle class="progress-ring-bg" cx="35" cy="35" r="28" />
-                <circle class="progress-ring-fill" cx="35" cy="35" r="28" style="stroke-dashoffset: ${strokeOffset};" />
+              <svg class="alarm-orbital-svg" viewBox="0 0 320 320" aria-hidden="true">
+                <defs>
+                  <filter id="alarm-comet-glow-${timer.id}" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur stdDeviation="4.5" result="blur1" />
+                    <feGaussianBlur stdDeviation="9" result="blur2" />
+                    <feMerge>
+                      <feMergeNode in="blur2" />
+                      <feMergeNode in="blur1" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                  <filter id="alarm-ribbon-glow-${timer.id}" x="-25%" y="-25%" width="150%" height="150%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Subtle Ambient Outer Halo -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="155" class="alarm-ambient-halo" />
+
+                <!-- 1. Outer Recessed Dark-Glass Groove (1-Minute / 60s Ring, r = 143) -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_OUTER}" class="alarm-groove-outer" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_OUTER + 6.5}" class="alarm-groove-rim" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_OUTER - 6.5}" class="alarm-groove-rim" />
+
+                <!-- 4 Subtle Cardinal Micro-Dots Between Outer & Middle Grooves -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER - ALARM_R_CARDINAL_OUTER}" r="2.2" class="alarm-cardinal-dot" />
+                <circle cx="${ALARM_CENTER + ALARM_R_CARDINAL_OUTER}" cy="${ALARM_CENTER}" r="2.2" class="alarm-cardinal-dot" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER + ALARM_R_CARDINAL_OUTER}" r="2.2" class="alarm-cardinal-dot" />
+                <circle cx="${ALARM_CENTER - ALARM_R_CARDINAL_OUTER}" cy="${ALARM_CENTER}" r="2.2" class="alarm-cardinal-dot" />
+
+                <!-- 2. Middle Recessed Dark-Glass Groove (10-Minute Ring, r = 123) -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_MIDDLE}" class="alarm-groove-middle" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_MIDDLE + 5.2}" class="alarm-groove-rim" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_MIDDLE - 5.2}" class="alarm-groove-rim" />
+
+                <!-- 4 Subtle Cardinal Micro-Dots Between Middle & Inner Grooves -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER - ALARM_R_CARDINAL_INNER}" r="1.9" class="alarm-cardinal-dot" />
+                <circle cx="${ALARM_CENTER + ALARM_R_CARDINAL_INNER}" cy="${ALARM_CENTER}" r="1.9" class="alarm-cardinal-dot" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER + ALARM_R_CARDINAL_INNER}" r="1.9" class="alarm-cardinal-dot" />
+                <circle cx="${ALARM_CENTER - ALARM_R_CARDINAL_INNER}" cy="${ALARM_CENTER}" r="1.9" class="alarm-cardinal-dot" />
+
+                <!-- 3. Inner Recessed Dark-Glass Groove (60-Minute Ring, r = 104) -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_INNER}" class="alarm-groove-inner" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_INNER + 4.5}" class="alarm-groove-rim" />
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_INNER - 4.5}" class="alarm-groove-rim" />
+
+                <!-- Outer 1m (60s) Smooth Ribbon Progress Arc -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_OUTER}"
+                  class="alarm-ring-outer-fill"
+                  stroke-dasharray="${ALARM_CIRC_OUTER}"
+                  style="stroke-dashoffset: ${state.outerOffset};"
+                  transform="rotate(-90 ${ALARM_CENTER} ${ALARM_CENTER})"
+                  filter="url(#alarm-ribbon-glow-${timer.id})" />
+
+                <!-- Middle 10m Smooth Ribbon Progress Arc -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_MIDDLE}"
+                  class="alarm-ring-middle-fill"
+                  stroke-dasharray="${ALARM_CIRC_MIDDLE}"
+                  style="stroke-dashoffset: ${state.middleOffset};"
+                  transform="rotate(-90 ${ALARM_CENTER} ${ALARM_CENTER})"
+                  filter="url(#alarm-ribbon-glow-${timer.id})" />
+
+                <!-- Inner 60m Smooth Ribbon Progress Arc -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_INNER}"
+                  class="alarm-ring-inner-fill"
+                  stroke-dasharray="${ALARM_CIRC_INNER}"
+                  style="stroke-dashoffset: ${state.innerOffset};"
+                  transform="rotate(-90 ${ALARM_CENTER} ${ALARM_CENTER})"
+                  filter="url(#alarm-ribbon-glow-${timer.id})" />
+
+                <!-- Middle 10m Ring Leading Micro-Cap Dot -->
+                <circle cx="${state.middleCapX}" cy="${state.middleCapY}" r="3.8"
+                  class="alarm-middle-cap-dot" />
+
+                <!-- Inner 60m Ring Leading Micro-Cap Dot -->
+                <circle cx="${state.innerCapX}" cy="${state.innerCapY}" r="3.4"
+                  class="alarm-inner-cap-dot" />
+
+                <!-- Outer 1m Ring Glowing Comet Orb -->
+                <g class="alarm-comet-group" transform="translate(${state.cometX}, ${state.cometY})" filter="url(#alarm-comet-glow-${timer.id})">
+                  <circle cx="0" cy="0" r="10.5" class="alarm-comet-aura" />
+                  <circle cx="0" cy="0" r="5.8" class="alarm-comet-core" />
+                </g>
+
+                <!-- Frosted Glass Center Disc (r = 88) -->
+                <circle cx="${ALARM_CENTER}" cy="${ALARM_CENTER}" r="${ALARM_R_CORE}" class="alarm-frosted-core" />
               </svg>
               <span class="gauge-percent-text">${isOverdue ? "!" : percent + "%"}</span>
             </div>
@@ -453,6 +699,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     });
+
+    ensureAlarmAnimationLoop();
   }
 
   /********************************************************************************
@@ -467,12 +715,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const card = timersGrid ? timersGrid.querySelector(`.timer-card[data-id="${timer.id}"]`) : null;
       if (!card) return;
 
-      const targetTime = timer.targetTimestamp;
-      const startTime = timer.startTimestamp || timer.createdAt || targetTime;
-      const initialDuration = timer.initialDurationMs || Math.max(1, targetTime - startTime);
-      const remainingMs = targetTime - now;
-      const isOverdue = remainingMs <= 0;
-      const remainingSec = Math.floor(remainingMs / 1000);
+      const state = computeAlarmRingState(timer, now);
+      const { isOverdue, remainingSec } = state;
 
       // Handle transition to overdue (trigger alarm)
       if (isOverdue && !timer.alarmTriggered) {
@@ -509,21 +753,11 @@ document.addEventListener("DOMContentLoaded", function () {
         digitsEl.textContent = formatDigits(remainingSec, isOverdue);
       }
 
-      // Update circular SVG gauge
-      const fraction = isOverdue ? 0 : Math.max(0, Math.min(1, remainingMs / initialDuration));
-      const percent = Math.round(fraction * 100);
-      const strokeOffset = CIRCUMFERENCE * (1 - fraction);
-
-      const fillCircle = card.querySelector(".progress-ring-fill");
-      if (fillCircle) {
-        fillCircle.style.strokeDashoffset = strokeOffset;
-      }
-
-      const percentText = card.querySelector(".gauge-percent-text");
-      if (percentText) {
-        percentText.textContent = isOverdue ? "!" : `${percent}%`;
-      }
+      // Update 3-ring circular SVG gauge & center percentage
+      updateCardRingDOM(card, state);
     });
+
+    ensureAlarmAnimationLoop();
 
     const hasUnsilencedOverdue = activeTimers.some(t => t.targetTimestamp <= now && !t.alarmSilenced);
     if (hasUnsilencedOverdue) {
@@ -548,7 +782,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let initialPos = null;
     if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.findAvailableSlot === "function") {
-      initialPos = window.WebClockSnapLayout.findAvailableSlot(null, "right", TIMER_DEFAULT_WIDTH, 146);
+      initialPos = window.WebClockSnapLayout.findAvailableSlot(null, "right", TIMER_DEFAULT_WIDTH, 224);
     }
 
     const newTimer = {

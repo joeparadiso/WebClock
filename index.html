@@ -18,11 +18,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Baumans&family=Chivo+Mono:wght@100..900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=3.6" />
+    <link rel="stylesheet" href="styles.css?v=3.7" />
     <script type="text/javascript" src="themes.js?v=3.4" defer></script>
     <script type="text/javascript" src="themeStudio.js?v=3.4" defer></script>
     <script type="text/javascript" src="weather.js?v=3.3" defer></script>
-    <script type="text/javascript" src="clock.js?v=3.4" defer></script>
+    <script type="text/javascript" src="clock.js?v=3.5" defer></script>
     <script type="text/javascript" src="sunTimes.js?v=3.3" defer></script>
     <script type="text/javascript" src="nextTrain.js?v=3.4" defer></script>
     <script type="text/javascript" src="trainTracker.js?v=1.0" defer></script>
@@ -36,7 +36,7 @@
     <nav class="navbar" aria-label="Main Navigation">
       <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu" aria-expanded="false" type="button">☰</button>
       <div class="nav-actions">
-        <button class="nav-tidy-link" id="tidy-layout-btn" type="button" title="Snap and evenly space all open dashboard cards">✨ Tidy Layout</button>
+        <button class="nav-tidy-link" id="tidy-layout-btn" type="button" title="Snap and evenly space all open dashboard cards">＋ Tidy Layout</button>
         <button class="nav-todo-link" id="open-todo-btn" type="button">＋ Create To-Do</button>
         <button class="nav-stopwatch-link" id="open-stopwatch-btn" type="button">＋ Create Timer</button>
         <button class="nav-timer-link" id="open-timer-modal" type="button">＋ Create Alarm</button>
@@ -731,10 +731,19 @@
                           <button type="button" class="mock-timer-btn">✕</button>
                         </div>
                         <div class="mock-timer-mid">
-                          <svg class="mock-timer-gauge" width="56" height="56" viewBox="0 0 64 64">
-                            <circle cx="32" cy="32" r="26" class="mock-gauge-track"></circle>
-                            <circle cx="32" cy="32" r="26" class="mock-gauge-fill" stroke-dasharray="163.36" stroke-dashoffset="57.17"></circle>
-                          </svg>
+                          <div class="mock-timer-gauge-wrap">
+                            <svg class="mock-timer-gauge" width="66" height="66" viewBox="0 0 80 80">
+                              <circle cx="40" cy="40" r="34" class="mock-sw-groove-outer"></circle>
+                              <circle cx="40" cy="40" r="26.5" class="mock-sw-groove-middle"></circle>
+                              <circle cx="40" cy="40" r="19.5" class="mock-sw-groove-inner"></circle>
+                              <circle cx="40" cy="40" r="34" class="mock-alarm-ring-outer" stroke-dasharray="213.6" stroke-dashoffset="64"></circle>
+                              <circle cx="40" cy="40" r="26.5" class="mock-alarm-ring-middle" stroke-dasharray="166.5" stroke-dashoffset="48"></circle>
+                              <circle cx="40" cy="40" r="19.5" class="mock-alarm-ring-inner" stroke-dasharray="122.5" stroke-dashoffset="98"></circle>
+                              <circle cx="7.6" cy="29.5" r="3.4" class="mock-alarm-comet"></circle>
+                              <circle cx="40" cy="40" r="14" class="mock-sw-core"></circle>
+                            </svg>
+                            <span class="mock-timer-percent">65%</span>
+                          </div>
                           <div class="mock-timer-digits">01:08:42</div>
                         </div>
                         <div class="mock-timer-bot">

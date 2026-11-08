@@ -1347,45 +1347,129 @@ body {
   gap: 16px;
 }
 
-/* SVG Circular Gauge */
+/* SVG 3-Ring Concentric Orbital Gauge (1m, 10m, 60m + Center Percentage Core) */
 .timer-gauge-container {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: 148px;
+  height: 148px;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.progress-ring {
-  transform: rotate(-90deg);
-  width: 70px;
-  height: 70px;
+.alarm-orbital-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
 }
 
-.progress-ring-bg {
+.alarm-ambient-halo {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 6;
+  stroke: var(--text-color);
+  stroke-opacity: 0.1;
+  stroke-width: 1.2;
 }
 
-.progress-ring-fill {
+/* Recessed Dark-Glass Grooves */
+.alarm-groove-outer {
   fill: none;
-  stroke: var(--timer-visual-color);
-  stroke-width: 6;
+  stroke: var(--clock-inner-bg, rgba(0, 0, 0, 0.45));
+  stroke-width: 13;
+}
+
+.alarm-groove-middle {
+  fill: none;
+  stroke: var(--clock-inner-bg, rgba(0, 0, 0, 0.45));
+  stroke-width: 10.4;
+}
+
+.alarm-groove-inner {
+  fill: none;
+  stroke: var(--clock-inner-bg, rgba(0, 0, 0, 0.45));
+  stroke-width: 9;
+}
+
+.alarm-groove-rim {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.alarm-cardinal-dot {
+  fill: var(--text-color);
+  opacity: 0.45;
+}
+
+/* Smooth Ribbon Progress Rings (Derived from Gauge Visual Ring & Text Color) */
+.alarm-ring-outer-fill {
+  fill: none;
+  stroke: var(--timer-visual-color, var(--box-shadow-color));
+  stroke-width: 9.2;
   stroke-linecap: round;
-  stroke-dasharray: 175.93;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.6s linear, stroke 0.3s ease;
+  transition: stroke 0.3s ease;
+}
+
+.alarm-ring-middle-fill {
+  fill: none;
+  stroke: color-mix(in srgb, var(--timer-visual-color, var(--box-shadow-color)) 52%, var(--text-color) 48%);
+  stroke-width: 7.4;
+  stroke-linecap: round;
+  opacity: 0.95;
+  transition: stroke 0.3s ease;
+}
+
+.alarm-ring-inner-fill {
+  fill: none;
+  stroke: var(--text-color);
+  stroke-width: 6.2;
+  stroke-linecap: round;
+  opacity: 0.9;
+  transition: stroke 0.3s ease;
+}
+
+.alarm-middle-cap-dot {
+  fill: #ffffff;
+  stroke: color-mix(in srgb, var(--timer-visual-color, var(--box-shadow-color)) 52%, var(--text-color) 48%);
+  stroke-width: 2.2;
+}
+
+.alarm-inner-cap-dot {
+  fill: #ffffff;
+  stroke: var(--text-color);
+  stroke-width: 2;
+}
+
+/* Glowing Comet Orb on Outer 1m Ring */
+.alarm-comet-aura {
+  fill: var(--timer-visual-color, var(--box-shadow-color));
+  opacity: 0.35;
+}
+
+.alarm-comet-core {
+  fill: #ffffff;
+  stroke: var(--timer-visual-color, var(--box-shadow-color));
+  stroke-width: 2.6;
+}
+
+/* Frosted Glass Center Disc */
+.alarm-frosted-core {
+  fill: var(--clock-inner-bg, rgba(0, 0, 0, 0.35));
+  stroke: var(--text-color);
+  stroke-opacity: 0.24;
+  stroke-width: 1.4;
 }
 
 .gauge-percent-text {
   position: absolute;
   font-family: "Chivo Mono", monospace;
-  font-size: 0.8rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-color);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  line-height: 1;
 }
 
 /* Readout Container */
@@ -1394,6 +1478,7 @@ body {
   flex-direction: column;
   align-items: flex-start;
   flex: 1;
+  min-width: 0;
   text-align: left;
 }
 
@@ -1404,6 +1489,7 @@ body {
   line-height: 1.1;
   letter-spacing: 0.5px;
   color: var(--text-color);
+  white-space: nowrap;
 }
 
 .timer-subtext {
@@ -1429,7 +1515,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 320px;
+  max-width: 100%;
   text-align: left;
 }
 
@@ -1450,8 +1536,22 @@ body {
   }
 }
 
-.timer-card.overdue .progress-ring-fill {
+.timer-card.overdue .alarm-ring-outer-fill,
+.timer-card.overdue .alarm-ring-middle-fill,
+.timer-card.overdue .alarm-ring-inner-fill,
+.timer-card.overdue .alarm-comet-core,
+.timer-card.overdue .alarm-middle-cap-dot,
+.timer-card.overdue .alarm-inner-cap-dot {
   stroke: #ff4757;
+}
+
+.timer-card.overdue .alarm-comet-aura {
+  fill: #ff4757;
+}
+
+.timer-card.overdue .gauge-percent-text {
+  color: #ff6b81;
+  font-size: 1.5rem;
 }
 
 .timer-card.overdue .timer-digits {
@@ -2205,19 +2305,61 @@ body {
   gap: 14px;
 }
 
-.mock-gauge-track {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 6;
+.mock-timer-gauge-wrap {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.mock-gauge-fill {
+.mock-timer-gauge {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.mock-alarm-ring-outer {
   fill: none;
   stroke: var(--mock-timer-visual-color);
-  stroke-width: 6;
+  stroke-width: 4;
   stroke-linecap: round;
   transform: rotate(-90deg);
   transform-origin: center;
+}
+
+.mock-alarm-ring-middle {
+  fill: none;
+  stroke: color-mix(in srgb, var(--mock-timer-visual-color) 52%, var(--mock-text-color) 48%);
+  stroke-width: 3.3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.mock-alarm-ring-inner {
+  fill: none;
+  stroke: var(--mock-text-color);
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.mock-alarm-comet {
+  fill: #ffffff;
+  stroke: var(--mock-timer-visual-color);
+  stroke-width: 2;
+}
+
+.mock-timer-percent {
+  position: absolute;
+  font-family: "Chivo Mono", monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--mock-text-color);
+  pointer-events: none;
 }
 
 .mock-timer-digits {
