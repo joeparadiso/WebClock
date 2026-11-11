@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return `${monthShort} ${targetDate.getDate()}, ${timeStr}`;
   }
 
-  const TIMER_DEFAULT_WIDTH = 450;
+  const TIMER_DEFAULT_WIDTH = 415;
   const TIMER_GAP = 20;
 
   function setAlarmPositionFromLayout(id, left, top) {
@@ -197,8 +197,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     unmovedTimers.forEach(timer => {
       const isCollapsed = !!timer.collapsed;
-      // Header-only collapsed height is 44px; full card height with 148px 3-ring gauge is ~224px
-      const cardHeight = isCollapsed ? 44 : 224;
+      // Header-only collapsed height is 44px; full card height with 148px 3-ring gauge is ~208px
+      const cardHeight = isCollapsed ? 44 : 208;
       positions.push({ left: Math.round(left), top: Math.round(currentTop) });
       currentTop += cardHeight + TIMER_GAP;
     });
@@ -782,7 +782,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let initialPos = null;
     if (window.WebClockSnapLayout && typeof window.WebClockSnapLayout.findAvailableSlot === "function") {
-      initialPos = window.WebClockSnapLayout.findAvailableSlot(null, "right", TIMER_DEFAULT_WIDTH, 224);
+      initialPos = window.WebClockSnapLayout.findAvailableSlot(null, "right", TIMER_DEFAULT_WIDTH, 208);
     }
 
     const newTimer = {

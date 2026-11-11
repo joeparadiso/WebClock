@@ -1179,12 +1179,12 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 24px var(--box-shadow-color);
   color: var(--text-color);
-  width: 450px;
+  width: 415px;
   max-width: 95vw;
-  padding: 16px 18px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   position: relative;
   overflow: hidden;
@@ -1209,7 +1209,7 @@ body {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 8px;
+  padding-bottom: 5px;
   gap: 8px;
   cursor: grab;
   user-select: none;
@@ -1344,7 +1344,7 @@ body {
 .timer-card-body {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* SVG 3-Ring Concentric Orbital Gauge (1m, 10m, 60m + Center Percentage Core) */
@@ -1484,7 +1484,7 @@ body {
 
 .timer-digits {
   font-family: "Chivo Mono", monospace;
-  font-size: 1.7rem;
+  font-size: 1.65rem;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.5px;
@@ -1579,8 +1579,8 @@ body {
 .timer-stop-alarm-btn {
   display: none;
   position: absolute;
-  bottom: 12px;
-  right: 14px;
+  bottom: 8px;
+  right: 12px;
   background: linear-gradient(135deg, #ff4757, #e84118);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.45);
